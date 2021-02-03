@@ -1,0 +1,13 @@
+
+struct SPsInput
+{
+	float4 _Position : SV_POSITION;
+	float4 _Color : COLOR;
+};
+
+// Main PS shader
+float4 ColorPixelShader(SPsInput Input) : SV_TARGET
+{
+	return float4( 0.1, 0.8, 0.3, 1.0);
+	//return Input._Color;
+}
