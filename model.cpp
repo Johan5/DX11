@@ -34,12 +34,12 @@ bool CModel::InitializeBuffers(ID3D11Device* pDevice)
 	_VertexCount = 3;
 	SVertex* pVertices = new SVertex[_VertexCount];
 	{ // populate vertice data
-		pVertices[0]._Position = XMFLOAT3( 0.0f, 0.0f, 5.0f ); // bot left
-		//pVertices[0]._Color = XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f );
-		pVertices[1]._Position = XMFLOAT3( 0.5f, 1.0f, 5.0f ); // top
-		//pVertices[1]._Color = XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f );
-		pVertices[2]._Position = XMFLOAT3( 1.0f, 0.0f, 5.0f ); // bot right
-		//pVertices[2]._Color = XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f );
+		pVertices[0]._Position = XMFLOAT3( 0.0f, 0.0f, 0.0f ); // bot left
+		pVertices[0]._Color = XMFLOAT4( 0.9f, 1.0f, 0.2f, 1.0f );
+		pVertices[1]._Position = XMFLOAT3( 0.5f, 1.0f, 0.0f ); // top
+		pVertices[1]._Color = XMFLOAT4( 0.9f, 1.0f, 0.2f, 1.0f );
+		pVertices[2]._Position = XMFLOAT3( 1.0f, 0.0f, 0.0f ); // bot right
+		pVertices[2]._Color = XMFLOAT4( 0.9f, 1.0f, 0.2f, 1.0f );
 	}
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

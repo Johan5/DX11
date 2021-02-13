@@ -47,4 +47,6 @@ private:
 	DirectX::XMMATRIX _ProjectionMatrix;
 	DirectX::XMMATRIX _WorldMatrix;
 	DirectX::XMMATRIX _OrthoMatrix;
+
+	bool _GfxDebugEnabled = true;
 };

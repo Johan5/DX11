@@ -32,7 +32,7 @@ bool CGraphics::Initialize(int ScreenWidth, int ScreenHeight, HWND Wnd)
 	Result = _ColorShader->Initialize( _Direct3D->AccessDevice(), Wnd );
 	if ( !Result )
 	{
-		MessageBox( Wnd, L"Could not initialize the model object.", L"Error", MB_OK );
+		MessageBox( Wnd, L"Could not initialize ColorShader.", L"Error", MB_OK );
 		return false;
 	}
 	

@@ -84,7 +84,7 @@ bool CColorShader::InitializeShader(ID3D11Device* pDevice, HWND Wnd, const std::
 	}
 
 	// Create vertex input layout description
-	D3D11_INPUT_ELEMENT_DESC pPolygonLayout[1];
+	D3D11_INPUT_ELEMENT_DESC pPolygonLayout[2];
 	pPolygonLayout[0].SemanticName = "POSITION";
 	pPolygonLayout[0].SemanticIndex = 0;
 	pPolygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -93,13 +93,13 @@ bool CColorShader::InitializeShader(ID3D11Device* pDevice, HWND Wnd, const std::
 	pPolygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	pPolygonLayout[0].InstanceDataStepRate = 0;
 
-	// pPolygonLayout[1].SemanticName = "COLOR";
-	// pPolygonLayout[1].SemanticIndex = 0;
-	// pPolygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	// pPolygonLayout[1].InputSlot = 1;
-	// pPolygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	// pPolygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	// pPolygonLayout[1].InstanceDataStepRate = 0;
+	pPolygonLayout[1].SemanticName = "COLOR";
+	pPolygonLayout[1].SemanticIndex = 0;
+	pPolygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	pPolygonLayout[1].InputSlot = 0;
+	pPolygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	pPolygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	pPolygonLayout[1].InstanceDataStepRate = 0;
 
 	int NumElementsInVsInputLayout = sizeof( pPolygonLayout ) / sizeof( pPolygonLayout[0] );
 	Result = pDevice->CreateInputLayout( pPolygonLayout, NumElementsInVsInputLayout, pCompiledVertexShader->GetBufferPointer(),

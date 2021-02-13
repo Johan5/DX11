@@ -14,7 +14,7 @@ private:
 	struct SVertex
 	{
 		XMFLOAT3 _Position;
-		//XMFLOAT4 _Color;
+		XMFLOAT4 _Color;
 	};
 	
 public:

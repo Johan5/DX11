@@ -1,6 +1,5 @@
 
 
-// Constant buffer
 cbuffer MatrixBuffer
 {
 	// To world space
@@ -14,7 +13,7 @@ cbuffer MatrixBuffer
 struct SVsInput
 {
 	float3 _Position : POSITION;
-	//float4 _Color : COLOR;
+	float4 _Color : COLOR;
 };
 
 struct SPsInput
@@ -24,14 +23,13 @@ struct SPsInput
 };
 
 
-// Main VS shader?
 SPsInput ColorVertexShader( SVsInput Input ) 
 {
 	SPsInput Output;
 
 	Output._Position.xyz = Input._Position;
 	Output._Position.w = 1.0;
-	Output._Color = float4( 0.6, 0.2, 0.6, 1.0);
+	Output._Color = Input._Color;
 	return Output;
 
 	//Output._Position = mul( Input._Position, _WorldMatrix );

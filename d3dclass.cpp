@@ -139,8 +139,9 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	
 	// Set feature level to DirectX 11.0
 	D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	UINT CreationFlags = _GfxDebugEnabled ? D3D11_CREATE_DEVICE_DEBUG : 0;
 	// Create the swap chain, Direct3D device, and Direct3D device context
-	Result = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, &FeatureLevel, 1, D3D11_SDK_VERSION, &SwapChainDesc,
+	Result = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, CreationFlags, &FeatureLevel, 1, D3D11_SDK_VERSION, &SwapChainDesc,
 		&_pSwapChain, &_pDevice, nullptr, &_pDeviceContext );
 	if ( FAILED(Result) )
 	{
@@ -236,10 +237,10 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	// Setup the raster description which will determine how and what polygons will be drawn
 	D3D11_RASTERIZER_DESC RasterDesc;
 	RasterDesc.AntialiasedLineEnable = false;
-	RasterDesc.CullMode = D3D11_CULL_NONE;
+	RasterDesc.CullMode = D3D11_CULL_BACK;
 	RasterDesc.DepthBias = 0;
 	RasterDesc.DepthBiasClamp = 0.0f;
-	RasterDesc.DepthClipEnable = false;
+	RasterDesc.DepthClipEnable = true;
 	RasterDesc.FillMode = D3D11_FILL_SOLID;
 	RasterDesc.FrontCounterClockwise = false;
 	RasterDesc.MultisampleEnable = false;
@@ -261,7 +262,7 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	Viewport.TopLeftX = 0.0f;
 	Viewport.TopLeftY = 0.0f;
 	// Create viewport
-	_pDeviceContext->RSSetViewports( 0, &Viewport );
+	_pDeviceContext->RSSetViewports( 1, &Viewport );
 
 	float FieldOfView = 3.1415926535f / 2.0f;
 	float ScreenAspect = (float)ScreenWidth / (float)ScreenHeight;
