@@ -4,10 +4,8 @@ cbuffer MatrixBuffer
 {
 	// To world space
 	matrix _WorldMatrix;
-	// To camera space
-	matrix _ViewMatrix;
-	// To (2D) screen
-	matrix _ProjectionMatrix;
+	// To camera space and then to viewport
+	matrix _ViewAndProjectionMatrix;
 };
 
 struct SVsInput
@@ -29,15 +27,10 @@ SPsInput ColorVertexShader( SVsInput Input )
 
 	Output._Position.xyz = Input._Position;
 	Output._Position.w = 1.0;
+	Output._Position = mul( Output._Position, _WorldMatrix );
+	Output._Position = mul( Output._Position, _ViewAndProjectionMatrix );
+	
 	Output._Color = Input._Color;
 	return Output;
-
-	//Output._Position = mul( Input._Position, _WorldMatrix );
-	//Output._Position = mul( Output._Position, _ViewMatrix );
-	//Output._Position = mul( Output._Position, _ProjectionMatrix);
-	
-	//Output._Color = Input._Color;
-
-	//return Output;
 }
 

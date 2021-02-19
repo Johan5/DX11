@@ -2,30 +2,24 @@
 
 #include <DirectXMath.h>
 
-using namespace DirectX;
 
-
+// Using left handed coordinate systems
 class CCamera
 {
 public:
 	void SetPosition( float X, float Y, float Z );
-	void SetRotation( float PitchInDegrees, float YawInDegrees, float RollInDegrees );
 
-	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetRotation();
+	DirectX::XMFLOAT3 GetPosition();
 
-	void Render();
-	void GetViewMatrix( XMMATRIX& MatrixOut );
+	void GetViewMatrix(DirectX::XMMATRIX& MatrixOut );
+	void GetProjectionMatrix( DirectX::XMMATRIX& MatrixOut );
+	void GetViewAndProjection(DirectX::XMMATRIX& MatrixOut );
 
 private:
-	float _PosX = 0.0f;
+	float _PosX = 0.5f;
 	float _PosY = 0.0f;
 	float _PosZ = 0.0f;
-	// "X rotation"
-	float _PitchInDeg = 0.0f;
-	// "Y rotation"
-	float _YawInDeg = 0.0f;
-	// "Z rotation"
-	float _RollInDeg = 0.0f;
-	XMMATRIX _ViewMatrix;
+
+	// in degrees
+	float _FieldOfViewDegrees = 90.0f;
 };

@@ -6,9 +6,6 @@
 #include <fstream>
 
 
-using namespace DirectX;
-using namespace std;
-
 /// <summary>
 /// This class is responsible for handling of the color shader. 
 /// </summary>
@@ -17,9 +14,8 @@ class CColorShader
 private:
 	struct SMatrixCb
 	{
-		XMMATRIX _World;
-		XMMATRIX _View;
-		XMMATRIX _Projection;
+		DirectX::XMMATRIX _World;
+		DirectX::XMMATRIX _ViewAndProjection;
 	};
 public:
 	CColorShader() = default;
@@ -28,14 +24,14 @@ public:
 
 	bool Initialize( ID3D11Device* pDevice, HWND Wnd );
 	void Shutdown();
-	bool Render( ID3D11DeviceContext* pDeviceContext, int IndexCount, XMMATRIX WorldMatrix, XMMATRIX ViewMatrix, XMMATRIX ProjectionMatrix );
+	bool Render( ID3D11DeviceContext* pDeviceContext, int IndexCount, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix );
 
 private:
 	bool InitializeShader( ID3D11Device* pDevice, HWND Wnd, const std::wstring& VsFilename, const std::wstring& PsFilename );
 	void ShutdownShader();
 	void OutputShaderErrorMessage( ID3D10Blob* pErrorMessage, HWND Wnd, const std::wstring& ShaderFilename);
 
-	bool SetShaderParameters( ID3D11DeviceContext* pDeviceContext, XMMATRIX WorldMatrix, XMMATRIX ViewMatrix, XMMATRIX ProjectionMatrix );
+	bool SetShaderParameters( ID3D11DeviceContext* pDeviceContext, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix );
 	void RenderShader( ID3D11DeviceContext* pDeviceContext, int IndexCount );
 
 private:

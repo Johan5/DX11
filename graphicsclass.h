@@ -36,6 +36,6 @@ private:
 private:
 	std::unique_ptr<CDirectX3D> _Direct3D;
 	std::unique_ptr<CCamera> _Camera;
-	std::unique_ptr<CModel> _Model;
+	std::vector< std::unique_ptr<CModel> > _Models;
 	std::unique_ptr<CColorShader> _ColorShader;
 };

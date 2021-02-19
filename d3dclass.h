@@ -7,9 +7,6 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-// Uggh
-//using namespace DirectX;
-
 
 class CDirectX3D
 {
@@ -27,7 +24,6 @@ public:
 	ID3D11DeviceContext* AccessDeviceContext();
 
 	void GetProjectionMatrix( DirectX::XMMATRIX& MatrixOut );
-	void GetWorldMatrix( DirectX::XMMATRIX& MatrixOut );
 	void GetOrthoMatrix( DirectX::XMMATRIX& MatrixOut );
 
 	void GetVideoCardInfo( char* CardName, int& VRamInMb );
@@ -45,7 +41,6 @@ private:
 	ID3D11DepthStencilView* _pDepthStencilView = nullptr;
 	ID3D11RasterizerState* _pRasterState = nullptr;
 	DirectX::XMMATRIX _ProjectionMatrix;
-	DirectX::XMMATRIX _WorldMatrix;
 	DirectX::XMMATRIX _OrthoMatrix;
 
 	bool _GfxDebugEnabled = true;

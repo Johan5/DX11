@@ -24,9 +24,9 @@ void CColorShader::Shutdown()
 	ShutdownShader();
 }
 
-bool CColorShader::Render(ID3D11DeviceContext* pDeviceContext, int IndexCount, XMMATRIX WorldMatrix, XMMATRIX ViewMatrix, XMMATRIX ProjectionMatrix)
+bool CColorShader::Render(ID3D11DeviceContext* pDeviceContext, int IndexCount, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix )
 {
-	bool Result = SetShaderParameters( pDeviceContext, WorldMatrix, ViewMatrix, ProjectionMatrix );
+	bool Result = SetShaderParameters( pDeviceContext, WorldMatrix, ViewAndProjectionMatrix );
 	if ( !Result )
 	{
 		return false;
@@ -159,7 +159,7 @@ void CColorShader::OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, HWND Wnd,
 {
 	char* pCompileErrors = (char*)pErrorMessage->GetBufferPointer();
 	int BufferSize = (int)pErrorMessage->GetBufferSize();
-	ofstream FOut;
+	std::ofstream FOut;
 	FOut.open( "shader-error.txt" );
 	for ( int i = 0; i < BufferSize; ++i )
 	{
@@ -171,13 +171,12 @@ void CColorShader::OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, HWND Wnd,
 	MessageBox( Wnd, L"Error compiling shader. Check shader-error.txt for message.", ShaderFilename.c_str(), MB_OK );
 }
 
-bool CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, XMMATRIX WorldMatrix, XMMATRIX ViewMatrix, XMMATRIX ProjectionMatrix)
+bool CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix )
 {
 	HRESULT Result;
 	// Apparently, DX11 "requires" matrices to be transposed?
 	WorldMatrix = XMMatrixTranspose( WorldMatrix );
-	ViewMatrix = XMMatrixTranspose( ViewMatrix );
-	ProjectionMatrix = XMMatrixTranspose( ProjectionMatrix );
+	ViewAndProjectionMatrix = XMMatrixTranspose( ViewAndProjectionMatrix );
 
 	// Set SMatrixCb
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
@@ -189,8 +188,7 @@ bool CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, XMMA
 
 	SMatrixCb* pConstantBufferData = static_cast<SMatrixCb*>( MappedResource.pData );
 	pConstantBufferData->_World = WorldMatrix;
-	pConstantBufferData->_View = ViewMatrix;
-	pConstantBufferData->_Projection = ProjectionMatrix;
+	pConstantBufferData->_ViewAndProjection = ViewAndProjectionMatrix;
 
 	pDeviceContext->Unmap( _pMatrixBuffer, 0 );
 

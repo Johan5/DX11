@@ -266,9 +266,6 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 
 	float FieldOfView = 3.1415926535f / 2.0f;
 	float ScreenAspect = (float)ScreenWidth / (float)ScreenHeight;
-	_ProjectionMatrix = DirectX::XMMatrixPerspectiveFovLH( FieldOfView, ScreenAspect, ScreenNear, ScreenDepth );
-
-	_WorldMatrix = DirectX::XMMatrixIdentity();
 
 	_OrthoMatrix = DirectX::XMMatrixOrthographicLH( (float)ScreenWidth, (float)ScreenHeight, ScreenNear, ScreenDepth );
 	
@@ -357,11 +354,6 @@ ID3D11DeviceContext* CDirectX3D::AccessDeviceContext()
 void CDirectX3D::GetProjectionMatrix(DirectX::XMMATRIX& MatrixOut)
 {
 	MatrixOut = _ProjectionMatrix;
-}
-
-void CDirectX3D::GetWorldMatrix(DirectX::XMMATRIX& MatrixOut)
-{
-	MatrixOut = _WorldMatrix;
 }
 
 void CDirectX3D::GetOrthoMatrix(DirectX::XMMATRIX& MatrixOut)

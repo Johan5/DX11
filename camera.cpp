@@ -11,45 +11,31 @@ void CCamera::SetPosition(float X, float Y, float Z)
 	_PosZ = Z;
 }
 
-void CCamera::SetRotation(float PitchInDegrees, float YawInDegrees, float RollInDegrees)
+DirectX::XMFLOAT3 CCamera::GetPosition()
 {
-	_PitchInDeg = PitchInDegrees;
-	_YawInDeg = YawInDegrees;
-	_RollInDeg = RollInDegrees;
+	return DirectX::XMFLOAT3( _PosX, _PosY, _PosZ );
 }
 
-XMFLOAT3 CCamera::GetPosition()
+void CCamera::GetViewMatrix(DirectX::XMMATRIX& MatrixOut)
 {
-	return XMFLOAT3( _PosX, _PosY, _PosZ );
+	// Currently only supports translate
+	MatrixOut = DirectX::XMMATRIX( 1.0f, 0.0f, 0.0f, 0.0f,
+	                               0.0f, 1.0f, 0.0f, 0.0f,
+	                               0.0f, 0.0f, 1.0f, 0.0f,
+	                               -_PosX, -_PosY, -_PosZ, 1.0f );
 }
 
-XMFLOAT3 CCamera::GetRotation()
+void CCamera::GetProjectionMatrix(DirectX::XMMATRIX& MatrixOut)
 {
-	return XMFLOAT3( _PitchInDeg, _YawInDeg, _RollInDeg );
+	// perspective projection 
 }
 
-void CCamera::Render()
+void CCamera::GetViewAndProjection(DirectX::XMMATRIX& MatrixOut)
 {
-	XMFLOAT3 Up{ 0.0f, 1.0f, 0.0f };
-	XMVECTOR UpVector = XMLoadFloat3( &Up );
-	XMFLOAT3 Position{ _PosX, _PosY, _PosZ };
-	XMVECTOR PositionVector = XMLoadFloat3( &Position );
-	XMFLOAT3 LookAt{ 0.0f, 0.0f, 1.0f };
-	XMVECTOR LookAtVector = XMLoadFloat3( &LookAt );
-	XMMATRIX RotationMatrix = XMMatrixRotationRollPitchYaw( DegToRad * _PitchInDeg, DegToRad * _YawInDeg, DegToRad * _RollInDeg );
+	// Projection not yet implemented
 
-	LookAtVector = XMVector3TransformCoord( LookAtVector, RotationMatrix );
-	UpVector = XMVector3TransformCoord( UpVector, RotationMatrix );
 	
-	LookAtVector = XMVectorAdd( PositionVector, LookAtVector );
-	
-
-	_ViewMatrix = XMMatrixLookAtLH( PositionVector, LookAtVector, UpVector );
-}
-
-void CCamera::GetViewMatrix(XMMATRIX& MatrixOut)
-{
-	MatrixOut = _ViewMatrix;
+	return GetViewMatrix( MatrixOut );
 }
 
 
