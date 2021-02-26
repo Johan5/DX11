@@ -2,8 +2,9 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include <directxmath.h>
 #include <fstream>
+
+#include "matrix.h"
 
 
 /// <summary>
@@ -14,8 +15,8 @@ class CColorShader
 private:
 	struct SMatrixCb
 	{
-		DirectX::XMMATRIX _World;
-		DirectX::XMMATRIX _ViewAndProjection;
+		CMatrix4x4f _World;
+		CMatrix4x4f _ViewAndProjection;
 	};
 public:
 	CColorShader() = default;
@@ -24,14 +25,14 @@ public:
 
 	bool Initialize( ID3D11Device* pDevice, HWND Wnd );
 	void Shutdown();
-	bool Render( ID3D11DeviceContext* pDeviceContext, int IndexCount, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix );
+	bool Render( ID3D11DeviceContext* pDeviceContext, int IndexCount, const CMatrix4x4f& WorldMatrix, const CMatrix4x4f& ViewAndProjectionMatrix );
 
 private:
 	bool InitializeShader( ID3D11Device* pDevice, HWND Wnd, const std::wstring& VsFilename, const std::wstring& PsFilename );
 	void ShutdownShader();
 	void OutputShaderErrorMessage( ID3D10Blob* pErrorMessage, HWND Wnd, const std::wstring& ShaderFilename);
 
-	bool SetShaderParameters( ID3D11DeviceContext* pDeviceContext, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix );
+	bool SetShaderParameters( ID3D11DeviceContext* pDeviceContext, const CMatrix4x4f& WorldMatrix, const CMatrix4x4f& ViewAndProjectionMatrix );
 	void RenderShader( ID3D11DeviceContext* pDeviceContext, int IndexCount );
 
 private:

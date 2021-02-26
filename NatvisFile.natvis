@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="CMatrix4x4f">
+    <DisplayString>4x4 float matrix</DisplayString>
+    <Expand>
+      <CustomListItems>
+        <Item Name="0">&amp;_M11,4na</Item>
+        <Item Name="1">&amp;_M21,4na</Item>
+        <Item Name="2">&amp;_M31,4na</Item>
+        <Item Name="3">&amp;_M41,4na</Item>
+      </CustomListItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

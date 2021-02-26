@@ -264,11 +264,6 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	// Create viewport
 	_pDeviceContext->RSSetViewports( 1, &Viewport );
 
-	float FieldOfView = 3.1415926535f / 2.0f;
-	float ScreenAspect = (float)ScreenWidth / (float)ScreenHeight;
-
-	_OrthoMatrix = DirectX::XMMatrixOrthographicLH( (float)ScreenWidth, (float)ScreenHeight, ScreenNear, ScreenDepth );
-	
 	return true;
 }
 
@@ -349,16 +344,6 @@ ID3D11Device* CDirectX3D::AccessDevice()
 ID3D11DeviceContext* CDirectX3D::AccessDeviceContext()
 {
 	return _pDeviceContext;
-}
-
-void CDirectX3D::GetProjectionMatrix(DirectX::XMMATRIX& MatrixOut)
-{
-	MatrixOut = _ProjectionMatrix;
-}
-
-void CDirectX3D::GetOrthoMatrix(DirectX::XMMATRIX& MatrixOut)
-{
-	MatrixOut = _OrthoMatrix;
 }
 
 void CDirectX3D::GetVideoCardInfo(char* CardName, int& VRamInMb)

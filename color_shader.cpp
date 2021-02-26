@@ -24,7 +24,7 @@ void CColorShader::Shutdown()
 	ShutdownShader();
 }
 
-bool CColorShader::Render(ID3D11DeviceContext* pDeviceContext, int IndexCount, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix )
+bool CColorShader::Render(ID3D11DeviceContext* pDeviceContext, int IndexCount, const CMatrix4x4f& WorldMatrix, const CMatrix4x4f& ViewAndProjectionMatrix )
 {
 	bool Result = SetShaderParameters( pDeviceContext, WorldMatrix, ViewAndProjectionMatrix );
 	if ( !Result )
@@ -171,12 +171,14 @@ void CColorShader::OutputShaderErrorMessage(ID3D10Blob* pErrorMessage, HWND Wnd,
 	MessageBox( Wnd, L"Error compiling shader. Check shader-error.txt for message.", ShaderFilename.c_str(), MB_OK );
 }
 
-bool CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, DirectX::XMMATRIX WorldMatrix, DirectX::XMMATRIX ViewAndProjectionMatrix )
+bool CColorShader::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, const CMatrix4x4f& WorldMatrix, const CMatrix4x4f& ViewAndProjectionMatrix )
 {
 	HRESULT Result;
 	// Apparently, DX11 "requires" matrices to be transposed?
-	WorldMatrix = XMMatrixTranspose( WorldMatrix );
-	ViewAndProjectionMatrix = XMMatrixTranspose( ViewAndProjectionMatrix );
+	CMatrix4x4f TransposedWorldMatrix = WorldMatrix;
+	TransposedWorldMatrix.Transpose();
+	CMatrix4x4f TransposedViewAndProjectionMatrix = ViewAndProjectionMatrix;
+	TransposedViewAndProjectionMatrix.Transpose();
 
 	// Set SMatrixCb
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
