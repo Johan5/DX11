@@ -1,6 +1,6 @@
 #include "orthographic_camera.h"
 
-#include "graphicsclass.h"
+#include "graphics.h"
 #include "3d_math.h"
 
 constexpr float DegToRad = 360.0f / ( 2.0f * 3.1415926535f );

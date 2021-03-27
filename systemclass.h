@@ -1,14 +1,12 @@
 #pragma once
 
-#include "inputclass.h"
-#include "graphicsclass.h"
+#include <memory>
 
 #include <windows.h>
 
-#include <memory>
-
-//class CInput;
-//class CGraphics;
+#include "game_application.h"
+#include "graphics.h"
+#include "input_handler.h"
 
 
 class CSystem
@@ -34,8 +32,9 @@ private:
 	HINSTANCE _Instance;
 	HWND _Wnd;
 
-	std::unique_ptr<CInput> _Input;
+	std::unique_ptr<CInputHandler> _InputHandler;
 	std::unique_ptr<CGraphics> _Graphics;
+	std::unique_ptr<CGameApplication> _GameApplication;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

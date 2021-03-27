@@ -1,7 +1,119 @@
 #include "systemclass.h"
 
 #include "inputclass.h"
-#include "graphicsclass.h"
+#include "graphics.h"
+#include "input_enums.h"
+#include "input_handler.h"
+
+
+namespace
+{
+	EInputCode TranslateVirtualKeyToInputCode( WPARAM Param )
+	{
+		/* https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes */
+		// Extend this table as needed
+		constexpr int VirtualKeyLookupTableSize = 91;
+		static EInputCode VirtualKeyToInputCode[VirtualKeyLookupTableSize] = {
+			EInputCode::Unknown,
+			EInputCode::LeftMouseButton,
+			EInputCode::RightMouseButton,
+			EInputCode::Unknown,
+			EInputCode::MiddleMouseButton,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Backspace,
+			EInputCode::Tab,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Enter,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Shift,
+			EInputCode::Ctrl,
+			EInputCode::Alt,
+			EInputCode::Unknown,
+			EInputCode::CapsLock,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Escape,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Space,
+			EInputCode::PgUp,
+			EInputCode::PgDown,
+			EInputCode::End,
+			EInputCode::Home,
+			EInputCode::LeftArrow,
+			EInputCode::UpArrow,
+			EInputCode::RightArrow,
+			EInputCode::DownArrow,
+			EInputCode::Select,
+			EInputCode::Print,
+			EInputCode::Execute,
+			EInputCode::PrintScreen,
+			EInputCode::Ins,
+			EInputCode::Del,
+			EInputCode::Help,
+			EInputCode::Key0,
+			EInputCode::Key1,
+			EInputCode::Key2,
+			EInputCode::Key3,
+			EInputCode::Key4,
+			EInputCode::Key5,
+			EInputCode::Key6,
+			EInputCode::Key7,
+			EInputCode::Key8,
+			EInputCode::Key9,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::Unknown,
+			EInputCode::KeyA,
+			EInputCode::KeyB,
+			EInputCode::KeyC,
+			EInputCode::KeyD,
+			EInputCode::KeyE,
+			EInputCode::KeyF,
+			EInputCode::KeyG,
+			EInputCode::KeyH,
+			EInputCode::KeyI,
+			EInputCode::KeyJ,
+			EInputCode::KeyK,
+			EInputCode::KeyL,
+			EInputCode::KeyM,
+			EInputCode::KeyN,
+			EInputCode::KeyO,
+			EInputCode::KeyP,
+			EInputCode::KeyQ,
+			EInputCode::KeyR,
+			EInputCode::KeyS,
+			EInputCode::KeyT,
+			EInputCode::KeyU,
+			EInputCode::KeyV,
+			EInputCode::KeyW,
+			EInputCode::KeyX,
+			EInputCode::KeyY,
+			EInputCode::KeyZ,			
+		};
+
+		if ( Param < VirtualKeyLookupTableSize )
+		{
+			return VirtualKeyToInputCode[Param];
+		}
+		return EInputCode::Unknown;
+	}
+}
 
 
 bool CSystem::Initialize()
@@ -11,23 +123,14 @@ bool CSystem::Initialize()
 
 	InitializeWindows(ScreenWidth, ScreenHeight);
 
-	_Input = std::make_unique<CInput>();
-	if (!_Input)
-	{
-		return false;
-	}
-	_Input->Initialize();
-
 	_Graphics = std::make_unique<CGraphics>();
-	if (!_Graphics)
-	{
-		return false;
-	}
 	bool GfxOk = _Graphics->Initialize(ScreenWidth, ScreenHeight, _Wnd);
 	if ( !GfxOk)
 	{
 		return false;
 	}
+	_InputHandler = std::make_unique<CInputHandler>();
+	_GameApplication = std::make_unique<CGameApplication>( *_InputHandler, *_Graphics );
 	
 	return true;
 }
@@ -51,6 +154,7 @@ void CSystem::Run()
 	{
 		if ( PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) )
 		{
+			// translates keystrokes into character codes, generating WM_CHAR messages
 			TranslateMessage( &msg );
 			DispatchMessage( &msg );
 		}
@@ -73,15 +177,15 @@ LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM Param, LPARA
 {
 	switch (Msg)
 	{
-	case WM_KEYDOWN:
+		case WM_KEYDOWN:
 		{
-		_Input->KeyDown( (unsigned int)Param );
-		return 0;
+			_InputHandler->KeyInputFromOS( CInputHandler::EInputType::KeyDown, TranslateVirtualKeyToInputCode( Param ) );
+			return 0;
 		}
-	case WM_KEYUP:
+		case WM_KEYUP:
 		{
-		_Input->KeyUp( (unsigned int)Param );
-		return 0;
+			_InputHandler->KeyInputFromOS( CInputHandler::EInputType::KeyUp, TranslateVirtualKeyToInputCode( Param ) );
+			return 0;
 		}
 		default:
 		{
@@ -93,13 +197,11 @@ LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM Param, LPARA
 
 bool CSystem::Frame()
 {
-	if ( _Input->IsKeyDown(VK_ESCAPE) )
+	if ( _InputHandler->IsKeyDown( EInputCode::Escape ) )
 	{
 		return false;
 	}
-
-	bool Result = _Graphics->Frame();
-
+	bool Result = _GameApplication->ProduceNewFrame();
 	return Result;
 }
 

@@ -1,12 +1,16 @@
 
 
-cbuffer MatrixBuffer
+cbuffer PerCameraCb : register(b1)
 {
-	// To world space
-	matrix _WorldMatrix;
-	// To camera space and then to viewport
-	matrix _ViewAndProjectionMatrix;
+	// World To Viewport
+	float4x4 _ViewAndProjectionMatrix;
 };
+
+cbuffer PerObjectCb : register(b2) 
+{
+	// Local To World
+	float4x4 _WorldMatrix;
+}
 
 struct SVsInput
 {
@@ -27,10 +31,18 @@ SPsInput ColorVertexShader( SVsInput Input )
 
 	Output._Position.xyz = Input._Position;
 	Output._Position.w = 1.0;
-	Output._Position = mul( Output._Position, _WorldMatrix );
+	//Output._Position = mul( Output._Position, _WorldMatrix );
 	Output._Position = mul( Output._Position, _ViewAndProjectionMatrix );
 	
 	Output._Color = Input._Color;
+
+	////
+	if ( Input._Position.x < -0.99f && Input._Position.y < -0.99f && Input._Position.z < -0.99f ) {
+		Output._Color = float4( 0.2f, 0.2f, 0.2f, 1.0f );
+ 	}
+
+	////
+
 	return Output;
 }
 
