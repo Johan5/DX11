@@ -9,7 +9,7 @@ CGameApplication::CGameApplication( CInputHandler& InputHandler, CGraphics& Grap
 
 bool CGameApplication::ProduceNewFrame()
 {
-	CVector4f BackgroundColor{ 0.7f, 0.7f, 0.2f, 1.0f };
+	CVector4f BackgroundColor{ 0.2f, 0.2f, 0.2f, 1.0f };
 	CRenderContext& RenderContext = _Graphics.StartRenderFrame( BackgroundColor );
 	{
 		_World.Render( RenderContext );

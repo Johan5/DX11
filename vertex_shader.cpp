@@ -61,36 +61,7 @@ bool CVertexShader::Initialize( ID3D11Device& Device, const std::string& FileNam
 	//                             "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pCompiledPixelShader, &pErrorMessage );
 }
 
-bool CVertexShader::IsInitialized()
+bool CVertexShader::IsInitialized() const
 {
 	return _pVertexShader && _pLayout;
-}
-
-bool CVertexShader::SetShaderParameters( ID3D11DeviceContext* pDeviceContext, const CMatrix4x4f& WorldMatrix, const CMatrix4x4f& ViewAndProjectionMatrix )
-{
-//	HRESULT Result;
-//	// Apparently, DX11 "requires" matrices to be transposed?
-//	CMatrix4x4f TransposedWorldMatrix = WorldMatrix;
-//	TransposedWorldMatrix.Transpose();
-//	CMatrix4x4f TransposedViewAndProjectionMatrix = ViewAndProjectionMatrix;
-//	TransposedViewAndProjectionMatrix.Transpose();
-//
-//	// Set SMatrixCb
-//	D3D11_MAPPED_SUBRESOURCE MappedResource;
-//	Result = pDeviceContext->Map( _pMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
-//	if ( FAILED( Result ) )
-//	{
-//		return false;
-//	}
-//
-//	SMatrixCb* pConstantBufferData = static_cast<SMatrixCb*>( MappedResource.pData );
-//	pConstantBufferData->_World = WorldMatrix;
-//	pConstantBufferData->_ViewAndProjection = ViewAndProjectionMatrix;
-//
-//	pDeviceContext->Unmap( _pMatrixBuffer, 0 );
-//
-//	unsigned int BufferNumber = 0U;
-//	pDeviceContext->VSSetConstantBuffers( BufferNumber, 1, &_pMatrixBuffer );
-//
-	return true;
 }

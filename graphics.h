@@ -4,6 +4,7 @@
 #include "orthographic_camera.h"
 #include "frame_timer.h"
 #include "vertex_shader.h"
+#include "pixel_shader.h"
 
 #include <string>
 #include <memory>
@@ -96,6 +97,7 @@ public:
 	void SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology );
 	void SetVertexShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
 	void SetVertexShader( CVertexShader& VertexShader );
+	void SetPixelShader( CPixelShader& PixelShader );
 	// optimally, ConstantBuffer data should be 16 byte aligned
 	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, int32_t NewDataSize );
 	void Draw( int32_t VertexCount );
@@ -120,6 +122,7 @@ public:
 
 	CVertexBuffer CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings );
 	CVertexShader CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
+	CPixelShader CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
 
 	CConstantBuffer CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );
 
@@ -144,4 +147,5 @@ private:
 	int32_t _ScreenHeightInPix;
 
 	std::vector<CVertexShader> _VertexShaderCache;
+	std::vector<CPixelShader> _PixelShaderCache;
 };

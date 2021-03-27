@@ -1,9 +1,11 @@
 #include "cube.h"
 
-#include <vector>
-
 #include "camera_base.h"
 #include "3d_math.h"
+#include "pixel_shader.h"
+
+#include <vector>
+
 
 namespace
 {
@@ -121,6 +123,7 @@ void CCube::Initialize( CGraphics& Graphics )
 	_ConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCubeConstantBuffer ), ECpuAccessPolicy::CpuWrite );
 
 	_VertexShader = Graphics.CreateVertexShader( VertexShaderFileName, VertexShaderMainFunction );
+	_PixelShader = Graphics.CreatePixelShader( PixelShaderFileName, PixelShaderMainFunction );
 
 	_IsInitialized = true;
 }
@@ -140,8 +143,12 @@ void CCube::Render( CRenderContext& RenderContext, const CCameraBase& Camera )
 {
 	assert(_Vertices.size() > 0);
 	RenderContext.SetVertexBuffer( _VertexBuffer );
+	CMatrix4x4f LocalToWorld = GetLocalToWorldTransform();
+	assert( sizeof( LocalToWorld ) == sizeof( SCubeConstantBuffer ) );
+	RenderContext.UpdateConstantBuffer( _ConstantBuffer, &LocalToWorld, sizeof( SCubeConstantBuffer ) );
 	RenderContext.SetVertexShaderConstantBuffer( _ConstantBuffer, EConstantBufferIdx::PerObject );
 	RenderContext.SetVertexShader( _VertexShader );
+	RenderContext.SetPixelShader( _PixelShader );
 	// Set pixel shader
 	RenderContext.Draw( static_cast<int32_t>( _Vertices.size() ) );
 }

@@ -98,20 +98,19 @@ void CRenderContext::SetVertexShader( CVertexShader& VertexShader )
 	_pDeviceContext->VSSetShader( VertexShader.AccessVertexShader(), nullptr, 0 );
 }
 
+void CRenderContext::SetPixelShader( CPixelShader& PixelShader )
+{
+	_pDeviceContext->PSSetShader( PixelShader.AccessPixelShader(), nullptr, 0 );
+}
+
 void CRenderContext::UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* pNewData, int32_t NewDataSize  )
 {
 	assert( ConstantBuffer.GetSizeInBytes() == NewDataSize );
 	assert( (uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite );
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	ZeroMemory( &MappedResource, sizeof( D3D11_MAPPED_SUBRESOURCE ));
-	ID3D11Buffer* RawBfr = ConstantBuffer.AccessRawBuffer();
-	D3D11_BUFFER_DESC Desc;
-	RawBfr->GetDesc( &Desc );
 	HRESULT Result = _pDeviceContext->Map( ConstantBuffer.AccessRawBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
-	if ( FAILED( Result ) )
-	{
-		assert( false );
-	}
+	assert( SUCCEEDED( Result ) );
 	memcpy( MappedResource.pData, pNewData, NewDataSize );
 	_pDeviceContext->Unmap( ConstantBuffer.AccessRawBuffer(), 0 );
 }
@@ -165,6 +164,14 @@ CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, 
 	return VertexShader;
 }
 
+CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction )
+{
+	_PixelShaderCache.emplace_back();
+	CPixelShader& PixelShader = _PixelShaderCache.back();
+	PixelShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
+	return PixelShader;
+}
+
 CConstantBuffer CGraphics::CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy )
 {
 	return CConstantBuffer{ AccessDevice(), SizeInBytes, AccessPolicy };
@@ -180,32 +187,3 @@ void CGraphics::EndFrame( CRenderContext& /* RenderContext */ )
 {
 	_Direct3D->EndScene();
 }
-
-////bool CGraphics::Render( double TimeElapsedMs )
-////{
-//	// Set to black
-//	_Direct3D->BeginScene( 0.0f, 0.0f, 0.0f, 1.0f );
-//
-//	{
-//		// static float TotElapsedTimeSec = 0;
-//		// TotElapsedTimeSec += static_cast<float>( TimeElapsedMs ) / 1000.0f;
-//	//	//
-//	//	// float CameraMovementSpeed = 0.5f;
-//	//	// float XOffset = 0.5f * cosf( CameraMovementSpeed * TotElapsedTimeSec );
-//	//	// float YOffset = 0.5f * sinf( CameraMovementSpeed * TotElapsedTimeSec );
-//	//	// CVector3f NewPos = CVector3f{ XOffset, YOffset, 0.0f };
-//	//	// _Camera->SetPosition( NewPos );
-//	//}
-//
-//	
-//	/*CMatrix4x4f ViewAndProjectionMatrix = _Camera->GetViewAndProjection();
-//	for ( const std::unique_ptr<CGameObject>& pModel : _Models )
-//	{
-//		const CMatrix4x4f& LocalToWorld = pModel->GetLocalToWorldTransform();
-//		pModel->PrepForRender( _Direct3D->AccessDeviceContext() );
-//		_ColorShader->Render( _Direct3D->AccessDeviceContext(), pModel->GetNumVertices(), LocalToWorld, ViewAndProjectionMatrix );
-//	}*/
-//	
-////	_Direct3D->EndScene();
-////	return true;
-////}
