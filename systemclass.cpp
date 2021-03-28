@@ -179,12 +179,12 @@ LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM Param, LPARA
 	{
 		case WM_KEYDOWN:
 		{
-			_InputHandler->KeyInputFromOS( CInputHandler::EInputType::KeyDown, TranslateVirtualKeyToInputCode( Param ) );
+			_InputHandler->KeyInputFromOS( EInputType::KeyDown, TranslateVirtualKeyToInputCode( Param ) );
 			return 0;
 		}
 		case WM_KEYUP:
 		{
-			_InputHandler->KeyInputFromOS( CInputHandler::EInputType::KeyUp, TranslateVirtualKeyToInputCode( Param ) );
+			_InputHandler->KeyInputFromOS( EInputType::KeyUp, TranslateVirtualKeyToInputCode( Param ) );
 			return 0;
 		}
 		default:
@@ -197,10 +197,6 @@ LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM Param, LPARA
 
 bool CSystem::Frame()
 {
-	if ( _InputHandler->IsKeyDown( EInputCode::Escape ) )
-	{
-		return false;
-	}
 	bool Result = _GameApplication->ProduceNewFrame();
 	return Result;
 }

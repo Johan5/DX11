@@ -4,27 +4,31 @@
 #include "cube.h"
 #include "matrix.h"
 
+#include <functional>
 
-void CWorld::Initialize( CGraphics& Graphics )
+void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 {
+	using namespace std::placeholders;
+
 	_pGraphics = &Graphics;
+	_pInputHandler = &InputHandler;
 	float ViewportHeightInWorldUnits = 10.0f;
 	float AspectRatio = (float)Graphics.GetScreenWidth() / (float)Graphics.GetScreenHeight();
 	float ViewportWidthInWorldUnits = ViewportHeightInWorldUnits * AspectRatio;
 	_Camera = std::make_unique<COrthographicCamera>( ViewportWidthInWorldUnits, ViewportHeightInWorldUnits );
+	InputHandler.RegisterKeyInputEventCallback( this, std::bind( &CWorld::HandleUserInput, this, _1 ) );
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCameraConstantBuffer ), ECpuAccessPolicy::CpuWrite );
 
 	ID3D11Buffer* RawBfr = _CameraConstantBuffer.AccessRawBuffer();
-	D3D11_BUFFER_DESC Desc;
-	RawBfr->GetDesc( &Desc );
 
 	SpawnDefaultObjects();
 }
 
-void CWorld::SpawnDefaultObjects()
+void CWorld::ShutDown()
 {
-	CCube* Cube = SpawnGameObject<CCube>();
-	Cube->SetPosition( CVector3f{ 0.0f, 0.0f, 5.0f } );
+	_pGraphics = nullptr;
+	_pInputHandler->DeRegisterKeyInputEventCallback( this );
+	_pInputHandler = nullptr;
 }
 
 void CWorld::Update()
@@ -34,7 +38,6 @@ void CWorld::Update()
 
 void CWorld::Render( CRenderContext& RenderContext )
 {
-
 	// Set view and projection matrix
 	CMatrix4x4f ViewandProjection = _Camera->GetViewAndProjection();
 	ViewandProjection.Transpose();
@@ -45,5 +48,32 @@ void CWorld::Render( CRenderContext& RenderContext )
 	for ( auto& pGameObject : _GameObjects )
 	{
 		pGameObject->Render( RenderContext, *_Camera );
+	}
+}
+
+void CWorld::SpawnDefaultObjects()
+{
+	CCube* Cube = SpawnGameObject<CCube>();
+	Cube->SetPosition( CVector3f{ 0.0f, 0.0f, 5.0f } );
+}
+
+void CWorld::HandleUserInput( const SKeyInput& Input )
+{
+	switch ( Input._InputCode )
+	{
+	case EInputCode::KeyW:
+		_Camera->StrafeUp();
+		break;
+	case EInputCode::KeyD:
+		_Camera->StrafeRight();
+		break;
+	case EInputCode::KeyS:
+		_Camera->StrafeDown();
+		break;
+	case EInputCode::KeyA:
+		_Camera->StrafeLeft();
+		break;
+	default:
+		break;
 	}
 }

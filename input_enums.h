@@ -1,6 +1,13 @@
 #pragma once
 
 
+enum class EInputType
+{
+	Invalid,
+	KeyDown,
+	KeyUp,
+};
+
 enum class EInputCode
 {
 	Unknown,

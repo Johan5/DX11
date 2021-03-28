@@ -6,16 +6,6 @@
 constexpr float DegToRad = 360.0f / ( 2.0f * 3.1415926535f );
 
 
-CVector3f COrthographicCamera::GetPosition() const
-{
-	return _Position;
-}
-
-void COrthographicCamera::SetPosition(const CVector3f& NewPosition)
-{
-	_Position = NewPosition;
-}
-
 // "World to Camera"
 CMatrix4x4f COrthographicCamera::GetViewMatrix() const
 {

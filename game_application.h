@@ -11,6 +11,7 @@ class CGameApplication
 {
 public:
 	CGameApplication( CInputHandler& InputHandler, CGraphics& Graphics );
+	~CGameApplication();
 
 	// This is the main update loop, called from the system class
 	bool ProduceNewFrame();
@@ -21,4 +22,6 @@ private:
 	CWorld _World;
 
 	CFrameTimer _FrameTimer;
+
+	bool _ShouldExitApplication = false;
 };

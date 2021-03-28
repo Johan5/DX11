@@ -3,6 +3,7 @@
 #include "game_object.h"
 #include "orthographic_camera.h"
 #include "graphics.h"
+#include "input_handler.h"
 
 #include <vector>
 #include <memory>
@@ -19,7 +20,8 @@ struct SCameraConstantBuffer
 class CWorld
 {
 public:	
-	void Initialize( CGraphics& Graphics );
+	void Initialize( CGraphics& Graphics, CInputHandler& InputHandler );
+	void ShutDown();
 
 	void Update();
 	void Render( CRenderContext& RenderContext );
@@ -30,8 +32,10 @@ public:
 
 private:
 	void SpawnDefaultObjects();
+	void HandleUserInput( const SKeyInput& Input );
 
-	CGraphics* _pGraphics;
+	CGraphics* _pGraphics = nullptr;
+	CInputHandler* _pInputHandler = nullptr;
 	std::unique_ptr<COrthographicCamera> _Camera;
 	CConstantBuffer _CameraConstantBuffer;
 

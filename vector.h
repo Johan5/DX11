@@ -9,7 +9,11 @@ public:
 	CVector3f() = default;
 	CVector3f( float X, float Y, float Z ) : _X{X} , _Y{Y}, _Z{Z} {}
 
+	CVector3f operator+( const CVector3f& Other ) const;
+	CVector3f operator-( const CVector3f& Other ) const;
 	CVector3f operator/( float Denominator ) const;
+	CVector3f& operator+=( const CVector3f& Other );
+	CVector3f& operator-=( const CVector3f& Other );
 
 	float Dot( const CVector3f& Other ) const;
 	
@@ -27,6 +31,9 @@ public:
 	float _Z = 0.0f;
 };
 
+inline CVector3f operator*( float lhs, const CVector3f& rhs );
+inline CVector3f operator*( const CVector3f& lhs, float rhs );
+
 class CVector4f
 {
 public:
@@ -40,9 +47,35 @@ public:
 	float _W = 0.0f;
 };
 
+inline CVector3f CVector3f::operator+( const CVector3f& Other ) const
+{
+	return CVector3f{ _X + Other._X, _Y + Other._Y, _Z + Other._Z };
+}
+
+inline CVector3f CVector3f::operator-( const CVector3f& Other ) const
+{
+	return CVector3f{ _X - Other._X, _Y - Other._Y, _Z - Other._Z };
+}
+
 inline CVector3f CVector3f::operator/( float Denominator ) const
 {
 	return CVector3f{ _X / Denominator, _Y / Denominator, _Z / Denominator };
+}
+
+inline CVector3f& CVector3f::operator+=( const CVector3f& Other )
+{
+	_X += Other._X;
+	_Y += Other._Y;
+	_Z += Other._Z;
+	return *this;
+}
+
+inline CVector3f& CVector3f::operator-=( const CVector3f& Other )
+{
+	_X -= Other._X;
+	_Y -= Other._Y;
+	_Z -= Other._Z;
+	return *this;
 }
 
 inline CVector3f CVector3f::CalcNormalized() const
@@ -70,4 +103,12 @@ inline CVector3f CVector3f::Up()
 	return CVector3f{ 0.0f, 0.0f, 1.0f };
 }
 
+inline CVector3f operator*( float lhs, const CVector3f& rhs )
+{
+	return CVector3f{ lhs * rhs._X, lhs * rhs._Y, lhs * rhs._Z };
+}
 
+inline CVector3f operator*( const CVector3f& lhs, float rhs )
+{
+	return operator*( rhs, lhs );
+}
