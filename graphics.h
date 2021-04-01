@@ -18,11 +18,9 @@ namespace NGraphicsDefines
 	const bool IsFullScreen = false;
 	const bool IsVSyncEnabled = true;
 	const float ScreenDepth = 1000.0f;
-	const float ScreenNear = 1.0f;
+	const float ScreenNear = 0.0f;
 	const float ScreenFar = 10.0f;
 }
-
-
 
 enum class ECpuAccessPolicy : uint32_t
 {

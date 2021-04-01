@@ -101,6 +101,11 @@ namespace
 		ModelData[35]._Position = CVector3f{ 1.0f, -1.0f, 1.0f };
 		ModelData[35]._Color = CVector4f{ 0.9f, 0.9f, 0.9f, 1.0f };
 
+		for ( CCube::SVertex& V : ModelData )
+		{
+			V._Position._Z += 5;
+		}
+
 		return ModelData;
 	}
 }
@@ -143,7 +148,8 @@ void CCube::Render( CRenderContext& RenderContext, const CCameraBase& Camera )
 {
 	assert(_Vertices.size() > 0);
 	RenderContext.SetVertexBuffer( _VertexBuffer );
-	CMatrix4x4f LocalToWorld = GetLocalToWorldTransform();
+	//CMatrix4x4f LocalToWorld = GetLocalToWorldTransform();
+	CMatrix4x4f LocalToWorld = CMatrix4x4f::Identity();
 	assert( sizeof( LocalToWorld ) == sizeof( SCubeConstantBuffer ) );
 	RenderContext.UpdateConstantBuffer( _ConstantBuffer, &LocalToWorld, sizeof( SCubeConstantBuffer ) );
 	RenderContext.SetVertexShaderConstantBuffer( _ConstantBuffer, EConstantBufferIdx::PerObject );

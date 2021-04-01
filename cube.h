@@ -34,7 +34,7 @@ public:
 	void SetPosition( const CVector3f& NewPosition );
 	void SetScale( const CVector3f& NewScale );
 
-private:
+//private:
 	CMatrix4x4f GetLocalToWorldTransform() const;
 
 private:

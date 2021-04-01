@@ -11,4 +11,8 @@
       </CustomListItems>
     </Expand>
   </Type>
+
+  <Type Name="CVector4f">
+    <DisplayString>{{ {_X}, {_Y}, {_Z}, {_W}  }}</DisplayString>
+  </Type>
 </AutoVisualizer>

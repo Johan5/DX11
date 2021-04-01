@@ -22,6 +22,7 @@ public:
 	static CMatrix4x4f CreateTransform( const CVector3f& Translate, const CVector3f& Scale, const CVector3f& Rotate );
 	
 	void Transpose();
+	CMatrix4x4f CalcTranspose();
 	
 	float _M11 = 0.0f;
 	float _M12 = 0.0f;
@@ -98,4 +99,13 @@ inline void CMatrix4x4f::Transpose()
 	std::swap( _M23, _M32 );
 	std::swap( _M24, _M42 );
 	std::swap( _M34, _M43 );
+}
+
+inline CMatrix4x4f CMatrix4x4f::CalcTranspose()
+{
+	return CMatrix4x4f{
+		_M11, _M21, _M31, _M41,
+		_M12, _M22, _M32, _M42,
+		_M13, _M23, _M33, _M43,
+		_M14, _M24, _M34, _M44 };
 }
