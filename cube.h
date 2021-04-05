@@ -34,7 +34,6 @@ public:
 	void SetPosition( const CVector3f& NewPosition );
 	void SetScale( const CVector3f& NewScale );
 
-//private:
 	CMatrix4x4f GetLocalToWorldTransform() const;
 
 private:
@@ -42,10 +41,10 @@ private:
 	CVector3f _Scale = CVector3f{ 1.0f, 1.0f, 1.0f };
 	// Normalized, in world coords
 	//CVector3f _Forward = CVector3f::Forward();
-	CVector3f _Forward = CVector3f{ 1.0f, 0.0f, 0.0f }.CalcNormalized();
+	CVector3f _Forward = CVector3f{ 1.0f, 0.0f, 0.5f }.CalcNormalized();
 	// Normalized, in world coords
 	// CVector3f _Up = CVector3f::Up();
-	CVector3f _Up = CVector3f{ 0.0f, 1.0f, 0.0f }.CalcNormalized();
+	CVector3f _Up = CVector3f{ 0.2f, 1.0f, 0.2f }.CalcNormalized();
 
 	// these are just cached values
 	mutable bool _LocalToWorldTransformIsStale = true;

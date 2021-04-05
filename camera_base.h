@@ -21,8 +21,14 @@ public:
 	void StrafeDown();
 	void StrafeUp();
 
-	void RotateRight();
-	void RotateLeft();
+	// Yaw+
+	void RotateRight( float RotationStrength );
+	// Yaw-
+	void RotateLeft( float RotationStrength );
+	// Pitch+
+	void RotateDown( float RotationStrength );
+	// Pitch-
+	void RotateUp( float RotationStrength );
 	
 private: 
 	CVector3f _Position = CVector3f{ 0.0f, 0.0f, 0.0f };

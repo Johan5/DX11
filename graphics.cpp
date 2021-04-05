@@ -160,7 +160,8 @@ CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, 
 {
 	_VertexShaderCache.emplace_back();
 	CVertexShader& VertexShader = _VertexShaderCache.back();
-	VertexShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
+	bool Success = VertexShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
+	assert( Success );
 	return VertexShader;
 }
 
@@ -168,7 +169,8 @@ CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, co
 {
 	_PixelShaderCache.emplace_back();
 	CPixelShader& PixelShader = _PixelShaderCache.back();
-	PixelShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
+	bool Success = PixelShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
+	assert( Success );
 	return PixelShader;
 }
 

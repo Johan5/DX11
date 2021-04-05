@@ -16,5 +16,12 @@ namespace N3DMath
 	CVector3f CalcCross( const CVector3f& A, const CVector3f& B );
 	bool AreOrthogonal( const CVector3f& A, const CVector3f& B );
 	bool AlmostEqual( const CVector3f& A, const CVector3f& B );
+
+	CMatrix4x4f CreatePitchRotation( float AngleInRadians );
+	CMatrix4x4f CreateYawRotation( float AngleInRadians );
+	CMatrix4x4f CreateRollRotation( float AngleInRadians );
+
+	// Rotates VectorToRotate about RotationBasis
+	CVector3f CalcVectorRotationAboutAxis( const CVector3f& VectorToRotate, const CVector3f& UnitAxis, float AngleInRadians );
 	
 }

@@ -1,4 +1,5 @@
 
+#pragma pack_matrix( row_major )
 
 cbuffer PerCameraCb : register(b1)
 {
@@ -31,8 +32,8 @@ SPsInput ColorVertexShader( SVsInput Input )
 
 	Output._Position.xyz = Input._Position;
 	Output._Position.w = 1.0;
-	//Output._Position = mul( Output._Position, _WorldMatrix );
-	Output._Position = mul( Output._Position, _ViewAndProjectionMatrix );
+	Output._Position = mul( _WorldMatrix, Output._Position );
+	Output._Position = mul( _ViewAndProjectionMatrix, Output._Position );
 	
 	Output._Color = Input._Color;
 

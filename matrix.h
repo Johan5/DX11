@@ -5,7 +5,7 @@
 #include "vector.h"
 
 // Row major matrix implementation
-// This implementationis inefficient and doesnt utalize SSE intrinsics
+// Todo: inspect assembly, do I need to use SSE intrinsics?
 class CMatrix4x4f
 {
 public:
@@ -87,9 +87,6 @@ inline CVector4f CMatrix4x4f::operator*(const CVector4f& Vector) const
 	float w = _M41 * Vector._X + _M42 * Vector._Y + _M43 * Vector._Z + _M44 * Vector._W;
 	return CVector4f( x, y, z, w );
 }
-
-
-
 
 inline void CMatrix4x4f::Transpose()
 {

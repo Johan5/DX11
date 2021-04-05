@@ -40,29 +40,9 @@ void CWorld::Render( CRenderContext& RenderContext )
 {
 	// Set view and projection matrix
 	CMatrix4x4f ViewandProjection = _Camera->GetViewAndProjection();
-	//ViewandProjection.Transpose();
 	RenderContext.UpdateConstantBuffer( _CameraConstantBuffer, &ViewandProjection, sizeof( ViewandProjection ) );
 	RenderContext.SetVertexShaderConstantBuffer( _CameraConstantBuffer, EConstantBufferIdx::PerCamera );
 	RenderContext.SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
-	////////////////////////////////////////////////////////////////////////////////
-	CMatrix4x4f TmpProjection1 = _Camera->GetViewMatrix();
-	CVector4f Pt1 = TmpProjection1 * CVector4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	CVector4f Pt2 = TmpProjection1 * CVector4f{ 1.0f, -1.0f, -1.0f, 1.0f };
-	CVector4f Pt3 = TmpProjection1 * CVector4f{ -1.0f, 1.0f, 1.0f, 1.0f };
-	CVector4f Pt4 = TmpProjection1 * CVector4f{ -1.0f, -1.0f, -1.0f, 1.0f };
-	CMatrix4x4f TmpProjection2 = _Camera->GetProjectionMatrix();
-	CVector4f Qt1 = TmpProjection2 * Pt1;
-	CVector4f Qt2 = TmpProjection2 * Pt2;
-	CVector4f Qt3 = TmpProjection2 * Pt3;
-	CVector4f Qt4 = TmpProjection2 * Pt4;
-	CCube* pCube = reinterpret_cast<CCube*>(_GameObjects[0].get());
-	CMatrix4x4f TmpProjection3 = pCube->GetLocalToWorldTransform();
-	CVector4f Rt1 = TmpProjection3 * CVector4f{ 1.0f, 1.0f, 1.0f, 1.0f };
-	CVector4f Rt2 = TmpProjection3 * CVector4f{ 1.0f, -1.0f, -1.0f, 1.0f };
-	CVector4f Rt3 = TmpProjection3 * CVector4f{ -1.0f, 1.0f, 1.0f, 1.0f };
-	CVector4f Rt4 = TmpProjection3 * CVector4f{ -1.0f, -1.0f, -1.0f, 1.0f };
-	////////////////////////////////////////////////////////////////////////////////
 
 	for ( auto& pGameObject : _GameObjects )
 	{
@@ -93,10 +73,16 @@ void CWorld::HandleUserInput( const SKeyInput& Input )
 		_Camera->StrafeLeft();
 		break;
 	case EInputCode::LeftArrow:
-		_Camera->RotateLeft();
+		_Camera->RotateLeft( 1.0f );
 		break;
 	case EInputCode::RightArrow:
-		_Camera->RotateRight();
+		_Camera->RotateRight( 1.0f );
+		break;
+	case EInputCode::DownArrow:
+		_Camera->RotateDown( 1.0f );
+		break;
+	case EInputCode::UpArrow:
+		_Camera->RotateUp( 1.0f );
 		break;
 	default:
 		break;

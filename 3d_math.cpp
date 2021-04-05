@@ -1,6 +1,9 @@
 #include "3d_math.h"
 
 #include "misc_math.h"
+#include "quaternion.h"
+
+#include <cassert>
 
 CMatrix4x4f N3DMath::CreateCoordinateTransform( const CVector3f& Origin, const CVector3f& Forward, const CVector3f& Up, ECoordinateTransformType TransformType )
 {
@@ -46,3 +49,41 @@ bool N3DMath::AlmostEqual(const CVector3f& A, const CVector3f& B)
 		NMiscMath::AlmostEqual( A._Z, B._Z );
 }
 
+// clang-format off
+CMatrix4x4f N3DMath::CreatePitchRotation( float AngleInRadians )
+{
+	return CMatrix4x4f{ 1.0f, 0.0f,						0.0f,					0.0f,
+						0.0f, cosf( AngleInRadians ),	sinf( AngleInRadians ),	0.0f,
+						0.0f, -sinf( AngleInRadians ),	cosf( AngleInRadians ),	0.0f,
+						0.0f, 0.0f,						0.0f,					1.0f };
+}
+CMatrix4x4f N3DMath::CreateYawRotation( float AngleInRadians )
+{
+	return CMatrix4x4f{ cosf( AngleInRadians ),	0.0f, -sinf( AngleInRadians ),	0.0f,
+						0.0f,					1.0f, 0.0f,						0.0f,
+						sinf( AngleInRadians ),	0.0f, cosf( AngleInRadians ),	0.0f,
+						0.0f,					0.0f, 0.0f,						1.0f };
+}
+CMatrix4x4f N3DMath::CreateRollRotation( float AngleInRadians ) 
+{
+	return CMatrix4x4f{ cosf( AngleInRadians ),		sinf( AngleInRadians ),		0.0f, 0.0f,
+						-sinf( AngleInRadians ),	cosf( AngleInRadians ),		0.0f, 0.0f,
+						0.0f,						0.0f,						1.0f, 0.0f,
+						0.0f,						0.0f,						0.0f, 1.0f };
+}
+
+CVector3f N3DMath::CalcVectorRotationAboutAxis( const CVector3f& VectorToRotate, const CVector3f& UnitAxis, float AngleInRadians )
+{
+	assert( NMiscMath::AlmostEqual( UnitAxis.CalcLengthSquared(), 1.0f ) );
+
+	CQuaternion p{ 0, VectorToRotate };
+	CQuaternion q = CQuaternion::CreateRotationQuaternion( AngleInRadians, UnitAxis );
+	CQuaternion qInv = q.CalcInverse();
+
+	CQuaternion RotatedQuat = q * p * qInv;
+	assert( NMiscMath::AlmostEqual( RotatedQuat.GetScalar(), 0.0f ) );
+	assert( NMiscMath::AlmostEqual( RotatedQuat.GetVector().CalcLengthSquared(), VectorToRotate.CalcLengthSquared() ) );
+	return RotatedQuat.GetVector();
+}
+
+// clang-format on
