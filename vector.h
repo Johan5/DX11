@@ -43,6 +43,12 @@ public:
 	CVector4f( float X, float Y, float Z, float W ) : _X{ X }, _Y{ Y }, _Z{ Z }, _W{ W } {}
 	CVector4f( const CVector3f& XYZ, float W ) : _X{ XYZ._X }, _Y{ XYZ._Y }, _Z{ XYZ._Z }, _W{ W } {}
 
+	CVector4f operator+( const CVector4f& Other ) const;
+	CVector4f operator-( const CVector4f& Other ) const;
+	CVector4f operator/( float Denominator ) const;
+	CVector4f& operator+=( const CVector4f& Other );
+	CVector4f& operator-=( const CVector4f& Other );
+
 	CVector3f XYZ();
 
 	float _X = 0.0f;
@@ -134,6 +140,39 @@ inline CVector3f operator*( float lhs, const CVector3f& rhs )
 inline CVector3f operator*( const CVector3f& lhs, float rhs )
 {
 	return operator*( rhs, lhs );
+}
+
+inline CVector4f CVector4f::operator+( const CVector4f& Other ) const
+{
+	return CVector4f{ _X + Other._X, _Y + Other._Y, _Z + Other._Z, _W + Other._W };
+}
+
+inline CVector4f CVector4f::operator-( const CVector4f& Other ) const
+{
+	return CVector4f{ _X - Other._X, _Y - Other._Y, _Z - Other._Z, _W - Other._W };
+}
+
+inline CVector4f CVector4f::operator/( float Denominator ) const
+{
+	return CVector4f{ _X / Denominator, _Y / Denominator, _Z / Denominator, _W / Denominator };
+}
+
+inline CVector4f& CVector4f::operator+=( const CVector4f& Other )
+{
+	_X += Other._X;
+	_Y += Other._Y;
+	_Z += Other._Z;
+	_W += Other._W;
+	return *this;
+}
+
+inline CVector4f& CVector4f::operator-=( const CVector4f& Other )
+{
+	_X -= Other._X;
+	_Y -= Other._Y;
+	_Z -= Other._Z;
+	_W -= Other._W;
+	return *this;
 }
 
 inline CVector3f CVector4f::XYZ()

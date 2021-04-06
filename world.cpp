@@ -3,6 +3,8 @@
 #include "graphics.h"
 #include "cube.h"
 #include "matrix.h"
+#include "perspective_camera.h"
+#include "logger.h"
 
 #include <functional>
 
@@ -12,10 +14,9 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 
 	_pGraphics = &Graphics;
 	_pInputHandler = &InputHandler;
-	float ViewportHeightInWorldUnits = 10.0f;
+	float FieldOfView = NMiscMath::Pi / 2.0f;
 	float AspectRatio = (float)Graphics.GetScreenWidth() / (float)Graphics.GetScreenHeight();
-	float ViewportWidthInWorldUnits = ViewportHeightInWorldUnits * AspectRatio;
-	_Camera = std::make_unique<COrthographicCamera>( ViewportWidthInWorldUnits, ViewportHeightInWorldUnits );
+	_Camera = std::make_unique<CPerspectiveCamera>( FieldOfView, AspectRatio );
 	InputHandler.RegisterKeyInputEventCallback( this, std::bind( &CWorld::HandleUserInput, this, _1 ) );
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCameraConstantBuffer ), ECpuAccessPolicy::CpuWrite );
 
@@ -53,7 +54,9 @@ void CWorld::Render( CRenderContext& RenderContext )
 void CWorld::SpawnDefaultObjects()
 {
 	CCube* Cube = SpawnGameObject<CCube>();
-	Cube->SetPosition( CVector3f{ 0.0f, 0.0f, 5.0f } );
+	Cube->SetPosition( CVector3f{ 0.0f, 0.0f, 4.0f } );
+	CCube* Cube2 = SpawnGameObject<CCube>();
+	Cube2->SetPosition( CVector3f{ 5.5f, 5.5f, 20.0f } );
 }
 
 void CWorld::HandleUserInput( const SKeyInput& Input )

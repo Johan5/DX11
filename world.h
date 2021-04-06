@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game_object.h"
-#include "orthographic_camera.h"
+#include "camera_base.h"
 #include "graphics.h"
 #include "input_handler.h"
 
@@ -36,7 +36,7 @@ private:
 
 	CGraphics* _pGraphics = nullptr;
 	CInputHandler* _pInputHandler = nullptr;
-	std::unique_ptr<COrthographicCamera> _Camera;
+	std::unique_ptr<CCameraBase> _Camera;
 	CConstantBuffer _CameraConstantBuffer;
 
 	std::vector< std::unique_ptr<CGameObject> > _GameObjects;

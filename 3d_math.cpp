@@ -2,8 +2,7 @@
 
 #include "misc_math.h"
 #include "quaternion.h"
-
-#include <cassert>
+#include "assert.h"
 
 CMatrix4x4f N3DMath::CreateCoordinateTransform( const CVector3f& Origin, const CVector3f& Forward, const CVector3f& Up, ECoordinateTransformType TransformType )
 {
@@ -74,15 +73,15 @@ CMatrix4x4f N3DMath::CreateRollRotation( float AngleInRadians )
 
 CVector3f N3DMath::CalcVectorRotationAboutAxis( const CVector3f& VectorToRotate, const CVector3f& UnitAxis, float AngleInRadians )
 {
-	assert( NMiscMath::AlmostEqual( UnitAxis.CalcLengthSquared(), 1.0f ) );
+	ASSERT( NMiscMath::AlmostEqual( UnitAxis.CalcLengthSquared(), 1.0f ), "The given axis must be unit length." );
 
 	CQuaternion p{ 0, VectorToRotate };
 	CQuaternion q = CQuaternion::CreateRotationQuaternion( AngleInRadians, UnitAxis );
 	CQuaternion qInv = q.CalcInverse();
 
 	CQuaternion RotatedQuat = q * p * qInv;
-	assert( NMiscMath::AlmostEqual( RotatedQuat.GetScalar(), 0.0f ) );
-	assert( NMiscMath::AlmostEqual( RotatedQuat.GetVector().CalcLengthSquared(), VectorToRotate.CalcLengthSquared() ) );
+	ASSERT( NMiscMath::AlmostEqual( RotatedQuat.GetScalar(), 0.0f ), "Scalar part is supposed to be 0 after quat rotation..." );
+	ASSERT( NMiscMath::AlmostEqual( RotatedQuat.GetVector().CalcLengthSquared(), VectorToRotate.CalcLengthSquared() ), "Rotating a vector changed it's norm. " );
 	return RotatedQuat.GetVector();
 }
 

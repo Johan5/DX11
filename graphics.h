@@ -1,7 +1,6 @@
 #pragma once
 
 #include "d3dclass.h"
-#include "orthographic_camera.h"
 #include "frame_timer.h"
 #include "vertex_shader.h"
 #include "pixel_shader.h"
@@ -18,8 +17,8 @@ namespace NGraphicsDefines
 	const bool IsFullScreen = false;
 	const bool IsVSyncEnabled = true;
 	const float ScreenDepth = 1000.0f;
-	const float ScreenNear = 0.0f;
-	const float ScreenFar = 10.0f;
+	const float ScreenNear = 1.0f;
+	const float ScreenFar = 100.0f;
 }
 
 enum class ECpuAccessPolicy : uint32_t

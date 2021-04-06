@@ -4,10 +4,20 @@
 #include "misc_math.h"
 #include "assert.h"
 
-#include <cassert>
-#include <algorithm>
 
+// "World to Camera"
+CMatrix4x4f CCameraBase::GetViewMatrix() const
+{
+	// Establish basis vectors for camera space
+	CMatrix4x4f Ret = N3DMath::CreateCoordinateTransform( _Position, _Forward, _Up, N3DMath::ECoordinateTransformType::WorldToLocal );
+	return Ret;
+}
 
+CMatrix4x4f CCameraBase::GetViewAndProjection() const
+{
+	ASSERT( N3DMath::AreOrthogonal( GetForwardVec(), GetUpVec() ), "Camera Forward and Up vec are no longer orthogonal." );
+	return GetProjectionMatrix() * GetViewMatrix();
+}
 
 const CVector3f& CCameraBase::GetPosition() const
 {
