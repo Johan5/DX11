@@ -54,16 +54,24 @@ void CCameraBase::StrafeUp()
 	_Position += _MovementSpeed * _Up;
 }
 
-void CCameraBase::RotateRight( float RotationStrength )
+void CCameraBase::MoveForward()
+{
+	_Position += _MovementSpeed * _Forward;
+}
+
+void CCameraBase::MoveBackwards()
+{
+	_Position -= _MovementSpeed * _Forward;
+}
+
+void CCameraBase::Yaw( float RotationStrength )
 {
 	_Forward = N3DMath::CalcVectorRotationAboutAxis( _Forward, _Up, RotationStrength * _RotationSpeed );
+	_Forward.Normalize(); // For numerical stability reasons
 	ASSERT( NMiscMath::AlmostEqual( _Forward.CalcLengthSquared(), 1.0f ), "Camera _Forward is no longer unit length" );
 }
-void CCameraBase::RotateLeft( float RotationStrength )
-{
-	RotateRight( -RotationStrength );
-}
-void CCameraBase::RotateDown( float RotationStrength )
+
+void CCameraBase::Pitch( float RotationStrength )
 {
 	CVector3f Right = N3DMath::CalcCross( _Up, _Forward );
 	CVector3f NewUp = N3DMath::CalcVectorRotationAboutAxis( _Up, Right, RotationStrength * _RotationSpeed );
@@ -71,14 +79,34 @@ void CCameraBase::RotateDown( float RotationStrength )
 	if ( NewUp._Y < 0.0f )
 	{
 		NewUp._Y = 0.0f;
-		NewUp.Normalize();
 	}
-	_Up = NewUp;
-	_Forward = N3DMath::CalcCross( Right, NewUp );
+	NewUp.Normalize();
+	_Up = NewUp; // For numerical stability reasons
+	_Forward = N3DMath::CalcCross( Right, NewUp ).CalcNormalized();
 	ASSERT( NMiscMath::AlmostEqual( _Up.CalcLengthSquared(), 1.0f ), "Camera _Up is no longer unit length" );
 	ASSERT( NMiscMath::AlmostEqual( _Forward.CalcLengthSquared(), 1.0f ), "Camera _Forward is no longer unit length" );
+	ASSERT( NMiscMath::AlmostEqual( _Forward.Dot( _Up ), 0.0f ), "Camera _Forward and _Up are no longer orthogonal" );
+}
+
+void CCameraBase::RotateRight( float RotationStrength )
+{
+	Yaw( RotationStrength );
+}
+void CCameraBase::RotateLeft( float RotationStrength )
+{
+	Yaw( -RotationStrength );
+}
+void CCameraBase::RotateDown( float RotationStrength )
+{
+	Pitch( RotationStrength );
 }
 void CCameraBase::RotateUp( float RotationStrength )
 {
-	return RotateDown( -RotationStrength );
+	Pitch( -RotationStrength );
+}
+
+void CCameraBase::RotateAboutAxis( const CVector3f& UnitAxisInWorldCoordinates, float RotationStrength )
+{
+
+	_Forward = N3DMath::CalcVectorRotationAboutAxis( _Forward, _Up, RotationStrength * _RotationSpeed );
 }

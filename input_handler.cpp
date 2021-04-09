@@ -1,34 +1,44 @@
 #include "input_handler.h"
 
-#include <assert.h>
+#include "assert.h"
+#include "logger.h"
+
 #include <utility>
+#include <algorithm>
 
 
-std::vector<SKeyInput>& CDoubleBufferedInput::SwapBuffers()
+
+CInputEvent::CInputEvent( const SInputData& InputData )
+	: _InputData( InputData )
 {
-	std::lock_guard<std::mutex> Lock{ _Mutex };
-	std::swap( _FrontBufferIdx, _BackBufferIdx );
-	_Buffers[_BackBufferIdx].clear();
-	return _Buffers[_FrontBufferIdx];
 }
 
-void CDoubleBufferedInput::AddEventToBackBuffer( const  SKeyInput& InputEvent )
+bool CInputEvent::IsPressed( EInputCode InputCode ) const
 {
-	std::lock_guard<std::mutex> Lock{ _Mutex };
-	_Buffers[_BackBufferIdx].push_back( InputEvent );
+	return std::find( _InputData._CurrentlyHeldDown.begin(), _InputData._CurrentlyHeldDown.end(), InputCode ) != _InputData._CurrentlyHeldDown.end();
+}
+
+CVector2f CInputEvent::GetMouseMovement() const
+{
+	return _InputData._RawMousePos - _InputData._RawMousePosPrevFrame;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
+CInputHandler::CInputHandler( int32_t GameWindowWidth, int32_t GameWindowHeight )
+	: _GameWindowWidth( (float) GameWindowWidth)
+	, _GameWindowHeight( (float) GameWindowHeight)
+{
+	ASSERT( _GameWindowWidth != 0.0f && _GameWindowHeight != 0.0f, "Incorrect window size, game will crash." );
+}
+
 void CInputHandler::DispatchInputEvents()
 {
-	std::vector<SKeyInput>& Inputs = _InputBuffers.SwapBuffers();
-	for ( const SKeyInput& Input : Inputs )
+	const SInputData& InputData = _InputBuffers.SwapBuffers();
+	CInputEvent InputEvent{ InputData };
+	for ( auto& it : _KeyInputCallbackMap )
 	{
-		for ( auto& it : _KeyInputCallbackMap )
-		{
-			it.second( Input );
-		}
+		it.second( InputEvent );
 	}
 }
  
@@ -44,14 +54,21 @@ void CInputHandler::DeRegisterKeyInputEventCallback( const void* pCallerId )
 
 void CInputHandler::KeyInputFromOS(EInputType InputType, EInputCode InputCode)
 {
-
+	//CLogger::LogFormat( "Input registered, Type %d, Code %d", (int32_t)InputType, (int32_t)InputCode );
 	if ( InputType == EInputType::KeyDown || InputType == EInputType::KeyUp )
 	{
-		_InputBuffers.AddEventToBackBuffer( SKeyInput{ InputType, InputCode } );
+		_InputBuffers.AddKeyInput( InputType, InputCode );
 	}
 	else
 	{
-		assert( false ); // not implemented anything else than key input yet
+		ASSERT( false, "Unrecognized input" ); // not implemented anything else than key input yet
 	}
 }
 
+void CInputHandler::MouseMovementFromOs( int32_t NewX, int32_t NewY )
+{
+	float ScaledX = (float)NewX / _GameWindowWidth;
+	// Flip Y-axis since OS has origo top-left but this engine uses bot-left
+	float ScaledY = 1.0f - NewY / _GameWindowHeight;
+	_InputBuffers.AddMousePos( CVector2f{ ScaledX, ScaledY } );
+}

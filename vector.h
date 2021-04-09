@@ -3,6 +3,29 @@
 #include <math.h>
 #include <cassert>
 
+class CVector2f
+{
+public:
+	CVector2f() = default;
+	CVector2f( float X, float Y ) : _X{ X }, _Y{ Y } {}
+
+	CVector2f operator+( const CVector2f& Other ) const;
+	CVector2f operator-( const CVector2f& Other ) const;
+	CVector2f operator/( float Denominator ) const;
+	CVector2f& operator+=( const CVector2f& Other );
+	CVector2f& operator-=( const CVector2f& Other );
+
+	void Normalize();
+	CVector2f CalcNormalized() const;
+
+	float CalcLength() const;
+	float CalcLengthSquared() const;
+
+public:
+	float _X = 0.0f;
+	float _Y = 0.0f;
+};
+
 class CVector3f
 {
 public:
@@ -56,6 +79,69 @@ public:
 	float _Z = 0.0f;
 	float _W = 0.0f;
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+inline CVector2f CVector2f::operator+( const CVector2f& Other ) const
+{
+	return CVector2f{ _X + Other._X, _Y + Other._Y };
+}
+
+inline CVector2f CVector2f::operator-( const CVector2f& Other ) const
+{
+	return CVector2f{ _X - Other._X, _Y - Other._Y };
+}
+
+inline CVector2f CVector2f::operator/( float Denominator ) const
+{
+	return CVector2f{ _X / Denominator, _Y / Denominator };
+}
+
+inline CVector2f& CVector2f::operator+=( const CVector2f& Other )
+{
+	_X += Other._X;
+	_Y += Other._Y;
+	return *this;
+}
+
+inline CVector2f& CVector2f::operator-=( const CVector2f& Other )
+{
+	_X -= Other._X;
+	_Y -= Other._Y;
+	return *this;
+}
+
+inline void CVector2f::Normalize()
+{
+	*this = this->CalcNormalized();
+}
+
+inline CVector2f CVector2f::CalcNormalized() const
+{
+	assert( CalcLength() != 0.0f );
+	return *this / CalcLength();
+}
+
+inline float CVector2f::CalcLength() const
+{
+	return sqrtf( _X * _X + _Y * _Y );
+}
+
+inline float CVector2f::CalcLengthSquared() const
+{
+	return _X * _X + _Y * _Y;
+}
+
+inline CVector2f operator*( float lhs, const CVector2f& rhs )
+{
+	return CVector2f{ lhs * rhs._X, lhs * rhs._Y };
+}
+
+inline CVector2f operator*( const CVector2f& lhs, float rhs )
+{
+	return operator*( rhs, lhs );
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -141,6 +227,8 @@ inline CVector3f operator*( const CVector3f& lhs, float rhs )
 {
 	return operator*( rhs, lhs );
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 inline CVector4f CVector4f::operator+( const CVector4f& Other ) const
 {

@@ -5,6 +5,7 @@
 #include "matrix.h"
 #include "perspective_camera.h"
 #include "logger.h"
+#include "input_enums.h"
 
 #include <functional>
 
@@ -59,35 +60,52 @@ void CWorld::SpawnDefaultObjects()
 	Cube2->SetPosition( CVector3f{ 5.5f, 5.5f, 20.0f } );
 }
 
-void CWorld::HandleUserInput( const SKeyInput& Input )
+void CWorld::HandleUserInput( const CInputEvent& Input )
 {
-	switch ( Input._InputCode )
+	if ( Input.IsPressed( EInputCode::RightMouseButton ) )
 	{
-	case EInputCode::KeyW:
-		_Camera->StrafeUp();
-		break;
-	case EInputCode::KeyD:
-		_Camera->StrafeRight();
-		break;
-	case EInputCode::KeyS:
-		_Camera->StrafeDown();
-		break;
-	case EInputCode::KeyA:
-		_Camera->StrafeLeft();
-		break;
-	case EInputCode::LeftArrow:
-		_Camera->RotateLeft( 1.0f );
-		break;
-	case EInputCode::RightArrow:
-		_Camera->RotateRight( 1.0f );
-		break;
-	case EInputCode::DownArrow:
-		_Camera->RotateDown( 1.0f );
-		break;
-	case EInputCode::UpArrow:
-		_Camera->RotateUp( 1.0f );
-		break;
-	default:
-		break;
+		static bool done = false;
+		// When right mouse button is pressed, mouse movement is turned into rotation
+		CVector2f NormalizedMouseMovement = Input.GetMouseMovement();
+		_Camera->Yaw( NormalizedMouseMovement._X );
+		_Camera->Pitch( -NormalizedMouseMovement._Y );
+		// WASD used to move camera in (_Up, _Right) plane
+		if ( Input.IsPressed( EInputCode::KeyW ) )
+		{
+			_Camera->MoveForward();
+		}
+		if ( Input.IsPressed( EInputCode::KeyA ) )
+		{
+			_Camera->StrafeLeft();
+		}
+		if ( Input.IsPressed( EInputCode::KeyS ) )
+		{
+			_Camera->MoveBackwards();
+		}
+		if ( Input.IsPressed( EInputCode::KeyD ) )
+		{
+			_Camera->StrafeRight();
+		}
 	}
+	else
+	{
+		// WASD used to move camera in (_Up, _Right) plane
+		if ( Input.IsPressed( EInputCode::KeyW ) )
+		{
+			_Camera->StrafeUp();
+		}
+		if ( Input.IsPressed( EInputCode::KeyA ) )
+		{
+			_Camera->StrafeLeft();
+		}
+		if ( Input.IsPressed( EInputCode::KeyS ) )
+		{
+			_Camera->StrafeDown();
+		}
+		if ( Input.IsPressed( EInputCode::KeyD ) )
+		{
+			_Camera->StrafeRight();
+		}
+	}
+
 }

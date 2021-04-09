@@ -1,9 +1,11 @@
 #include "systemclass.h"
 
-#include "inputclass.h"
+#include "vector.h"
 #include "graphics.h"
 #include "input_enums.h"
 #include "input_handler.h"
+
+#include "windowsx.h"
 
 
 namespace
@@ -129,7 +131,7 @@ bool CSystem::Initialize()
 	{
 		return false;
 	}
-	_InputHandler = std::make_unique<CInputHandler>();
+	_InputHandler = std::make_unique<CInputHandler>( ScreenWidth, ScreenHeight );
 	_GameApplication = std::make_unique<CGameApplication>( *_InputHandler, *_Graphics );
 	
 	return true;
@@ -173,23 +175,58 @@ void CSystem::Run()
 	}
 }
 
-LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM Param, LPARAM pParam)
+LRESULT CALLBACK CSystem::MessageHandler(HWND Wnd, UINT Msg, WPARAM wParam, LPARAM pParam)
 {
 	switch (Msg)
 	{
 		case WM_KEYDOWN:
 		{
-			_InputHandler->KeyInputFromOS( EInputType::KeyDown, TranslateVirtualKeyToInputCode( Param ) );
+			_InputHandler->KeyInputFromOS( EInputType::KeyDown, TranslateVirtualKeyToInputCode( wParam ) );
 			return 0;
 		}
 		case WM_KEYUP:
 		{
-			_InputHandler->KeyInputFromOS( EInputType::KeyUp, TranslateVirtualKeyToInputCode( Param ) );
+			_InputHandler->KeyInputFromOS( EInputType::KeyUp, TranslateVirtualKeyToInputCode( wParam ) );
+			return 0;
+		}
+		case WM_MOUSEMOVE:
+		{
+			_InputHandler->MouseMovementFromOs( GET_X_LPARAM( pParam ), GET_Y_LPARAM( pParam ) );
+			return 0;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyDown, EInputCode::LeftMouseButton );
+			return 0;
+		}
+		case WM_LBUTTONUP:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyUp, EInputCode::LeftMouseButton );
+			return 0;
+		}
+		case WM_RBUTTONDOWN:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyDown, EInputCode::RightMouseButton );
+			return 0;
+		}
+		case WM_RBUTTONUP:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyUp, EInputCode::RightMouseButton );
+			return 0;
+		}
+		case WM_MBUTTONDOWN:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyDown, EInputCode::MiddleMouseButton );
+			return 0;
+		}
+		case WM_MBUTTONUP:
+		{
+			_InputHandler->KeyInputFromOS( EInputType::KeyUp, EInputCode::MiddleMouseButton );
 			return 0;
 		}
 		default:
 		{
-			return DefWindowProc( Wnd, Msg, Param, pParam );
+			return DefWindowProc( Wnd, Msg, wParam, pParam );
 		}
 	}
 }
@@ -211,18 +248,18 @@ void CSystem::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 	
 	{
 		WNDCLASSEX WC;
+		WC.cbSize = sizeof( WNDCLASSEX );
 		WC.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		WC.lpfnWndProc = WndProc;
 		WC.cbClsExtra = 0;
 		WC.cbWndExtra = 0;
 		WC.hInstance = _Instance;
 		WC.hIcon = LoadIcon( nullptr, IDI_WINLOGO );
-		WC.hIconSm = WC.hIcon;
-		WC.hCursor = LoadCursor( nullptr, IDC_ARROW );
+		WC.hCursor = LoadCursor( nullptr, IDC_HAND );
 		WC.hbrBackground = (HBRUSH)GetStockObject( BLACK_BRUSH );
 		WC.lpszMenuName = nullptr;
 		WC.lpszClassName = _ApplicationName;
-		WC.cbSize = sizeof( WNDCLASSEX );
+		WC.hIconSm = WC.hIcon;
 		RegisterClassEx( &WC );
 	}
 
@@ -260,7 +297,7 @@ void CSystem::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 	SetForegroundWindow( _Wnd );
 	SetFocus( _Wnd );
 
-	ShowCursor( false );	
+	ShowCursor( true );	
 }
 
 void CSystem::ShutdownWindows()
@@ -280,7 +317,7 @@ void CSystem::ShutdownWindows()
 	pApplicationHandle = nullptr;
 }
 
-LRESULT WndProc(HWND Wnd, UINT Message, WPARAM Param, LPARAM pParam)
+LRESULT WndProc(HWND Wnd, UINT Message, WPARAM wParam, LPARAM pParam)
 {
 	switch ( Message )
 	{
@@ -289,7 +326,7 @@ LRESULT WndProc(HWND Wnd, UINT Message, WPARAM Param, LPARAM pParam)
 		PostQuitMessage( 0 );
 		return 0;
 	default:
-		return pApplicationHandle->MessageHandler( Wnd, Message, Param, pParam );
+		return pApplicationHandle->MessageHandler( Wnd, Message, wParam, pParam );
 	}
 	
 }

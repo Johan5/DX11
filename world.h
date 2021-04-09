@@ -32,7 +32,7 @@ public:
 
 private:
 	void SpawnDefaultObjects();
-	void HandleUserInput( const SKeyInput& Input );
+	void HandleUserInput( const CInputEvent& Input );
 
 	CGraphics* _pGraphics = nullptr;
 	CInputHandler* _pInputHandler = nullptr;

@@ -21,6 +21,12 @@ public:
 	void StrafeLeft();
 	void StrafeDown();
 	void StrafeUp();
+	void MoveForward();
+	void MoveBackwards();
+
+	// Negative values rotates counter-clockwise
+	void Yaw( float RotationStrength );
+	void Pitch( float RotationStrength );
 
 	// Yaw+
 	void RotateRight( float RotationStrength );
@@ -31,13 +37,15 @@ public:
 	// Pitch-
 	void RotateUp( float RotationStrength );
 	
+	void RotateAboutAxis( const CVector3f& UnitAxisInWorldCoordinates, float RotationStrength );
+
 private: 
 	CVector3f _Position = CVector3f{ 1.0f, 0.0f, 0.0f };
 	CVector3f _Forward = CVector3f{ 0.0f, 0.0f, 1.0f }.CalcNormalized();
 	CVector3f _Up = CVector3f{ 0.0f, 1.0f, 0.0f }.CalcNormalized();
-	float _MovementSpeed = 0.01f;
+	float _MovementSpeed = 0.1f;
 	// given in radians
-	float _RotationSpeed = 0.1f;
+	float _RotationSpeed = 5.0f;
 
 
 };

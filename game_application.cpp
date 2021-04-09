@@ -1,13 +1,14 @@
 #include "game_application.h"
 
+#include "input_enums.h"
 
 CGameApplication::CGameApplication( CInputHandler& InputHandler, CGraphics& Graphics )
 	: _InputHandler( InputHandler ), _Graphics( Graphics )
 {
 	_World.Initialize( _Graphics, _InputHandler );
-	_InputHandler.RegisterKeyInputEventCallback( this, [this]( const SKeyInput& KeyInput )
+	_InputHandler.RegisterKeyInputEventCallback( this, [this]( const CInputEvent& CInputEvent )
 	{
-		if ( KeyInput._InputCode == EInputCode::Escape )
+		if ( CInputEvent.IsPressed( EInputCode::Escape ) )
 		{
 			_ShouldExitApplication = true;
 		}

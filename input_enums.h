@@ -3,7 +3,7 @@
 
 enum class EInputType
 {
-	Invalid,
+	None,
 	KeyDown,
 	KeyUp,
 };

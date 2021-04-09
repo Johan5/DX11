@@ -1,42 +1,35 @@
 #pragma once
 
 #include "input_enums.h"
+#include "input_handler_types.h"
 
 #include <stdint.h>
-#include <vector>
-#include <functional>
 #include <unordered_map>
-#include <mutex>
+#include <functional>
 
 
-struct SKeyInput
-{
-	EInputType _InputType = EInputType::Invalid;
-	EInputCode _InputCode = EInputCode::Unknown;
-};
-
-// Input is stored in order it was received, with oldest event first.
-// Is threadsafe
-class CDoubleBufferedInput
+class CInputEvent
 {
 public:
-	// Swaps the front and backbuffers. Clears the new back buffer, returns the new front buffer.
-	std::vector<SKeyInput>& SwapBuffers();
-	void AddEventToBackBuffer( const SKeyInput& InputEvent );
+	CInputEvent( const SInputData& InputData );
+
+	bool IsPressed( EInputCode InputCode ) const;
+	
+	// returns mouse movement from previous frame, ( bot-left origo with [0, 1] cooridnates )
+	CVector2f GetMouseMovement() const;
 
 private:
-	std::vector<SKeyInput> _Buffers[2];
-	int32_t _FrontBufferIdx = 0;
-	int32_t _BackBufferIdx = 1;
-
-	std::mutex _Mutex;
+	SInputData _InputData;
 };
+
+////////////////////////////////////////////////////////////////////////////////
 
 class CInputHandler
 {
 	friend class CSystem;
+	using KeyCbkFuncT = std::function<void( const CInputEvent& InputCode )>;
 public:
-	using KeyCbkFuncT = std::function<void( const SKeyInput& InputCode )>;
+	CInputHandler( int32_t GameWindowWidth, int32_t GameWindowHeight );
 
 	// Input events will be dispatched from the main thread at the start of each frame
 	void DispatchInputEvents();
@@ -47,8 +40,11 @@ public:
 
 private:
 	void KeyInputFromOS( EInputType InputType, EInputCode InputCode );
+	void MouseMovementFromOs( int32_t NewX, int32_t NewY );
 
 private:
 	CDoubleBufferedInput _InputBuffers;
 	std::unordered_map<const void*, KeyCbkFuncT> _KeyInputCallbackMap;
+	float _GameWindowWidth = 0;
+	float _GameWindowHeight = 0;
 };
