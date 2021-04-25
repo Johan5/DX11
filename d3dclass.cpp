@@ -84,7 +84,7 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	_VideoCardMemoryInMb = (int)( AdapterDesc.DedicatedVideoMemory / 1024 / 1024 );
 
 	// Convert the name of the video card to a character array and store it
-	unsigned long long StringLength;
+	size_t StringLength;
 	int Error = wcstombs_s( &StringLength, _VideoCardDescription, 128, AdapterDesc.Description, 128 );
 
 	delete[] pDisplayModeList;

@@ -9,7 +9,7 @@ class CLogger
 {
 public:
 	static void Log( const std::string& String );
-
+	
 	template <typename... T>
 	static void LogFormat( const std::string& String, const T&... Args );
 	
@@ -24,6 +24,7 @@ private:
 template <typename... T>
 void CLogger::LogFormat( const std::string& String, const T&... Args )
 {
+	memset(&_DebugStringBuffer, 0, _MaxDebugStringSize);
 	int32_t StringLen = snprintf( _DebugStringBuffer, CLogger::_MaxDebugStringSize, String.c_str(), Args... );
 	std::cout << _DebugStringBuffer << std::endl;
 }

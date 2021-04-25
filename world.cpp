@@ -20,8 +20,7 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 	_Camera = std::make_unique<CPerspectiveCamera>( FieldOfView, AspectRatio );
 	InputHandler.RegisterKeyInputEventCallback( this, std::bind( &CWorld::HandleUserInput, this, _1 ) );
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCameraConstantBuffer ), ECpuAccessPolicy::CpuWrite );
-
-	ID3D11Buffer* RawBfr = _CameraConstantBuffer.AccessRawBuffer();
+	_PerFrameConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SPerFrameConstantBuffer ), ECpuAccessPolicy::CpuWrite );
 
 	SpawnDefaultObjects();
 }
@@ -40,9 +39,17 @@ void CWorld::Update()
 
 void CWorld::Render( CRenderContext& RenderContext )
 {
+	SPerFrameConstantBuffer PerFrameCB;
+	CVector4f LightPos4f = CVector4f{ PerFrameCB._Light1Pos, 1.0f };
+	LightPos4f = _Camera->GetViewMatrix() * LightPos4f;
+	PerFrameCB._Light1Pos = LightPos4f.XYZ() / LightPos4f._W;
+	RenderContext.UpdateConstantBuffer( _PerFrameConstantBuffer, &PerFrameCB, sizeof( PerFrameCB ) );
+	RenderContext.SetPixelShaderConstantBuffer( _PerFrameConstantBuffer, EConstantBufferIdx::PerFrame );
 	// Set view and projection matrix
-	CMatrix4x4f ViewandProjection = _Camera->GetViewAndProjection();
-	RenderContext.UpdateConstantBuffer( _CameraConstantBuffer, &ViewandProjection, sizeof( ViewandProjection ) );
+	SCameraConstantBuffer CameraCb;
+	CameraCb._ViewMatrix = _Camera->GetViewMatrix();
+	CameraCb._ViewAndProjection = _Camera->GetViewAndProjection();
+	RenderContext.UpdateConstantBuffer( _CameraConstantBuffer, &CameraCb, sizeof(CameraCb) );
 	RenderContext.SetVertexShaderConstantBuffer( _CameraConstantBuffer, EConstantBufferIdx::PerCamera );
 	RenderContext.SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 

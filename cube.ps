@@ -1,0 +1,25 @@
+
+cbuffer PerFrameCb : register(b0)
+{
+	// Light in camera space
+	float3 _C_Light1Pos;
+	float _Pad1;
+};
+
+struct SPsInput
+{
+	float4 _S_Position : SV_POSITION;
+	float3 _C_Position : POSITION;
+	float3 _C_Normal : NORMAL;
+	float4 _Color : COLOR;
+};
+
+
+float4 ColorPixelShader(SPsInput Input) : SV_TARGET
+{
+	float3 C_DirToLight = normalize(_C_Light1Pos - Input._C_Position);
+	float LightCosAngle = dot(Input._C_Normal, C_DirToLight);
+	
+	LightCosAngle = clamp( LightCosAngle, 0.0f, 1.0f );
+	return Input._Color * LightCosAngle;
+}

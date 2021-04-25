@@ -2,8 +2,8 @@
 
 #include "logger.h"
 #include "string_util.h"
+#include "assert.h"
 
-#include <cassert>
 
 bool CPixelShader::Initialize( ID3D11Device& Device, const std::string& FileName, const std::string& ShaderMainFunction )
 {
@@ -13,7 +13,7 @@ bool CPixelShader::Initialize( ID3D11Device& Device, const std::string& FileName
 	ComPtr<ID3D10Blob> pCompiledPixelShader;
 	ComPtr<ID3D10Blob> pErrorMessage;
 	HRESULT Result = D3DCompileFromFile( FileNameW.c_str(), nullptr, nullptr, ShaderMainFunction.c_str(), "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, pCompiledPixelShader.GetAddressOf(), pErrorMessage.GetAddressOf() );
-	assert( SUCCEEDED( Result ) );
+	ASSERT( SUCCEEDED( Result ), "Failed to compile pixel shader" );
 	if ( FAILED(Result) )
 	{
 		if ( pErrorMessage )
@@ -29,7 +29,7 @@ bool CPixelShader::Initialize( ID3D11Device& Device, const std::string& FileName
 	}
 
 	Result = Device.CreatePixelShader( pCompiledPixelShader->GetBufferPointer(), pCompiledPixelShader->GetBufferSize(), nullptr, _pPixelShader.GetAddressOf() );
-	assert( SUCCEEDED( Result ) );
+	ASSERT(SUCCEEDED(Result), "Failed to create pixel shader");
 
 	return true;
 }

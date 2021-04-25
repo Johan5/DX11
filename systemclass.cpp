@@ -247,7 +247,7 @@ void CSystem::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 	_ApplicationName = L"DX11Test";
 	
 	{
-		WNDCLASSEX WC;
+		WNDCLASSEXW WC;
 		WC.cbSize = sizeof( WNDCLASSEX );
 		WC.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 		WC.lpfnWndProc = WndProc;
@@ -260,7 +260,7 @@ void CSystem::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 		WC.lpszMenuName = nullptr;
 		WC.lpszClassName = _ApplicationName;
 		WC.hIconSm = WC.hIcon;
-		RegisterClassEx( &WC );
+		RegisterClassExW( &WC );
 	}
 
 	
@@ -289,14 +289,14 @@ void CSystem::InitializeWindows(int& ScreenWidth, int& ScreenHeight)
 	}
 
 	DWORD Style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP;
-	_Wnd = CreateWindowEx( WS_EX_APPWINDOW, _ApplicationName, _ApplicationName, Style, PosX, PosY, ScreenWidth
+	_Wnd = CreateWindowExW( WS_EX_APPWINDOW, _ApplicationName, _ApplicationName, Style, PosX, PosY, ScreenWidth
 		, ScreenHeight, nullptr, nullptr, _Instance, nullptr );
 	
 	// Bring up window and set as main focus
 	ShowWindow( _Wnd, SW_SHOW );
 	SetForegroundWindow( _Wnd );
 	SetFocus( _Wnd );
-
+	SetCapture( _Wnd );
 	ShowCursor( true );	
 }
 
@@ -311,13 +311,13 @@ void CSystem::ShutdownWindows()
 	DestroyWindow( _Wnd );
 	_Wnd = nullptr;
 
-	UnregisterClass( _ApplicationName, _Instance );
+	UnregisterClassW( _ApplicationName, _Instance );
 	_Instance = nullptr;
 
 	pApplicationHandle = nullptr;
 }
 
-LRESULT WndProc(HWND Wnd, UINT Message, WPARAM wParam, LPARAM pParam)
+LRESULT CALLBACK WndProc(HWND Wnd, UINT Message, WPARAM wParam, LPARAM pParam)
 {
 	switch ( Message )
 	{

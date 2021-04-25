@@ -12,8 +12,15 @@
 
 class CGraphics;
 
+struct SPerFrameConstantBuffer
+{
+	CVector3f _Light1Pos = CVector3f{ 0.0f, 10.0f, 5.0f };
+	float _Pad1;
+};
+
 struct SCameraConstantBuffer
 {
+	CMatrix4x4f _ViewMatrix;
 	CMatrix4x4f _ViewAndProjection;
 };
 
@@ -38,6 +45,7 @@ private:
 	CInputHandler* _pInputHandler = nullptr;
 	std::unique_ptr<CCameraBase> _Camera;
 	CConstantBuffer _CameraConstantBuffer;
+	CConstantBuffer _PerFrameConstantBuffer;
 
 	std::vector< std::unique_ptr<CGameObject> > _GameObjects;
 	

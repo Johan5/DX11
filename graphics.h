@@ -21,11 +21,15 @@ namespace NGraphicsDefines
 	const float ScreenFar = 100.0f;
 }
 
-enum class ECpuAccessPolicy : uint32_t
+////////////////////////////////////////////////////////////////////////////////
+
+struct SMaterial
 {
-	NoAccess = 0,
-	CpuWrite = D3D11_CPU_ACCESS_WRITE,
-	CpuRead = D3D11_CPU_ACCESS_READ,
+	float _SpecularReflection = 1.0f;
+	float _DiffuseReflection = 1.0f;
+	float _AmbientReflection = 1.0f;
+	// Large specular power means small specular highlight
+	int32_t _SpecularPower = 32;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +98,7 @@ public:
 	void SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology );
 	void SetVertexShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
 	void SetVertexShader( CVertexShader& VertexShader );
+	void SetPixelShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
 	void SetPixelShader( CPixelShader& PixelShader );
 	// optimally, ConstantBuffer data should be 16 byte aligned
 	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, int32_t NewDataSize );
@@ -118,7 +123,7 @@ public:
 	void Shutdown();
 
 	CVertexBuffer CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings );
-	CVertexShader CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
+	CVertexShader CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout );
 	CPixelShader CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
 
 	CConstantBuffer CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );

@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "string_util.h"
 #include "logger.h"
+#include "assert.h"
 
 struct STest
 {
@@ -13,8 +14,8 @@ struct STest
 
 CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties )
 {
-	assert(Properties._VertexDataSizeInBytes > 0);
-	assert(Properties._SingleVertexSizeInBytes > 0);
+	ASSERT(Properties._VertexDataSizeInBytes > 0, "Vertex data size needs to be positive" );
+	ASSERT(Properties._SingleVertexSizeInBytes > 0, "Single vertex size needs to be positive" );
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	ZeroMemory( &VertexBufferDesc, sizeof( D3D11_BUFFER_DESC ) );
 	VertexBufferDesc.ByteWidth = Properties._VertexDataSizeInBytes;
@@ -29,7 +30,7 @@ CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, con
 	VertexData.SysMemPitch = 0;
 	VertexData.SysMemSlicePitch = 0;
 	HRESULT VertexResult = Device.CreateBuffer( &VertexBufferDesc, &VertexData, _pVertexBuffer.GetAddressOf() );
-	assert( SUCCEEDED( VertexResult ) );
+	ASSERT( SUCCEEDED( VertexResult ), "Failed to create vertex buffer" );
 	_Properties = Properties;
 }
 
@@ -46,10 +47,7 @@ CConstantBuffer::CConstantBuffer( ID3D11Device& Device, int32_t SizeInBytes, ECp
 	MatrixBufferDesc.MiscFlags = 0;
 	MatrixBufferDesc.StructureByteStride = 0;
 	HRESULT Result = Device.CreateBuffer( &MatrixBufferDesc, nullptr, _pBuffer.GetAddressOf() );
-	if ( FAILED( Result ) )
-	{
-		assert( false );
-	}
+	ASSERT( SUCCEEDED( Result ), "Failed to create constant buffer" );
 	_BufferSizeInBytes = SizeInBytes;
 	_AccessPolicy = AccessPolicy;
 }
@@ -73,9 +71,9 @@ namespace
 void CRenderContext::SetVertexBuffer( CVertexBuffer& VertexBuffer )
 {
 	ID3D11Buffer* pVertexBuffer = VertexBuffer.AccessVertexBuffer();
-	assert( pVertexBuffer );
+	ASSERT( pVertexBuffer, "Given vertex buffer is invalid" );
 	uint32_t SingleVertexSize = VertexBuffer.GetProperties()._SingleVertexSizeInBytes;
-	assert(SingleVertexSize > 0);
+	ASSERT(SingleVertexSize > 0, "Creating vertex buffer with vertices of size 0?" );
 	uint32_t Stride = SingleVertexSize;
 	uint32_t Offset = 0U;
 	_pDeviceContext->IASetVertexBuffers( 0, 1, VertexBuffer.AccessVertexBufferAddr(), &Stride, &Offset );
@@ -98,6 +96,12 @@ void CRenderContext::SetVertexShader( CVertexShader& VertexShader )
 	_pDeviceContext->VSSetShader( VertexShader.AccessVertexShader(), nullptr, 0 );
 }
 
+void CRenderContext::SetPixelShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index )
+{
+	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
+	_pDeviceContext->PSSetConstantBuffers( static_cast<uint32_t>(Index), 1, &pConstantBuffer );
+}
+
 void CRenderContext::SetPixelShader( CPixelShader& PixelShader )
 {
 	_pDeviceContext->PSSetShader( PixelShader.AccessPixelShader(), nullptr, 0 );
@@ -105,12 +109,12 @@ void CRenderContext::SetPixelShader( CPixelShader& PixelShader )
 
 void CRenderContext::UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* pNewData, int32_t NewDataSize  )
 {
-	assert( ConstantBuffer.GetSizeInBytes() == NewDataSize );
-	assert( (uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite );
+	ASSERT( ConstantBuffer.GetSizeInBytes() == NewDataSize, "Size mismatch, investigate." );
+	ASSERT( (uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite, "Cannot update contents of constant buffer unless registered with CpuWrite" );
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	ZeroMemory( &MappedResource, sizeof( D3D11_MAPPED_SUBRESOURCE ));
 	HRESULT Result = _pDeviceContext->Map( ConstantBuffer.AccessRawBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
-	assert( SUCCEEDED( Result ) );
+	ASSERT( SUCCEEDED( Result ), "Failed to update constant buffer" );
 	memcpy( MappedResource.pData, pNewData, NewDataSize );
 	_pDeviceContext->Unmap( ConstantBuffer.AccessRawBuffer(), 0 );
 }
@@ -136,7 +140,7 @@ bool CGraphics::Initialize(int ScreenWidth, int ScreenHeight, HWND Wnd)
 		Wnd, NGraphicsDefines::IsFullScreen, NGraphicsDefines::ScreenDepth, NGraphicsDefines::ScreenNear );
 	if ( !Result )
 	{
-		MessageBox( Wnd, L"Could not initialize Direct3D", L"Error", MB_OK );
+		MessageBoxW( Wnd, L"Could not initialize Direct3D", L"Error", MB_OK );
 		return false;
 	}
 
@@ -152,16 +156,15 @@ void CGraphics::Shutdown()
 
 CVertexBuffer CGraphics::CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings )
 {
-	// Add caching here?
 	return CVertexBuffer{ AccessDevice(), pVertexData, Settings };
 }
 
-CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction )
+CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout )
 {
 	_VertexShaderCache.emplace_back();
 	CVertexShader& VertexShader = _VertexShaderCache.back();
-	bool Success = VertexShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
-	assert( Success );
+	bool Success = VertexShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction, ShaderInputLayout );
+	ASSERT( Success, "Faield to create vertex shader" );
 	return VertexShader;
 }
 
@@ -170,7 +173,7 @@ CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, co
 	_PixelShaderCache.emplace_back();
 	CPixelShader& PixelShader = _PixelShaderCache.back();
 	bool Success = PixelShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
-	assert( Success );
+	ASSERT( Success, "Failed to create pixel shader" );
 	return PixelShader;
 }
 

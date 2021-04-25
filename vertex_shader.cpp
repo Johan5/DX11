@@ -2,11 +2,10 @@
 
 #include "string_util.h"
 #include "logger.h"
+#include "assert.h"
 
-#include <cassert>
 
-
-bool CVertexShader::Initialize( ID3D11Device& Device, const std::string& FileName, const std::string& ShaderMainFunction )
+bool CVertexShader::Initialize( ID3D11Device& Device, const std::string& FileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout )
 {
 	using Microsoft::WRL::ComPtr;
 	HRESULT Result;
@@ -20,45 +19,39 @@ bool CVertexShader::Initialize( ID3D11Device& Device, const std::string& FileNam
 	{
 		if ( pErrorMessage )
 		{
-			//CLogger::LogFormat( "Failed to compile shader file %s. Error: ", FileName );
-			CLogger::Log( static_cast<char*>( pErrorMessage->GetBufferPointer() ) );
+			CLogger::LogFormat( "Failed to compile shader file %s. Error: ", FileName.c_str() );
 		}
 		else
 		{
-			//CLogger::LogFormat( "Failed to find shader file: %s", FileName );
+			CLogger::LogFormat( "Failed to find shader file: %s", FileName.c_str() );
 		}
 		return false;
 	}
 
 	Result = Device.CreateVertexShader( pCompiledVertexShader->GetBufferPointer(), pCompiledVertexShader->GetBufferSize(), nullptr, _pVertexShader.GetAddressOf() );
-	assert( SUCCEEDED( Result ) );
+	ASSERT( SUCCEEDED( Result ), "Failed to create vertex shader"  );
 
+	constexpr int32_t MaxInputLayouts = 10;
+	ASSERT( ShaderInputLayout.size() <= MaxInputLayouts, "Input layout is unreasonably large (wont work)" );
 	// Create input layout
-	D3D11_INPUT_ELEMENT_DESC pPolygonLayout[2];
-	pPolygonLayout[0].SemanticName = "POSITION";
-	pPolygonLayout[0].SemanticIndex = 0;
-	pPolygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	pPolygonLayout[0].InputSlot = 0;
-	pPolygonLayout[0].AlignedByteOffset = 0;
-	pPolygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pPolygonLayout[0].InstanceDataStepRate = 0;
+	D3D11_INPUT_ELEMENT_DESC pPolygonLayout[MaxInputLayouts];
+	for ( int32_t i = 0; i < ShaderInputLayout.size(); ++i )
+	{
+		pPolygonLayout[i].SemanticName = ShaderInputLayout[i]._SemanticName.c_str();
+		pPolygonLayout[i].SemanticIndex = 0;
+		pPolygonLayout[i].Format = static_cast<DXGI_FORMAT>( ShaderInputLayout[i]._Format );
+		pPolygonLayout[i].InputSlot = 0;
+		pPolygonLayout[i].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+		pPolygonLayout[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		pPolygonLayout[i].InstanceDataStepRate = 0;
+	}
 
-	pPolygonLayout[1].SemanticName = "COLOR";
-	pPolygonLayout[1].SemanticIndex = 0;
-	pPolygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	pPolygonLayout[1].InputSlot = 0;
-	pPolygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	pPolygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	pPolygonLayout[1].InstanceDataStepRate = 0;
-
-	int32_t NumElementsInVsInputLayout = sizeof( pPolygonLayout ) / sizeof( pPolygonLayout[0] );
-	Result = Device.CreateInputLayout( pPolygonLayout, NumElementsInVsInputLayout, pCompiledVertexShader->GetBufferPointer(),
+	int32_t NumInputLayouts = static_cast<int32_t>( ShaderInputLayout.size() );
+	Result = Device.CreateInputLayout( pPolygonLayout, NumInputLayouts, pCompiledVertexShader->GetBufferPointer(),
 		pCompiledVertexShader->GetBufferSize(), _pLayout.GetAddressOf() );
-	assert( SUCCEEDED( Result ) );
+	ASSERT( SUCCEEDED( Result ), "Failed to create input layout" );
 
 	return true;
-	//Result = D3DCompileFromFile( PsFilename.c_str(), nullptr, nullptr, "ColorPixelShader", 
-	//                             "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, &pCompiledPixelShader, &pErrorMessage );
 }
 
 bool CVertexShader::IsInitialized() const
