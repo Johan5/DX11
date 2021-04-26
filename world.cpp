@@ -20,7 +20,7 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 	_Camera = std::make_unique<CPerspectiveCamera>( FieldOfView, AspectRatio );
 	InputHandler.RegisterKeyInputEventCallback( this, std::bind( &CWorld::HandleUserInput, this, _1 ) );
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCameraConstantBuffer ), ECpuAccessPolicy::CpuWrite );
-	_PerFrameConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SPerFrameConstantBuffer ), ECpuAccessPolicy::CpuWrite );
+	//_PerFrameConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SPerFrameConstantBuffer ), ECpuAccessPolicy::CpuWrite );
 
 	SpawnDefaultObjects();
 }
@@ -39,28 +39,21 @@ void CWorld::Update()
 
 void CWorld::Render( CRenderContext& RenderContext )
 {
-	SPerFrameConstantBuffer PerFrameCB;
-	CVector4f LightPos4f = CVector4f{ PerFrameCB._Light1Pos, 1.0f };
-	LightPos4f = _Camera->GetViewMatrix() * LightPos4f;
-	PerFrameCB._Light1Pos = LightPos4f.XYZ() / LightPos4f._W;
-	RenderContext.UpdateConstantBuffer( _PerFrameConstantBuffer, &PerFrameCB, sizeof( PerFrameCB ) );
-	RenderContext.SetPixelShaderConstantBuffer( _PerFrameConstantBuffer, EConstantBufferIdx::PerFrame );
-	// Set view and projection matrix
-	SCameraConstantBuffer CameraCb;
-	CameraCb._ViewMatrix = _Camera->GetViewMatrix();
-	CameraCb._ViewAndProjection = _Camera->GetViewAndProjection();
-	RenderContext.UpdateConstantBuffer( _CameraConstantBuffer, &CameraCb, sizeof(CameraCb) );
-	RenderContext.SetVertexShaderConstantBuffer( _CameraConstantBuffer, EConstantBufferIdx::PerCamera );
-	RenderContext.SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
-	for ( auto& pGameObject : _GameObjects )
-	{
-		pGameObject->Render( RenderContext, *_Camera );
-	}
+	NewFrameSetup(RenderContext);
+	PerCameraSetup(RenderContext, *_Camera.get());
+	RenderObjects(RenderContext, *_Camera.get());
 }
 
 void CWorld::SpawnDefaultObjects()
 {
+	{
+		std::unique_ptr<CLightSource> MainLight = std::make_unique<CLightSource>();
+		MainLight->SetId(_NextGameObjectId++);
+		MainLight->Initialize(*_pGraphics);
+		MainLight->SetPosition(CVector3f{ 0.0f, 10.0f, 5.0f });
+		_Lights.push_back(std::move(MainLight));
+	}
+
 	CCube* Cube = SpawnGameObject<CCube>();
 	Cube->SetPosition( CVector3f{ 0.0f, 0.0f, 4.0f } );
 	CCube* Cube2 = SpawnGameObject<CCube>();
@@ -114,5 +107,42 @@ void CWorld::HandleUserInput( const CInputEvent& Input )
 			_Camera->StrafeRight();
 		}
 	}
+}
 
+void CWorld::NewFrameSetup(CRenderContext& RenderContext)
+{
+}
+
+void CWorld::PerCameraSetup(CRenderContext& RenderContext, CCameraBase& Camera)
+{
+	SCameraConstantBuffer CameraCb;
+	if (!_Lights.empty())
+	{
+		std::unique_ptr<CLightSource>& MainLight = _Lights[0];
+		const CVector3f& W_LightPos = MainLight->GetPosition();
+		CVector4f C_LightPos = Camera.GetViewMatrix() * CVector4f(W_LightPos, 1.0f);
+		CameraCb._Light1Pos = C_LightPos.XYZ() / C_LightPos._W;
+		CameraCb._HasLight1 = 1.0f;
+	}
+
+	// Set view and projection matrix
+	CameraCb._ViewMatrix = Camera.GetViewMatrix();
+	CameraCb._ViewAndProjection = Camera.GetViewAndProjection();
+	RenderContext.UpdateConstantBuffer(_CameraConstantBuffer, &CameraCb, sizeof(CameraCb));
+	RenderContext.SetVertexShaderConstantBuffer(_CameraConstantBuffer, EConstantBufferIdx::PerCamera);
+	RenderContext.SetPixelShaderConstantBuffer(_CameraConstantBuffer, EConstantBufferIdx::PerCamera);
+}
+
+void CWorld::RenderObjects(CRenderContext& RenderContext, CCameraBase& Camera)
+{
+	RenderContext.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	for (auto& pLight : _Lights)
+	{
+		pLight->Render(RenderContext, Camera);
+	}
+
+	for (auto& pGameObject : _GameObjects)
+	{
+		pGameObject->Render(RenderContext, Camera);
+	}
 }

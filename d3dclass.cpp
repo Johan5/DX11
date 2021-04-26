@@ -236,16 +236,16 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 
 	// Setup the raster description which will determine how and what polygons will be drawn
 	D3D11_RASTERIZER_DESC RasterDesc;
-	RasterDesc.AntialiasedLineEnable = false;
+	RasterDesc.FillMode = D3D11_FILL_SOLID;
 	RasterDesc.CullMode = D3D11_CULL_BACK;
+	RasterDesc.FrontCounterClockwise = false;
 	RasterDesc.DepthBias = 0;
 	RasterDesc.DepthBiasClamp = 0.0f;
-	RasterDesc.DepthClipEnable = true;
-	RasterDesc.FillMode = D3D11_FILL_SOLID;
-	RasterDesc.FrontCounterClockwise = false;
-	RasterDesc.MultisampleEnable = false;
-	RasterDesc.ScissorEnable = false;
 	RasterDesc.SlopeScaledDepthBias = 0.0f;
+	RasterDesc.DepthClipEnable = true;
+	RasterDesc.ScissorEnable = false;
+	RasterDesc.MultisampleEnable = false;
+	RasterDesc.AntialiasedLineEnable = false;
 	// Create rasterizer state
 	Result = _pDevice->CreateRasterizerState( &RasterDesc, &_pRasterState );
 	if ( FAILED( Result ) )

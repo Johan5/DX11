@@ -1,9 +1,11 @@
 #pragma once
 
 #include "game_object.h"
+#include "light_source.h"
 #include "camera_base.h"
 #include "graphics.h"
 #include "input_handler.h"
+#include "constant_buffer.h"
 
 #include <vector>
 #include <memory>
@@ -14,14 +16,15 @@ class CGraphics;
 
 struct SPerFrameConstantBuffer
 {
-	CVector3f _Light1Pos = CVector3f{ 0.0f, 10.0f, 5.0f };
-	float _Pad1;
+	CVector4f _Dummy;
 };
 
 struct SCameraConstantBuffer
 {
 	CMatrix4x4f _ViewMatrix;
 	CMatrix4x4f _ViewAndProjection;
+	CVector3f _Light1Pos = CVector3f{ 0.0f, 10.0f, 5.0f };
+	float _HasLight1 = 0.0f; // Used as bool
 };
 
 class CWorld
@@ -40,14 +43,18 @@ public:
 private:
 	void SpawnDefaultObjects();
 	void HandleUserInput( const CInputEvent& Input );
+	void NewFrameSetup(CRenderContext& RenderContext);
+	void PerCameraSetup(CRenderContext& RenderContext, CCameraBase& Camera);
+	void RenderObjects(CRenderContext& RenderContext, CCameraBase& Camera);
 
 	CGraphics* _pGraphics = nullptr;
 	CInputHandler* _pInputHandler = nullptr;
 	std::unique_ptr<CCameraBase> _Camera;
 	CConstantBuffer _CameraConstantBuffer;
-	CConstantBuffer _PerFrameConstantBuffer;
+	//CConstantBuffer _PerFrameConstantBuffer;
 
 	std::vector< std::unique_ptr<CGameObject> > _GameObjects;
+	std::vector< std::unique_ptr<CLightSource> > _Lights;
 	
 	uint64_t _NextGameObjectId = 0;
 };

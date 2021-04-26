@@ -13,8 +13,8 @@ namespace
 {
 	const std::string VertexShaderFileName = "cube.vs";
 	const std::string PixelShaderFileName = "cube.ps";
-	const std::string VertexShaderMainFunction = "ColorVertexShader";
-	const std::string PixelShaderMainFunction = "ColorPixelShader";
+	const std::string VertexShaderMainFunction = "CubeVertexShader";
+	const std::string PixelShaderMainFunction = "CubePixelShader";
 
 	std::vector<CCube::SVertex> GenerateCubeModelVertices()
 	{
@@ -158,7 +158,7 @@ void CCube::Initialize( CGraphics& Graphics )
 	Properties._SingleVertexSizeInBytes = sizeof( SVertex );
 	_VertexBuffer = Graphics.CreateVertexBuffer( _Vertices.data(), VertexBufferSize, Properties );
 	
-	_ConstantBuffer = Graphics.CreateConstantBuffer( sizeof( SCubeConstantBuffer ), ECpuAccessPolicy::CpuWrite );
+	_ConstantBuffer = Graphics.CreateConstantBuffer( sizeof(STypicalConstantBuffer), ECpuAccessPolicy::CpuWrite );
 
 	std::vector<SShaderInputDescription> InputLayout;
 	InputLayout.push_back( SShaderInputDescription{ "POSITION", EGfxResourceDataFormat::R32G32B32Float } );
@@ -186,56 +186,13 @@ void CCube::Render( CRenderContext& RenderContext, const CCameraBase& Camera )
 	ASSERT( _Vertices.size() > 0, "Trying to render 0 vertices?" );
 	RenderContext.SetVertexBuffer( _VertexBuffer );
 	{
-		SCubeConstantBuffer CB;
+		STypicalConstantBuffer CB;
 		CB._ModelToWorld = GetLocalToWorldTransform();
 		CB._NormalModelToWorld = GetNormalLocalToWorldTransform();
-		RenderContext.UpdateConstantBuffer( _ConstantBuffer, &CB, sizeof( SCubeConstantBuffer ) );
+		RenderContext.UpdateConstantBuffer(_ConstantBuffer, &CB, sizeof(STypicalConstantBuffer) );
 	}
 	RenderContext.SetVertexShaderConstantBuffer( _ConstantBuffer, EConstantBufferIdx::PerObject );
 	RenderContext.SetVertexShader( _VertexShader );
 	RenderContext.SetPixelShader( _PixelShader );
 	RenderContext.Draw( static_cast<int32_t>( _Vertices.size() ) );
-}
-
-void CCube::SetPosition( const CVector3f& NewPosition )
-{
-	_Position = NewPosition;
-	_TransformsAreStale = true;
-}
-
-void CCube::SetScale( const CVector3f& NewScale )
-{
-	_Scale = NewScale;
-	_TransformsAreStale = true;
-}
-
-CMatrix4x4f CCube::GetLocalToWorldTransform() const
-{
-	if ( _TransformsAreStale )
-	{
-		UpdateTransforms();
-	}
-	return _LocalToWorldTransform;
-}
-
-
-CMatrix4x4f CCube::GetNormalLocalToWorldTransform() const
-{
-	if ( _TransformsAreStale )
-	{
-		UpdateTransforms();
-	}
-	return _NormalLocalToWorldTransform;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void CCube::UpdateTransforms() const
-{
-	_LocalToWorldTransform = N3DMath::CreateCoordinateTransform( _Position, _Forward, _Up, N3DMath::ECoordinateTransformType::LocalToWorld );
-	// The normal "local to world" cannot be used for normals since it might contain non-uniform scaling.
-	// Normals require inverse scaling (i.e. if model scales 0.5 in x, normals need to be scaled 2 in x)
-	_NormalLocalToWorldTransform = N3DMath::CreateCoordinateTransform( _Position, _Forward, _Up, N3DMath::ECoordinateTransformType::WorldToLocal );
-	_NormalLocalToWorldTransform.Transpose();
-	_TransformsAreStale = false;
 }

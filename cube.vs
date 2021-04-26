@@ -7,6 +7,8 @@ cbuffer PerCameraCb : register(b1)
 	float4x4 _ViewMatrix;
 	// World To Viewport
 	float4x4 _ViewAndProjectionMatrix;
+	float3 _Light1Pos;
+	float _HasLight1; //used as bool
 };
 
 struct SMaterial 
@@ -43,7 +45,7 @@ struct SPsInput
 };
 
 
-SPsInput ColorVertexShader( SVsInput Input ) 
+SPsInput CubeVertexShader( SVsInput Input ) 
 {
 	SPsInput Output;
 
@@ -58,9 +60,7 @@ SPsInput ColorVertexShader( SVsInput Input )
 	float4 W_Normal = mul( _NormalWorldMatrix, float4(Input._L_Normal, 0.0f));
 	W_Normal.w = 0.0f;
 	float4 C_Normal = mul( _ViewMatrix, W_Normal );
-	C_Normal.w = 0.0f;
-	Output._C_Normal = C_Normal;
-	normalize( Output._C_Normal );
+	Output._C_Normal = normalize(C_Normal.xyz);
 	
 	Output._Color = Input._Color;
 

@@ -4,6 +4,7 @@
 #include "frame_timer.h"
 #include "vertex_shader.h"
 #include "pixel_shader.h"
+#include "constant_buffer.h"
 
 #include <string>
 #include <memory>
@@ -56,35 +57,6 @@ private:
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> _pVertexBuffer;
 	SVertexBufferProperties _Properties;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-// This is the index that will be used when registering a buffer with the device context
-enum class EConstantBufferIdx
-{
-	PerFrame,
-	PerCamera,
-	PerObject
-};
-
-class CConstantBuffer
-{
-	friend class CGraphics; // Only allow CGraphics to create
-public:
-	CConstantBuffer() = default;
-
-	ID3D11Buffer* AccessRawBuffer() { return _pBuffer.Get(); }
-	int32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
-	ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
-
-private:
-	CConstantBuffer( ID3D11Device& Device, int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );
-
-private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
-	int32_t _BufferSizeInBytes = 0;
-	ECpuAccessPolicy _AccessPolicy;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

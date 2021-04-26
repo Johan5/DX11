@@ -1,9 +1,12 @@
 
-cbuffer PerFrameCb : register(b0)
+cbuffer PerCameraCb : register(b1)
 {
-	// Light in camera space
-	float3 _C_Light1Pos;
-	float _Pad1;
+	// World To Camera space
+	float4x4 _ViewMatrix;
+	// World To Viewport
+	float4x4 _ViewAndProjectionMatrix;
+	float3 _Light1Pos;
+	float _HasLight1; //used as bool
 };
 
 struct SPsInput
@@ -15,11 +18,11 @@ struct SPsInput
 };
 
 
-float4 ColorPixelShader(SPsInput Input) : SV_TARGET
+float4 CubePixelShader(SPsInput Input) : SV_TARGET
 {
-	float3 C_DirToLight = normalize(_C_Light1Pos - Input._C_Position);
+	float3 C_DirToLight = normalize(_Light1Pos - Input._C_Position);
 	float LightCosAngle = dot(Input._C_Normal, C_DirToLight);
 	
-	LightCosAngle = clamp( LightCosAngle, 0.0f, 1.0f );
+	LightCosAngle = clamp(LightCosAngle, 0.0f, 1.0f);
 	return Input._Color * LightCosAngle;
 }
