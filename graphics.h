@@ -24,13 +24,14 @@ namespace NGraphicsDefines
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Colors might be replaced if object has a per-vertex coloring or texture
 struct SMaterial
 {
-	float _SpecularReflection = 1.0f;
-	float _DiffuseReflection = 1.0f;
-	float _AmbientReflection = 1.0f;
+	float _DiffuseStrength = 1.0f;
+	float _SpecularStrength = 1.0f;
+	float _AmbientStrength = 0.15f;
 	// Large specular power means small specular highlight
-	int32_t _SpecularPower = 32;
+	int32_t _SpecularPower = 256;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

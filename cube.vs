@@ -11,13 +11,13 @@ cbuffer PerCameraCb : register(b1)
 	float _HasLight1; //used as bool
 };
 
-struct SMaterial 
+struct SMaterial
 {
-	float _SpecularReflection;
-	float _DiffuseReflection;
-	float _AmbientReflection;
+	float _DiffuseStrength;
+	float _SpecularStrength;
+	float _AmbientStrength;
 	// Large specular power means small specular highlight
-	int _SpecularPower;
+	int _SpecularPower; // "phong exponent"
 };
 
 cbuffer PerObjectCb : register(b2) 

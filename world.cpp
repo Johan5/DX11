@@ -122,7 +122,7 @@ void CWorld::PerCameraSetup(CRenderContext& RenderContext, CCameraBase& Camera)
 		const CVector3f& W_LightPos = MainLight->GetPosition();
 		CVector4f C_LightPos = Camera.GetViewMatrix() * CVector4f(W_LightPos, 1.0f);
 		CameraCb._Light1Pos = C_LightPos.XYZ() / C_LightPos._W;
-		CameraCb._HasLight1 = 1.0f;
+		CameraCb._Light1Intensity = 2.0f;
 	}
 
 	// Set view and projection matrix

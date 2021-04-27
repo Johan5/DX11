@@ -192,6 +192,7 @@ void CCube::Render( CRenderContext& RenderContext, const CCameraBase& Camera )
 		RenderContext.UpdateConstantBuffer(_ConstantBuffer, &CB, sizeof(STypicalConstantBuffer) );
 	}
 	RenderContext.SetVertexShaderConstantBuffer( _ConstantBuffer, EConstantBufferIdx::PerObject );
+	RenderContext.SetPixelShaderConstantBuffer(_ConstantBuffer, EConstantBufferIdx::PerObject);
 	RenderContext.SetVertexShader( _VertexShader );
 	RenderContext.SetPixelShader( _PixelShader );
 	RenderContext.Draw( static_cast<int32_t>( _Vertices.size() ) );

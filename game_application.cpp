@@ -24,7 +24,7 @@ bool CGameApplication::ProduceNewFrame()
 {
 	_InputHandler.DispatchInputEvents();
 
-	CVector4f BackgroundColor{ 0.2f, 0.2f, 0.2f, 1.0f };
+	CVector4f BackgroundColor{ 0.1f, 0.1f, 0.1f, 1.0f };
 	CRenderContext& RenderContext = _Graphics.StartRenderFrame( BackgroundColor );
 	{
 		_World.Render( RenderContext );

@@ -24,7 +24,7 @@ struct SCameraConstantBuffer
 	CMatrix4x4f _ViewMatrix;
 	CMatrix4x4f _ViewAndProjection;
 	CVector3f _Light1Pos = CVector3f{ 0.0f, 10.0f, 5.0f };
-	float _HasLight1 = 0.0f; // Used as bool
+	float _Light1Intensity = 0.0f;
 };
 
 class CWorld
