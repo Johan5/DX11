@@ -5,6 +5,11 @@
 #include "vertex_shader.h"
 #include "pixel_shader.h"
 #include "constant_buffer.h"
+#include "texture.h"
+#include "render_target.h"
+#include "geometry_shader.h"
+#include "texture_view.h"
+#include "sampler_state.h"
 
 #include <string>
 #include <memory>
@@ -65,7 +70,7 @@ private:
 class CRenderContext
 {
 public:
-	void Initialize( ID3D11DeviceContext* pDeviceContext );
+	void Initialize(CDirectX3D* pDirectX3D);
 
 	void SetVertexBuffer( CVertexBuffer& VertexBuffer );
 	void SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology );
@@ -73,11 +78,32 @@ public:
 	void SetVertexShader( CVertexShader& VertexShader );
 	void SetPixelShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
 	void SetPixelShader( CPixelShader& PixelShader );
+	void SetGeometryShader(CGeometryShader& GeometryShader);
+	void SetGeometryShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index);
+
+	void SetPixelShaderTexture(CTextureView& TextureView, int32_t SlotIdx);
+
+	void SetPixelShaderSampler(CSamplerState& SamplerState, int32_t SlotIdx);
+
+	void SetRenderTarget(CRenderTarget& RenderTarget);
+	void SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs);
+	void SetViewport(CVector2f NewSize);
+
+	// Clears registered shaders
+	void ClearShaders();
+	void ClearTextureSlot(int32_t SlotIdx);
+	// Restores render target to the initial backbuffer
+	void RestoreRenderTarget();
+	void RestoreViewport();
+	void UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, int32_t NewDataSize);
 	// optimally, ConstantBuffer data should be 16 byte aligned
 	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, int32_t NewDataSize );
 	void Draw( int32_t VertexCount );
+
+	// TODO: Removes this
+	CDirectX3D& Debug_AccessDxRaw() { return *_pDirectX3D; }
 private:
-	ID3D11DeviceContext* _pDeviceContext;
+	CDirectX3D* _pDirectX3D;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,15 +123,21 @@ public:
 
 	CVertexBuffer CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings );
 	CVertexShader CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout );
+	CGeometryShader CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction);
 	CPixelShader CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
 
 	CConstantBuffer CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );
+	CTexture CreateTextureResource(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy);
+	CRenderTarget CreateRenderTarget(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format);
+
+	CSamplerState CreateSamplerState();
 
 	int GetScreenWidth() const { return _ScreenWidthInPix; }
 	int GetScreenHeight() const { return _ScreenHeightInPix; }
 
 	CRenderContext& StartRenderFrame( const CVector4f& BackgroundColor );
 	void EndFrame( CRenderContext& RenderContext );
+	CRenderContext& AccessRenderContest() { return _RenderContext; }
 	
 	ID3D11Device& AccessDevice() { return *_Direct3D->AccessDevice(); }
 
@@ -122,5 +154,6 @@ private:
 	int32_t _ScreenHeightInPix;
 
 	std::vector<CVertexShader> _VertexShaderCache;
+	std::vector<CGeometryShader> _GeometryShaderCache;
 	std::vector<CPixelShader> _PixelShaderCache;
 };

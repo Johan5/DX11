@@ -21,6 +21,10 @@ public:
 		CMatrix4x4f _NormalModelToWorld;
 		SMaterial _Material;
 	};
+	struct STypicalShadowConstantBuffer
+	{
+		CMatrix4x4f _ModelToWorld;
+	};
 	struct STypicalVertex
 	{
 		CVector3f _Position;
@@ -34,7 +38,9 @@ public:
 	virtual bool IsInitialized() const;
 
 	virtual void Render( CRenderContext& RenderContext, const CCameraBase& Camera ) {};
+	virtual void RenderShadows(CRenderContext& RenderContext) {};
 	virtual bool ShouldRender() { return true; }
+	virtual bool ShouldRenderShadows() { return true; }
 
 	virtual void SetPosition(const CVector3f& NewPosition);
 	virtual void SetScale(const CVector3f& NewScale);
@@ -56,7 +62,7 @@ private:
 	CVector3f _Scale = CVector3f{ 1.0f, 1.0f, 1.0f };
 	// Normalized, in world coords
 	//CVector3f _Forward = CVector3f::Forward();
-	CVector3f _Forward = CVector3f{ 1.0f, 0.0f, 0.0f }.CalcNormalized();
+	CVector3f _Forward = CVector3f{ 0.0f, 0.0f, 1.0f }.CalcNormalized();
 	// Normalized, in world coords
 	// CVector3f _Up = CVector3f::Up();
 	CVector3f _Up = CVector3f{ 0.0f, 1.0f, 0.0f }.CalcNormalized();

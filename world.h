@@ -6,6 +6,7 @@
 #include "graphics.h"
 #include "input_handler.h"
 #include "constant_buffer.h"
+#include "shadow_handler.h"
 
 #include <vector>
 #include <memory>
@@ -14,18 +15,26 @@
 
 class CGraphics;
 
-struct SPerFrameConstantBuffer
+namespace NWorldPass
 {
-	CVector4f _Dummy;
-};
+	struct SPerFrameConstantBuffer
+	{
+		CVector4f _Dummy;
+	};
 
-struct SCameraConstantBuffer
-{
-	CMatrix4x4f _ViewMatrix;
-	CMatrix4x4f _ViewAndProjection;
-	CVector3f _Light1Pos = CVector3f{ 0.0f, 10.0f, 5.0f };
-	float _Light1Intensity = 0.0f;
-};
+	struct SCameraConstantBuffer
+	{
+		CMatrix4x4f _ViewMatrix;
+		CMatrix4x4f _ViewAndProjection;
+	};
+
+	struct SLightConstantBuffer
+	{
+		CVector3f _W_LightPos;
+		float _LightIntensity;
+	};
+}
+
 
 class CWorld
 {
@@ -43,18 +52,21 @@ public:
 private:
 	void SpawnDefaultObjects();
 	void HandleUserInput( const CInputEvent& Input );
-	void NewFrameSetup(CRenderContext& RenderContext);
 	void PerCameraSetup(CRenderContext& RenderContext, CCameraBase& Camera);
+	void PerLightSetup(CRenderContext& RenderContext, CLightSource& Light, SShadowData& ShadowData);
 	void RenderObjects(CRenderContext& RenderContext, CCameraBase& Camera);
 
 	CGraphics* _pGraphics = nullptr;
 	CInputHandler* _pInputHandler = nullptr;
 	std::unique_ptr<CCameraBase> _Camera;
 	CConstantBuffer _CameraConstantBuffer;
-	//CConstantBuffer _PerFrameConstantBuffer;
+	std::unique_ptr<CLightSource> _Light;
+	CConstantBuffer _LightConstantBuffer;
 
 	std::vector< std::unique_ptr<CGameObject> > _GameObjects;
-	std::vector< std::unique_ptr<CLightSource> > _Lights;
+
+
+	CShadowHandler _ShadowHandler;
 	
 	uint64_t _NextGameObjectId = 0;
 };

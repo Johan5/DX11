@@ -4,13 +4,24 @@
 #include "string_util.h"
 #include "logger.h"
 #include "assert.h"
+#include "graphics_enums.h"
 
-struct STest
+
+namespace
 {
-	CVector3f _Pos;
-	CVector4f _Clr;
-};
+	void UpdateDx11Buffer(ID3D11DeviceContext& DeviceContext, ID3D11Buffer* pBuffer, const void* pNewData, int32_t NewDataSize)
+	{
+		D3D11_MAPPED_SUBRESOURCE MappedResource;
+		ZeroMemory(&MappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+		HRESULT Result = DeviceContext.Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
+		ASSERT(SUCCEEDED(Result), "Failed to update buffer");
+		memcpy(MappedResource.pData, pNewData, NewDataSize);
+		DeviceContext.Unmap(pBuffer, 0);
+	}
+}
 
+
+////////////////////////////////////////////////////////////////////////////////
 
 CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties )
 {
@@ -19,9 +30,9 @@ CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, con
 	D3D11_BUFFER_DESC VertexBufferDesc;
 	ZeroMemory( &VertexBufferDesc, sizeof( D3D11_BUFFER_DESC ) );
 	VertexBufferDesc.ByteWidth = Properties._VertexDataSizeInBytes;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.CPUAccessFlags = 0;
+	VertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	VertexBufferDesc.BindFlags = static_cast<uint32_t>(EBindFlag::VertexBuffer);
+	VertexBufferDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::CpuWrite); // TODO: Expose this to caller instead?
 	VertexBufferDesc.MiscFlags = 0;
 	VertexBufferDesc.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA VertexData;
@@ -36,9 +47,9 @@ CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, con
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void CRenderContext::Initialize( ID3D11DeviceContext* pDeviceContext )
+void CRenderContext::Initialize(CDirectX3D* pDirectX3D)
 {
-	_pDeviceContext = pDeviceContext;
+	_pDirectX3D = pDirectX3D;
 }
 
 namespace
@@ -50,60 +61,130 @@ namespace
 	};
 };
 
-void CRenderContext::SetVertexBuffer( CVertexBuffer& VertexBuffer )
+void CRenderContext::SetVertexBuffer(CVertexBuffer& VertexBuffer)
 {
 	ID3D11Buffer* pVertexBuffer = VertexBuffer.AccessVertexBuffer();
-	ASSERT( pVertexBuffer, "Given vertex buffer is invalid" );
+	ASSERT(pVertexBuffer, "Given vertex buffer is invalid");
 	uint32_t SingleVertexSize = VertexBuffer.GetProperties()._SingleVertexSizeInBytes;
-	ASSERT(SingleVertexSize > 0, "Creating vertex buffer with vertices of size 0?" );
+	ASSERT(SingleVertexSize > 0, "Creating vertex buffer with vertices of size 0?");
 	uint32_t Stride = SingleVertexSize;
 	uint32_t Offset = 0U;
-	_pDeviceContext->IASetVertexBuffers( 0, 1, VertexBuffer.AccessVertexBufferAddr(), &Stride, &Offset );
+	_pDirectX3D->AccessDeviceContext()->IASetVertexBuffers(0, 1, VertexBuffer.AccessVertexBufferAddr(), &Stride, &Offset);
 }
 
-void CRenderContext::SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology )
+void CRenderContext::SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology)
 {
-	_pDeviceContext->IASetPrimitiveTopology( PrimitiveTopology );
+	_pDirectX3D->AccessDeviceContext()->IASetPrimitiveTopology(PrimitiveTopology);
 }
 
-void CRenderContext::SetVertexShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index )
-{
-	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
-	_pDeviceContext->VSSetConstantBuffers( static_cast<uint32_t>( Index ), 1, &pConstantBuffer );
-}
-
-void CRenderContext::SetVertexShader( CVertexShader& VertexShader )
-{
-	_pDeviceContext->IASetInputLayout( VertexShader.AccessInputLayout() );
-	_pDeviceContext->VSSetShader( VertexShader.AccessVertexShader(), nullptr, 0 );
-}
-
-void CRenderContext::SetPixelShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index )
+void CRenderContext::SetVertexShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
 {
 	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
-	_pDeviceContext->PSSetConstantBuffers( static_cast<uint32_t>(Index), 1, &pConstantBuffer );
+	_pDirectX3D->AccessDeviceContext()->VSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
 }
 
-void CRenderContext::SetPixelShader( CPixelShader& PixelShader )
+void CRenderContext::SetVertexShader(CVertexShader& VertexShader)
 {
-	_pDeviceContext->PSSetShader( PixelShader.AccessPixelShader(), nullptr, 0 );
+	_pDirectX3D->AccessDeviceContext()->IASetInputLayout(VertexShader.AccessInputLayout());
+	_pDirectX3D->AccessDeviceContext()->VSSetShader(VertexShader.AccessVertexShader(), nullptr, 0);
 }
 
-void CRenderContext::UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* pNewData, int32_t NewDataSize  )
+void CRenderContext::SetPixelShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
 {
-	ASSERT( ConstantBuffer.GetSizeInBytes() == NewDataSize, "Size mismatch, investigate." );
-	ASSERT( (uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite, "Cannot update contents of constant buffer unless registered with CpuWrite" );
-	D3D11_MAPPED_SUBRESOURCE MappedResource;
-	ZeroMemory( &MappedResource, sizeof( D3D11_MAPPED_SUBRESOURCE ));
-	HRESULT Result = _pDeviceContext->Map( ConstantBuffer.AccessRawBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
-	ASSERT( SUCCEEDED( Result ), "Failed to update constant buffer" );
-	memcpy( MappedResource.pData, pNewData, NewDataSize );
-	_pDeviceContext->Unmap( ConstantBuffer.AccessRawBuffer(), 0 );
+	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
+	_pDirectX3D->AccessDeviceContext()->PSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
 }
 
-void CRenderContext::Draw( int32_t VertexCount )
+void CRenderContext::SetPixelShader(CPixelShader& PixelShader)
 {
-	_pDeviceContext->Draw( VertexCount, 0 );
+	_pDirectX3D->AccessDeviceContext()->PSSetShader(PixelShader.AccessPixelShader(), nullptr, 0);
+}
+
+void CRenderContext::SetGeometryShader(CGeometryShader& GeometryShader)
+{
+	_pDirectX3D->AccessDeviceContext()->GSSetShader(GeometryShader.AccessGeometryShader(), nullptr, 0);
+}
+
+void CRenderContext::SetGeometryShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
+{
+	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
+	_pDirectX3D->AccessDeviceContext()->GSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
+}
+
+void CRenderContext::SetPixelShaderTexture(CTextureView& TextureView, int32_t SlotIdx)
+{
+	ID3D11ShaderResourceView** ppTextureView = TextureView.AccessAddrOfTextureView();
+	_pDirectX3D->AccessDeviceContext()->PSSetShaderResources(SlotIdx, 1, ppTextureView);
+}
+
+void CRenderContext::SetPixelShaderSampler(CSamplerState& SamplerState, int32_t SlotIdx)
+{
+	ID3D11SamplerState** ppSamplerState = SamplerState.AccessAddrOfSamplerState();
+	_pDirectX3D->AccessDeviceContext()->PSSetSamplers(SlotIdx, 1, ppSamplerState);
+}
+
+void CRenderContext::SetRenderTarget(CRenderTarget& RenderTarget)
+{
+	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, RenderTarget.GetAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
+}
+
+void CRenderContext::SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs)
+{
+	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(NumTargets, ppRTVs, pDSVs);
+}
+
+void CRenderContext::SetViewport(CVector2f NewSize)
+{
+	D3D11_VIEWPORT Viewport;
+	Viewport.TopLeftX = 0.0f;
+	Viewport.TopLeftY = 0.0f;
+	Viewport.Width = NewSize._X;
+	Viewport.Height = NewSize._Y;
+	Viewport.MinDepth = 0.0f;
+	Viewport.MaxDepth = 1.0f;
+	_pDirectX3D->AccessDeviceContext()->RSSetViewports(1, &Viewport);
+}
+
+void CRenderContext::ClearShaders()
+{
+	_pDirectX3D->AccessDeviceContext()->VSSetShader(nullptr, nullptr, 0);
+	_pDirectX3D->AccessDeviceContext()->GSSetShader(nullptr, nullptr, 0);
+	_pDirectX3D->AccessDeviceContext()->PSSetShader(nullptr, nullptr, 0);
+}
+
+void CRenderContext::ClearTextureSlot(int32_t SlotIdx)
+{
+	ID3D11ShaderResourceView* nullView[] = { nullptr };
+	_pDirectX3D->AccessDeviceContext()->PSSetShaderResources(SlotIdx, 1, nullView);
+}
+
+void CRenderContext::RestoreRenderTarget()
+{
+	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, _pDirectX3D->AccessAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
+}
+
+void CRenderContext::RestoreViewport()
+{
+	D3D11_VIEWPORT Viewport = _pDirectX3D->GetViewport();
+	_pDirectX3D->AccessDeviceContext()->RSSetViewports(1, &Viewport);
+}
+
+void CRenderContext::UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, int32_t NewDataSize)
+{
+	ASSERT(VertexBuffer.GetProperties()._VertexDataSizeInBytes == NewDataSize, "Size mismatch");
+	UpdateDx11Buffer(*_pDirectX3D->AccessDeviceContext(), VertexBuffer.AccessVertexBuffer(), pNewData, NewDataSize);
+}
+
+void CRenderContext::UpdateConstantBuffer(CConstantBuffer& ConstantBuffer, const void* pNewData, int32_t NewDataSize)
+{
+	ASSERT(ConstantBuffer.GetSizeInBytes() == NewDataSize, "Size mismatch, investigate.");
+	ASSERT((uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite, "Cannot update contents of constant buffer unless registered with CpuWrite");
+	UpdateDx11Buffer(*_pDirectX3D->AccessDeviceContext(), ConstantBuffer.AccessRawBuffer(), pNewData, NewDataSize);
+}
+
+void CRenderContext::Draw(int32_t VertexCount)
+{
+	_pDirectX3D->AccessDeviceContext()->Draw( VertexCount, 0 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,7 +207,7 @@ bool CGraphics::Initialize(int ScreenWidth, int ScreenHeight, HWND Wnd)
 		return false;
 	}
 
-	_RenderContext.Initialize( _Direct3D->AccessDeviceContext() );
+	_RenderContext.Initialize( _Direct3D.get() );
 
 	return true;
 }
@@ -150,6 +231,14 @@ CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, 
 	return VertexShader;
 }
 
+CGeometryShader CGraphics::CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction)
+{
+	_GeometryShaderCache.emplace_back();
+	CGeometryShader& GeometryShader = _GeometryShaderCache.back();
+	GeometryShader.Initialize(AccessDevice(), ShaderFileName, ShaderMainFunction);
+	return GeometryShader;
+}
+
 CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction )
 {
 	_PixelShaderCache.emplace_back();
@@ -162,6 +251,21 @@ CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, co
 CConstantBuffer CGraphics::CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy )
 {
 	return CConstantBuffer{ AccessDevice(), SizeInBytes, AccessPolicy };
+}
+
+CTexture CGraphics::CreateTextureResource(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy)
+{
+	return CTexture{ AccessDevice(), Width, Height, Format, BindFlags, AccessPolicy };
+}
+
+CRenderTarget CGraphics::CreateRenderTarget(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format)
+{
+	return CRenderTarget{ AccessDevice(), Width, Height, Format };
+}
+
+CSamplerState CGraphics::CreateSamplerState()
+{
+	return CSamplerState{ AccessDevice() };
 }
 
 CRenderContext& CGraphics::StartRenderFrame( const CVector4f& BackgroundColor )

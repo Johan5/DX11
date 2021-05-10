@@ -11,6 +11,8 @@
 #include "pixel_shader.h"
 #include "constant_buffer.h"
 
+#include <mutex>
+
 
 class CCube : public CGameObject
 {
@@ -28,15 +30,31 @@ public:
 	bool IsInitialized() const override;
 
 	void Render( CRenderContext& RenderContext, const CCameraBase& Camera ) override;
+	void RenderShadows(CRenderContext& RenderContext) override;
+
+	bool ShouldRenderShadows() override;
+	void DisableShadowRendering();
+
+	void SetColor(const CVector4f& NewColor);
 
 private:
 	std::vector<SVertex> _Vertices;
 	CVertexBuffer _VertexBuffer;
+	bool _NeedVertexBufferUpdate = false;
 	CConstantBuffer _ConstantBuffer;
+	CConstantBuffer _ShadowConstantBuffer;
+
 	CVertexShader _VertexShader;
 	CPixelShader _PixelShader;
 
+	CVertexShader _ShadowVertexShader;
+	CGeometryShader _ShadowGeometryShader;
+	CPixelShader _ShadowPixelShader;
+
+	std::mutex _RenderLock;
+
 	bool _IsInitialized = false;
+	bool _ShouldRenderShadow = true;
 };
 
 

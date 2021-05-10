@@ -1,6 +1,7 @@
 
 #pragma pack_matrix( row_major )
 
+
 cbuffer PerCameraCb : register(b1)
 {
 	// World To Camera space
@@ -9,7 +10,7 @@ cbuffer PerCameraCb : register(b1)
 	float4x4 _ViewAndProjectionMatrix;
 };
 
-cbuffer PerObjectCb : register(b2) 
+cbuffer PerObjectCb : register(b3) 
 {
 	// Local To World
 	float4x4 _WorldMatrix;
@@ -42,3 +43,10 @@ SPsInput LightSourceVertexShader( SVsInput Input )
 	return Output;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+float4 LightSourcePixelShader(SPsInput Input) : SV_TARGET
+{
+	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+}

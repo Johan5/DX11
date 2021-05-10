@@ -19,8 +19,8 @@ public:
 	CVector4f operator*( const CVector4f& Vector ) const;
 	
 	static CMatrix4x4f Identity() { return CMatrix4x4f( 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f ); }
-	static CMatrix4x4f CreateTransform( const CVector3f& Translate, const CVector3f& Scale, const CVector3f& Rotate );
-	
+	static CMatrix4x4f CalcScaleMatrix(const CVector3f& Scale) { return CMatrix4x4f{ Scale._X, 0.0f, 0.0f, 0.0f, 0.0f, Scale._Y, 0.0f, 0.0f, 0.0f, 0.0f, Scale._Z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f }; }
+
 	void Transpose();
 	CMatrix4x4f CalcTranspose();
 	

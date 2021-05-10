@@ -17,6 +17,8 @@ public:
 	const CVector3f& GetForwardVec() const;
 	const CVector3f& GetUpVec() const;
 
+	void SetOrientation(const CVector3f& Position, const CVector3f& Forward, const CVector3f& Up);
+
 	void StrafeRight();
 	void StrafeLeft();
 	void StrafeDown();
@@ -40,7 +42,7 @@ public:
 	void RotateAboutAxis( const CVector3f& UnitAxisInWorldCoordinates, float RotationStrength );
 
 private: 
-	CVector3f _Position = CVector3f{ 1.0f, 0.0f, 0.0f };
+	CVector3f _Position = CVector3f{ 0.0f, 0.0f, 0.0f };
 	CVector3f _Forward = CVector3f{ 0.0f, 0.0f, 1.0f }.CalcNormalized();
 	CVector3f _Up = CVector3f{ 0.0f, 1.0f, 0.0f }.CalcNormalized();
 	float _MovementSpeed = 0.1f;

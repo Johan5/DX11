@@ -6,7 +6,7 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
-
+#include <wrl/client.h> // Microsoft ComPtr
 
 class CDirectX3D
 {
@@ -22,6 +22,11 @@ public:
 
 	ID3D11Device* AccessDevice();
 	ID3D11DeviceContext* AccessDeviceContext();
+	ID3D11RenderTargetView* AccessRenderTargetView();
+	ID3D11RenderTargetView** AccessAddrOfRenderTargetView();
+	ID3D11DepthStencilView* AccessDepthStencilView();
+
+	D3D11_VIEWPORT GetViewport() const;
 
 	void GetVideoCardInfo( char* CardName, int& VRamInMb );
 
@@ -29,14 +34,16 @@ private:
 	bool _VSyncIsEnabled;
 	int _VideoCardMemoryInMb;
 	char _VideoCardDescription[128];
-	IDXGISwapChain* _pSwapChain = nullptr;
-	ID3D11Device* _pDevice = nullptr;
-	ID3D11DeviceContext* _pDeviceContext = nullptr;
-	ID3D11RenderTargetView* _pRenderTargetView = nullptr;
-	ID3D11Texture2D* _pDepthStencilBuffer = nullptr;
-	ID3D11DepthStencilState* _pDepthStencilState = nullptr;
-	ID3D11DepthStencilView* _pDepthStencilView = nullptr;
-	ID3D11RasterizerState* _pRasterState = nullptr;
+	Microsoft::WRL::ComPtr<IDXGISwapChain> _pSwapChain;
+	Microsoft::WRL::ComPtr<ID3D11Device> _pDevice;
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext> _pDeviceContext;
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _pRenderTargetView;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> _pDepthStencilBuffer;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _pDepthStencilState;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _pDepthStencilView;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> _pRasterState;
+
+	D3D11_VIEWPORT _DefaultViewport;
 
 	bool _GfxDebugEnabled = true;
 };

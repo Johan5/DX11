@@ -8,7 +8,7 @@ CConstantBuffer::CConstantBuffer(ID3D11Device& Device, int32_t SizeInBytes, ECpu
 	D3D11_BUFFER_DESC MatrixBufferDesc;
 	MatrixBufferDesc.ByteWidth = SizeInBytes;
 	MatrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	MatrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	MatrixBufferDesc.BindFlags = static_cast<uint32_t>(EBindFlag::ConstantBuffer);
 	MatrixBufferDesc.CPUAccessFlags = static_cast<uint32_t>(AccessPolicy);
 	MatrixBufferDesc.MiscFlags = 0;
 	MatrixBufferDesc.StructureByteStride = 0;

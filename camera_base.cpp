@@ -32,6 +32,16 @@ const CVector3f& CCameraBase::GetUpVec() const
 	return _Up;
 }
 
+void CCameraBase::SetOrientation(const CVector3f& Position, const CVector3f& Forward, const CVector3f& Up)
+{
+	_Position = Position;
+	_Forward = Forward;
+	_Up = Up;
+	ASSERT(NMiscMath::AlmostEqual(_Forward.CalcLengthSquared(), 1.0f), "Camera _Forward is no longer unit length");
+	ASSERT(NMiscMath::AlmostEqual(_Up.CalcLengthSquared(), 1.0f), "Camera _Up is no longer unit length");
+	ASSERT(NMiscMath::AlmostEqual(_Forward.Dot(_Up), 0.0f), "Camera _Forward and _Up are no longer orthogonal");
+}
+
 void CCameraBase::StrafeRight()
 {
 	CVector3f Right = N3DMath::CalcCross( _Up, _Forward );

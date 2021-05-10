@@ -142,7 +142,7 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	UINT CreationFlags = _GfxDebugEnabled ? D3D11_CREATE_DEVICE_DEBUG : 0;
 	// Create the swap chain, Direct3D device, and Direct3D device context
 	Result = D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, CreationFlags, &FeatureLevel, 1, D3D11_SDK_VERSION, &SwapChainDesc,
-		&_pSwapChain, &_pDevice, nullptr, &_pDeviceContext );
+		_pSwapChain.GetAddressOf(), _pDevice.GetAddressOf(), nullptr, _pDeviceContext.GetAddressOf() );
 	if ( FAILED(Result) )
 	{
 		return false;
@@ -156,7 +156,7 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 		return false;
 	}
 	// Create the render target view with the back buffer ptr
-	Result = _pDevice->CreateRenderTargetView( pBackBuffer, nullptr, &_pRenderTargetView );
+	Result = _pDevice->CreateRenderTargetView( pBackBuffer, nullptr, _pRenderTargetView.GetAddressOf() );
 	if ( FAILED( Result ) )
 	{
 		return false;
@@ -181,7 +181,7 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	DepthBufferDesc.MiscFlags = 0;
 
 	// Create the texture for the depth buffer using the filled out description
-	Result = _pDevice->CreateTexture2D( &DepthBufferDesc, nullptr, &_pDepthStencilBuffer );
+	Result = _pDevice->CreateTexture2D( &DepthBufferDesc, nullptr, _pDepthStencilBuffer.GetAddressOf() );
 	if ( FAILED( Result ) )
 	{
 		return false;
@@ -208,15 +208,13 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	DepthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	DepthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	// Create depth stencil state
-	Result = _pDevice->CreateDepthStencilState( &DepthStencilDesc, &_pDepthStencilState );
+	// Create depth stencil
+	Result = _pDevice->CreateDepthStencilState( &DepthStencilDesc, _pDepthStencilState.GetAddressOf() );
 	if ( FAILED( Result ) )
 	{
 		return false;
 	}
-	
-	// Set depth stencil so that it takes effect
-	_pDeviceContext->OMSetDepthStencilState( _pDepthStencilState, 1 );
+	_pDeviceContext->OMSetDepthStencilState( _pDepthStencilState.Get(), 1 );
 
 	// Setup depth stencil view
 	D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilViewDesc;
@@ -224,15 +222,14 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	DepthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	DepthStencilViewDesc.Texture2D.MipSlice = 0;
-	// Create depth stencil view
-	Result = _pDevice->CreateDepthStencilView( _pDepthStencilBuffer, &DepthStencilViewDesc, &_pDepthStencilView );
+	Result = _pDevice->CreateDepthStencilView( _pDepthStencilBuffer.Get(), &DepthStencilViewDesc, _pDepthStencilView.GetAddressOf());
 	if ( FAILED( Result ) )
 	{
 		return false;
 	}
 	
 	// Bind the render target view and depth stencil buffer to the output render pipeline
-	_pDeviceContext->OMSetRenderTargets( 1, &_pRenderTargetView, _pDepthStencilView );
+	_pDeviceContext->OMSetRenderTargets( 1, _pRenderTargetView.GetAddressOf(), _pDepthStencilView.Get() );
 
 	// Setup the raster description which will determine how and what polygons will be drawn
 	D3D11_RASTERIZER_DESC RasterDesc;
@@ -247,22 +244,21 @@ bool CDirectX3D::Initialize(int ScreenWidth, int ScreenHeight, bool ShouldVSync,
 	RasterDesc.MultisampleEnable = false;
 	RasterDesc.AntialiasedLineEnable = false;
 	// Create rasterizer state
-	Result = _pDevice->CreateRasterizerState( &RasterDesc, &_pRasterState );
+	Result = _pDevice->CreateRasterizerState( &RasterDesc, _pRasterState.GetAddressOf() );
 	if ( FAILED( Result ) )
 	{
 		return false;
 	}
 	
 	//Setup viewport
-	D3D11_VIEWPORT Viewport;
-	Viewport.Width = (float)ScreenWidth;
-	Viewport.Height = (float)ScreenHeight;
-	Viewport.MinDepth = 0.0f;
-	Viewport.MaxDepth = 1.0f;
-	Viewport.TopLeftX = 0.0f;
-	Viewport.TopLeftY = 0.0f;
+	_DefaultViewport.TopLeftX = 0.0f;
+	_DefaultViewport.TopLeftY = 0.0f;
+	_DefaultViewport.Width = (float)ScreenWidth;
+	_DefaultViewport.Height = (float)ScreenHeight;
+	_DefaultViewport.MinDepth = 0.0f;
+	_DefaultViewport.MaxDepth = 1.0f;
 	// Create viewport
-	_pDeviceContext->RSSetViewports( 1, &Viewport );
+	_pDeviceContext->RSSetViewports( 1, &_DefaultViewport);
 
 	return true;
 }
@@ -273,46 +269,6 @@ void CDirectX3D::Shutdown()
 	if ( _pSwapChain )
 	{
 		_pSwapChain->SetFullscreenState( false, nullptr );
-	}
-	if ( _pRasterState )
-	{
-		_pRasterState->Release();
-		_pRasterState = nullptr;
-	}	
-	if ( _pDepthStencilView )
-	{
-		_pDepthStencilView->Release();
-		_pDepthStencilView = nullptr;
-	}	
-	if ( _pDepthStencilState )
-	{
-		_pDepthStencilState->Release();
-		_pDepthStencilState = nullptr;
-	}	
-	if ( _pDepthStencilBuffer )
-	{
-		_pDepthStencilBuffer->Release();
-		_pDepthStencilBuffer = nullptr;
-	}	
-	if ( _pRenderTargetView )
-	{
-		_pRenderTargetView->Release();
-		_pRenderTargetView = nullptr;
-	}	
-	if ( _pDeviceContext )
-	{
-		_pDeviceContext->Release();
-		_pDeviceContext = nullptr;
-	}	
-	if ( _pDevice )
-	{
-		_pDevice->Release();
-		_pDevice = nullptr;
-	}	
-	if ( _pSwapChain )
-	{
-		_pSwapChain->Release();
-		_pSwapChain = nullptr;
 	}
 }
 
@@ -325,9 +281,9 @@ void CDirectX3D::BeginScene( float Red, float Green, float Blue, float Alpha )
 	Color[3] = Alpha;
 
 	// Clear the back buffer.
-	_pDeviceContext->ClearRenderTargetView( _pRenderTargetView, Color );
+	_pDeviceContext->ClearRenderTargetView( _pRenderTargetView.Get(), Color );
 	// Clear the depth buffer.
-	_pDeviceContext->ClearDepthStencilView( _pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
+	_pDeviceContext->ClearDepthStencilView( _pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0 );
 }
 
 void CDirectX3D::EndScene()
@@ -338,12 +294,32 @@ void CDirectX3D::EndScene()
 
 ID3D11Device* CDirectX3D::AccessDevice()
 {
-	return _pDevice;
+	return _pDevice.Get();
 }
 
 ID3D11DeviceContext* CDirectX3D::AccessDeviceContext()
 {
-	return _pDeviceContext;
+	return _pDeviceContext.Get();
+}
+
+ID3D11RenderTargetView* CDirectX3D::AccessRenderTargetView()
+{
+	return _pRenderTargetView.Get();
+}
+
+ID3D11RenderTargetView** CDirectX3D::AccessAddrOfRenderTargetView()
+{
+	return _pRenderTargetView.GetAddressOf();
+}
+
+ID3D11DepthStencilView* CDirectX3D::AccessDepthStencilView()
+{
+	return _pDepthStencilView.Get();
+}
+
+D3D11_VIEWPORT CDirectX3D::GetViewport() const 
+{
+	return _DefaultViewport;
 }
 
 void CDirectX3D::GetVideoCardInfo(char* CardName, int& VRamInMb)

@@ -11,7 +11,7 @@
 class CInputEvent
 {
 public:
-	CInputEvent( const SInputData& InputData );
+	explicit CInputEvent( const SInputData& InputData );
 
 	bool IsPressed( EInputCode InputCode ) const;
 	

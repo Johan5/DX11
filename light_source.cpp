@@ -5,8 +5,8 @@
 
 namespace
 {
-	const std::string VertexShaderFileName = "light_source.vs";
-	const std::string PixelShaderFileName = "light_source.ps";
+	const std::string VertexShaderFileName = "light_source.fx";
+	const std::string PixelShaderFileName = "light_source.fx";
 	const std::string VertexShaderMainFunction = "LightSourceVertexShader";
 	const std::string PixelShaderMainFunction = "LightSourcePixelShader";
 
@@ -64,8 +64,8 @@ namespace
 
 void CLightSource::Initialize(CGraphics& Graphics)
 {
-	int32_t LatitudeLineCount = 7;
-	int32_t LongitudeLineCount = 7;
+	int32_t LatitudeLineCount = 21;
+	int32_t LongitudeLineCount = 21;
 
 	_Vertices = GenerateSphereModelVertices(LatitudeLineCount, LongitudeLineCount);
 
