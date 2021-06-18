@@ -9,7 +9,7 @@ public:
 	// World space -> Camera space
 	CMatrix4x4f GetViewMatrix() const;
 
-	// Camera space -> Screen projeciton, (-1, -1, 0) to (1, 1, 1)
+	// Camera space -> Screen projection (x in [-1,1], y in [-1,1], z in [0,1])
 	virtual CMatrix4x4f GetProjectionMatrix() const = 0;
 	CMatrix4x4f GetViewAndProjection() const;
 
@@ -26,7 +26,7 @@ public:
 	void MoveForward();
 	void MoveBackwards();
 
-	// Negative values rotates counter-clockwise
+	// Negative values rotate counter-clockwise
 	void Yaw( float RotationStrength );
 	void Pitch( float RotationStrength );
 

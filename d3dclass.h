@@ -8,6 +8,9 @@
 #include <DirectXMath.h>
 #include <wrl/client.h> // Microsoft ComPtr
 
+// Handles the DX11 initialization and shutdown.
+// Most of the code in this class was heavily influenced by some online guide.
+// TODO: I should probably rewrite it now that I've learned so much about DX11.
 class CDirectX3D
 {
 public:

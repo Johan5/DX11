@@ -10,7 +10,7 @@
 #include <vector>
 
 
-/// Simple light source emitting light in all directions
+/// Simple point light (emitting light in all directions)
 class CLightSource : public CGameObject
 {
 public:

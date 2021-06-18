@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstdio>
 
-// This implementation is obv not threadsafe or reentrant
+// This implementation is not threadsafe or reentrant
 class CLogger
 {
 public:

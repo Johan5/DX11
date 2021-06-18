@@ -22,7 +22,6 @@ namespace N3DMath
 	CMatrix4x4f CreateYawRotation( float AngleInRadians );
 	CMatrix4x4f CreateRollRotation( float AngleInRadians );
 
-	// Rotates VectorToRotate about RotationBasis
 	CVector3f CalcVectorRotationAboutAxis( const CVector3f& VectorToRotate, const CVector3f& UnitAxis, float AngleInRadians );
 	
 }

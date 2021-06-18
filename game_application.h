@@ -3,7 +3,6 @@
 #include "graphics.h"
 #include "input_handler.h"
 #include "world.h"
-#include "frame_timer.h"
 
 #include <memory>
 
@@ -20,8 +19,6 @@ private:
 	CInputHandler& _InputHandler;
 	CGraphics& _Graphics;	
 	CWorld _World;
-
-	CFrameTimer _FrameTimer;
 
 	bool _ShouldExitApplication = false;
 };

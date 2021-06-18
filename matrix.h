@@ -5,7 +5,7 @@
 #include "vector.h"
 
 // Row major matrix implementation
-// Todo: inspect assembly, do I need to use SSE intrinsics?
+// Todo: inspect assembly, should I use SSE intrinsics?
 class CMatrix4x4f
 {
 public:

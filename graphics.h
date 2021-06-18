@@ -1,7 +1,6 @@
 #pragma once
 
 #include "d3dclass.h"
-#include "frame_timer.h"
 #include "vertex_shader.h"
 #include "pixel_shader.h"
 #include "constant_buffer.h"
@@ -67,6 +66,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// The render context is the basic rendering API used by gameplay classes
 class CRenderContext
 {
 public:
@@ -108,6 +108,8 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// The CGraphics class' primary usage is creating (and owning) various graphics related resources,
+// such as buffers and shaders.
 class CGraphics
 {
 public:
