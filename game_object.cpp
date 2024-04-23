@@ -36,7 +36,7 @@ CMatrix4x4f CGameObject::GetLocalToWorldTransform() const
 	CMatrix4x4f ScaledMatrix = _LocalToWorldTransform * CMatrix4x4f::CalcScaleMatrix(_Scale); // DBG
 	// dont forget to scale normal transform too
 	// TODO: This is multiplying local coordinate orientation with world coordinate scale, it is not going to work for rotated objects
-	return _LocalToWorldTransform *CMatrix4x4f::CalcScaleMatrix(_Scale);
+	return _LocalToWorldTransform * CMatrix4x4f::CalcScaleMatrix(_Scale);
 }
 
 

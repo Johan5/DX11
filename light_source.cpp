@@ -3,6 +3,8 @@
 #include "misc_math.h"
 #include "assert.h"
 
+#include <cmath>
+
 namespace
 {
 	const std::string VertexShaderFileName = "light_source.fx";
@@ -20,9 +22,9 @@ namespace
 			float AzimuthalAngle = 2 * Pi * (LongIdx / (float)(LongitudeLineCount));
 			// minus one in denominator so that we hit both ends in [0, Pi] interval
 			float PolarAngle = Pi * (LatIdx / (float)(LatitudeLineCount - 1));
-			float X = sin(PolarAngle) * cos(AzimuthalAngle);
-			float Y = cos(PolarAngle);
-			float Z = sin(PolarAngle) * sin(AzimuthalAngle);
+			float X = std::sin(PolarAngle) * std::cos(AzimuthalAngle);
+			float Y = std::cos(PolarAngle);
+			float Z = std::sin(PolarAngle) * std::sin(AzimuthalAngle);
 			return CVector3f{ X, Y, Z };
 		};
 

@@ -12,43 +12,36 @@
 void CShadowHandler::Initialize(CGraphics& Graphics, uint32_t Width, uint32_t Height)
 {
 	ASSERT(Width == Height, "Shadow map must be square.");
-	EGfxResourceDataFormat Format = EGfxResourceDataFormat::R32Float;
-
-	ID3D11Device& Device = Graphics.AccessDevice();
-	CRenderContext& RenderContext = Graphics.AccessRenderContest();
-
 	{
 		D3D11_TEXTURE2D_DESC TextureDesc;
 		TextureDesc.Width = Width;
 		TextureDesc.Height = Height;
 		TextureDesc.MipLevels = 1;
 		TextureDesc.ArraySize = 6;
-		TextureDesc.Format = static_cast<DXGI_FORMAT>(Format);
+		TextureDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32Float);
 		TextureDesc.SampleDesc = DXGI_SAMPLE_DESC{ 1, 0 };
 		TextureDesc.Usage = D3D11_USAGE_DEFAULT;
 		TextureDesc.BindFlags = static_cast<uint32_t>(EBindFlag::RenderTarget) | static_cast<uint32_t>(EBindFlag::ShaderResource);
 		TextureDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::NoAccess);
 		TextureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-		HRESULT Result = Graphics.AccessDevice().CreateTexture2D(&TextureDesc, nullptr, _pCubeMapTexture.GetAddressOf());
-		ASSERT(SUCCEEDED(Result), "Failed to create shadow map texture");
-
+		_CubemapTexture = Graphics.CreateTexture(TextureDesc);
+	}
+	{
 		D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc;
-		RenderTargetViewDesc.Format = static_cast<DXGI_FORMAT>(Format);
+		RenderTargetViewDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32Float);
 		RenderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 		RenderTargetViewDesc.Texture2DArray.MipSlice = 0;
 		RenderTargetViewDesc.Texture2DArray.FirstArraySlice = 0;
 		RenderTargetViewDesc.Texture2DArray.ArraySize = 6;
-		Result = Device.CreateRenderTargetView(_pCubeMapTexture.Get(), &RenderTargetViewDesc, _pRenderTargetView.GetAddressOf());
-		ASSERT(SUCCEEDED(Result), "Failed to create render target view");
+		_RenderTargetView = Graphics.CreateRenderTargetView(_CubemapTexture, RenderTargetViewDesc);
 	}
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC ShaderViewDesc;
-		ShaderViewDesc.Format = static_cast<DXGI_FORMAT>(Format);
+		ShaderViewDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32Float);
 		ShaderViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 		ShaderViewDesc.TextureCube.MostDetailedMip = 0;
 		ShaderViewDesc.TextureCube.MipLevels = 1;
-		HRESULT Result = Device.CreateShaderResourceView(_pCubeMapTexture.Get(), &ShaderViewDesc, _pShaderResourceView.GetAddressOf());
-		ASSERT(SUCCEEDED(Result), "Failed to create shader resource view");
+		_TextureView = Graphics.CreateTextureView(_CubemapTexture, ShaderViewDesc);
 	}
 	{
 		D3D11_TEXTURE2D_DESC TextureDesc;
@@ -62,9 +55,9 @@ void CShadowHandler::Initialize(CGraphics& Graphics, uint32_t Width, uint32_t He
 		TextureDesc.BindFlags = static_cast<uint32_t>(EBindFlag::DepthStencil);
 		TextureDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::NoAccess);
 		TextureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
-		HRESULT Result = Graphics.AccessDevice().CreateTexture2D(&TextureDesc, nullptr, _pCubeMapDepthStencilTexture.GetAddressOf());
-		ASSERT(SUCCEEDED(Result), "Failed to create shadow map depth stencil texture");
-
+		_pCubeMapDepthStencilTexture = Graphics.CreateTexture(TextureDesc);
+	}
+	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC DepthStencilViewDesc;
 		DepthStencilViewDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::D32Float);
 		DepthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
@@ -72,8 +65,7 @@ void CShadowHandler::Initialize(CGraphics& Graphics, uint32_t Width, uint32_t He
 		DepthStencilViewDesc.Texture2DArray.MipSlice = 0;
 		DepthStencilViewDesc.Texture2DArray.FirstArraySlice = 0;
 		DepthStencilViewDesc.Texture2DArray.ArraySize = 6;
-		Result = Device.CreateDepthStencilView(_pCubeMapDepthStencilTexture.Get(), &DepthStencilViewDesc, _pDepthStencilView.GetAddressOf());
-		ASSERT(SUCCEEDED(Result), "Failed to create depth stencil view");
+		_DepthStencilView = Graphics.CreateDepthStencilView(_pCubeMapDepthStencilTexture, DepthStencilViewDesc);
 	}
 
 	_PerLightConstantBuffer = Graphics.CreateConstantBuffer(sizeof(NShadowPass::SPerLightCb), ECpuAccessPolicy::CpuWrite);
@@ -87,10 +79,10 @@ SShadowData CShadowHandler::CalculatePointLightShadows(CRenderContext& RenderCon
 	// extra parenthesis since Windows.h defines 'max()' as a macro
 	float FloatMax = (std::numeric_limits<float>::max)();
 	float ClearColor[4] = { FloatMax, FloatMax, FloatMax, 1.0f }; // can this be a single float?
-	pDeviceContext->ClearRenderTargetView(_pRenderTargetView.Get(), ClearColor);
-	pDeviceContext->ClearDepthStencilView(_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	pDeviceContext->ClearRenderTargetView(_RenderTargetView.AccessRenderTargetView(), ClearColor);
+	pDeviceContext->ClearDepthStencilView(_DepthStencilView.AccessDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	RenderContext.SetRenderTargets(1, _pRenderTargetView.GetAddressOf(), _pDepthStencilView.Get());
+	RenderContext.SetRenderTargets(1, _RenderTargetView.AccessAddrOfRenderTargetView(), _DepthStencilView.AccessDepthStencilView());
 	RenderContext.SetViewport(GetShadowMapDimensions());
 	RenderContext.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
@@ -141,13 +133,13 @@ SShadowData CShadowHandler::CalculatePointLightShadows(CRenderContext& RenderCon
 	RenderContext.RestoreViewport();
 	RenderContext.RestoreRenderTarget();
 
-	return SShadowData{ CTextureView{ _pShaderResourceView }, _SamplerState };
+	return SShadowData{ _TextureView, _SamplerState };
 }
 
-CVector2f CShadowHandler::GetShadowMapDimensions() const
+CVector2f CShadowHandler::GetShadowMapDimensions()
 {
-	ASSERT(_pCubeMapTexture, "Trying to fetch data from uninitialized texture");
+	ASSERT(_CubemapTexture.GetTexture(), "Trying to fetch data from uninitialized texture");
 	D3D11_TEXTURE2D_DESC CubeMapTextureDesc;
-	_pCubeMapTexture->GetDesc(&CubeMapTextureDesc);
+	_CubemapTexture.AccessTexture()->GetDesc(&CubeMapTextureDesc);
 	return CVector2f{ static_cast<float>(CubeMapTextureDesc.Width), static_cast<float>(CubeMapTextureDesc.Height) };
 }

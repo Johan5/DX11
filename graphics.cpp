@@ -9,7 +9,7 @@
 
 namespace
 {
-	void UpdateDx11Buffer(ID3D11DeviceContext& DeviceContext, ID3D11Buffer* pBuffer, const void* pNewData, int32_t NewDataSize)
+	void UpdateDx11Buffer(ID3D11DeviceContext& DeviceContext, ID3D11Buffer* pBuffer, const void* pNewData, size_t NewDataSize)
 	{
 		D3D11_MAPPED_SUBRESOURCE MappedResource;
 		ZeroMemory(&MappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
@@ -123,9 +123,9 @@ void CRenderContext::SetPixelShaderSampler(CSamplerState& SamplerState, int32_t 
 	_pDirectX3D->AccessDeviceContext()->PSSetSamplers(SlotIdx, 1, ppSamplerState);
 }
 
-void CRenderContext::SetRenderTarget(CRenderTarget& RenderTarget)
+void CRenderContext::SetRenderTarget(CRenderTargetView& RenderTarget)
 {
-	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, RenderTarget.GetAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
+	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, RenderTarget.AccessAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
 }
 
 void CRenderContext::SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs)
@@ -169,13 +169,13 @@ void CRenderContext::RestoreViewport()
 	_pDirectX3D->AccessDeviceContext()->RSSetViewports(1, &Viewport);
 }
 
-void CRenderContext::UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, int32_t NewDataSize)
+void CRenderContext::UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, size_t NewDataSize)
 {
 	ASSERT(VertexBuffer.GetProperties()._VertexDataSizeInBytes == NewDataSize, "Size mismatch");
 	UpdateDx11Buffer(*_pDirectX3D->AccessDeviceContext(), VertexBuffer.AccessVertexBuffer(), pNewData, NewDataSize);
 }
 
-void CRenderContext::UpdateConstantBuffer(CConstantBuffer& ConstantBuffer, const void* pNewData, int32_t NewDataSize)
+void CRenderContext::UpdateConstantBuffer(CConstantBuffer& ConstantBuffer, const void* pNewData, size_t NewDataSize)
 {
 	ASSERT(ConstantBuffer.GetSizeInBytes() == NewDataSize, "Size mismatch, investigate.");
 	ASSERT((uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite, "Cannot update contents of constant buffer unless registered with CpuWrite");
@@ -253,14 +253,52 @@ CConstantBuffer CGraphics::CreateConstantBuffer( int32_t SizeInBytes, ECpuAccess
 	return CConstantBuffer{ AccessDevice(), SizeInBytes, AccessPolicy };
 }
 
-CTexture CGraphics::CreateTextureResource(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy)
+CTexture CGraphics::CreateTexture(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy)
 {
-	return CTexture{ AccessDevice(), Width, Height, Format, BindFlags, AccessPolicy };
+	D3D11_TEXTURE2D_DESC TextureDesc;
+	TextureDesc.Width = Width;
+	TextureDesc.Height = Height;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = static_cast<DXGI_FORMAT>(Format);
+	TextureDesc.SampleDesc = DXGI_SAMPLE_DESC{ 1, 0 };
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = BindFlags;
+	TextureDesc.CPUAccessFlags = static_cast<uint32_t>(AccessPolicy);
+	TextureDesc.MiscFlags = 0;
+	return CreateTexture(TextureDesc);
 }
 
-CRenderTarget CGraphics::CreateRenderTarget(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format)
+CTexture CGraphics::CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc)
 {
-	return CRenderTarget{ AccessDevice(), Width, Height, Format };
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+	HRESULT Result = AccessDevice().CreateTexture2D(&TextureDesc, nullptr, pTexture.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create texture resource");
+	return CTexture{ pTexture };
+}
+
+CTextureView CGraphics::CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc)
+{
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
+	HRESULT Result = AccessDevice().CreateShaderResourceView(Texture.AccessTexture(), &Desc, pTextureView.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create shader resource view");
+	return CTextureView{ pTextureView };
+}
+
+CRenderTargetView CGraphics::CreateRenderTargetView(CTexture& Texture, const D3D11_RENDER_TARGET_VIEW_DESC& Desc)
+{
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenderTargetView;
+	HRESULT Result = AccessDevice().CreateRenderTargetView(Texture.AccessTexture(), &Desc, pRenderTargetView.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create render target view");
+	return CRenderTargetView{ pRenderTargetView };
+}
+
+CDepthStencilView CGraphics::CreateDepthStencilView(CTexture& Texture, const D3D11_DEPTH_STENCIL_VIEW_DESC& Desc)
+{
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+	HRESULT Result = AccessDevice().CreateDepthStencilView(Texture.AccessTexture(), &Desc, pDepthStencilView.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create render target view");
+	return CDepthStencilView{ pDepthStencilView };
 }
 
 CSamplerState CGraphics::CreateSamplerState()

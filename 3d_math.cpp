@@ -6,7 +6,7 @@
 
 CMatrix4x4f N3DMath::CreateCoordinateTransform( const CVector3f& Origin, const CVector3f& Forward, const CVector3f& Up, ECoordinateTransformType TransformType )
 {
-	CVector3f Right = N3DMath::CalcCross( Up, Forward );
+	CVector3f Right = Up.CalcCross( Forward );
 	if ( TransformType == ECoordinateTransformType::LocalToWorld )
 	{
 		return CMatrix4x4f{
@@ -28,12 +28,6 @@ CMatrix4x4f N3DMath::CreateCoordinateTransform( const CVector3f& Origin, const C
 							   0.0f, 0.0f, 0.0f, 1.0f };
 		return AdjustBasis * Translate;
 	}
-}
-
-CVector3f N3DMath::CalcCross( const CVector3f& A, const CVector3f& B )
-{
-	// calculated using the "determinant formula"
-	return CVector3f{ A._Y * B._Z - A._Z * B._Y, A._Z * B._X - A._X * B._Z, A._X * B._Y - A._Y * B._X };
 }
 
 bool N3DMath::AreOrthogonal( const CVector3f& A, const CVector3f& B )

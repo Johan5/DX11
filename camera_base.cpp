@@ -44,13 +44,13 @@ void CCameraBase::SetOrientation(const CVector3f& Position, const CVector3f& For
 
 void CCameraBase::StrafeRight()
 {
-	CVector3f Right = N3DMath::CalcCross( _Up, _Forward );
+	CVector3f Right = _Up.CalcCross( _Forward );
 	_Position += _MovementSpeed * Right;
 }
 
 void CCameraBase::StrafeLeft()
 {
-	CVector3f Right = N3DMath::CalcCross( _Up, _Forward );
+	CVector3f Right = _Up.CalcCross( _Forward );
 	_Position -= _MovementSpeed * Right;
 }
 
@@ -83,7 +83,7 @@ void CCameraBase::Yaw( float RotationStrength )
 
 void CCameraBase::Pitch( float RotationStrength )
 {
-	CVector3f Right = N3DMath::CalcCross( _Up, _Forward );
+	CVector3f Right = _Up.CalcCross( _Forward );
 	CVector3f NewUp = N3DMath::CalcVectorRotationAboutAxis( _Up, Right, RotationStrength * _RotationSpeed );
 	// restrict movement so camera cant roll upside down
 	if ( NewUp._Y < 0.0f )
@@ -92,7 +92,7 @@ void CCameraBase::Pitch( float RotationStrength )
 	}
 	NewUp.Normalize();
 	_Up = NewUp; // For numerical stability reasons
-	_Forward = N3DMath::CalcCross( Right, NewUp ).CalcNormalized();
+	_Forward = Right.CalcCross( NewUp ).CalcNormalized();
 	ASSERT( NMiscMath::AlmostEqual( _Up.CalcLengthSquared(), 1.0f ), "Camera _Up is no longer unit length" );
 	ASSERT( NMiscMath::AlmostEqual( _Forward.CalcLengthSquared(), 1.0f ), "Camera _Forward is no longer unit length" );
 	ASSERT( NMiscMath::AlmostEqual( _Forward.Dot( _Up ), 0.0f ), "Camera _Forward and _Up are no longer orthogonal" );

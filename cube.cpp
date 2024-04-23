@@ -172,6 +172,8 @@ CCube::~CCube()
 
 void CCube::Initialize( CGraphics& Graphics )
 {
+	std::lock_guard<std::mutex> RenderLock(_RenderLock);
+
 	_Vertices = GenerateCubeModelVertices();
 	
 	uint32_t VertexBufferSize = static_cast<uint32_t>( _Vertices.size() * sizeof( SVertex ) );
@@ -218,7 +220,7 @@ void CCube::Render( CRenderContext& RenderContext, const CCameraBase& Camera )
 	ASSERT( _Vertices.size() > 0, "Trying to render 0 vertices?" );
 	if (_NeedVertexBufferUpdate)
 	{
-		RenderContext.UpdateVertexBuffer(_VertexBuffer, _Vertices.data(), _Vertices.size() * sizeof(SVertex));
+		RenderContext.UpdateVertexBuffer(_VertexBuffer, _Vertices.data(),_Vertices.size() * sizeof(SVertex));
 		_NeedVertexBufferUpdate = false;
 	}
 	RenderContext.SetVertexBuffer( _VertexBuffer );
@@ -274,6 +276,7 @@ void CCube::DisableShadowRendering()
 
 void CCube::SetColor(const CVector4f& NewColor)
 {
+	std::lock_guard<std::mutex> RenderLock(_RenderLock);
 	for (SVertex& Vertex : _Vertices)
 	{
 		Vertex._Color = NewColor;

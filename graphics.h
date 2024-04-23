@@ -5,10 +5,12 @@
 #include "pixel_shader.h"
 #include "constant_buffer.h"
 #include "texture.h"
-#include "render_target.h"
+#include "texture_view.h"
+#include "render_target_view.h"
 #include "geometry_shader.h"
 #include "texture_view.h"
 #include "sampler_state.h"
+#include "depth_stencil_view.h"
 
 #include <string>
 #include <memory>
@@ -42,7 +44,9 @@ struct SMaterial
 
 struct SVertexBufferProperties
 {
+	// Size of the entire buffer (all vertices)
 	uint32_t _VertexDataSizeInBytes = 0;
+	// Size of a single vertex
 	uint32_t _SingleVertexSizeInBytes = 0;
 };
 
@@ -85,7 +89,7 @@ public:
 
 	void SetPixelShaderSampler(CSamplerState& SamplerState, int32_t SlotIdx);
 
-	void SetRenderTarget(CRenderTarget& RenderTarget);
+	void SetRenderTarget(CRenderTargetView& RenderTarget);
 	void SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs);
 	void SetViewport(CVector2f NewSize);
 
@@ -95,9 +99,9 @@ public:
 	// Restores render target to the initial backbuffer
 	void RestoreRenderTarget();
 	void RestoreViewport();
-	void UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, int32_t NewDataSize);
+	void UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, size_t NewDataSize);
 	// optimally, ConstantBuffer data should be 16 byte aligned
-	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, int32_t NewDataSize );
+	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, size_t NewDataSize );
 	void Draw( int32_t VertexCount );
 
 	// TODO: Removes this
@@ -129,8 +133,12 @@ public:
 	CPixelShader CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
 
 	CConstantBuffer CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );
-	CTexture CreateTextureResource(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy);
-	CRenderTarget CreateRenderTarget(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format);
+	CTexture CreateTexture(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy);
+	CTexture CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc);
+	CTextureView CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc);
+	CRenderTargetView CreateRenderTargetView(CTexture& Texture, const D3D11_RENDER_TARGET_VIEW_DESC& Desc);
+	CDepthStencilView CreateDepthStencilView(CTexture& Texture, const D3D11_DEPTH_STENCIL_VIEW_DESC& Desc);
+	
 
 	CSamplerState CreateSamplerState();
 
