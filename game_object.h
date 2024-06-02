@@ -3,6 +3,8 @@
 #include "vector.h"
 #include "matrix.h"
 #include "graphics.h"
+#include "render_packet.h"
+#include "render_manager.h"
 
 #include <cstdint>
 
@@ -14,33 +16,13 @@ class CCameraBase;
 class CGameObject
 {
 public:
-	struct STypicalConstantBuffer
-	{
-		CMatrix4x4f _ModelToWorld;
-		// Transforms normals from model to world (it is the inverse transform of _ModelToWorld)
-		CMatrix4x4f _NormalModelToWorld;
-		SMaterial _Material;
-	};
-	struct STypicalShadowConstantBuffer
-	{
-		CMatrix4x4f _ModelToWorld;
-	};
-	struct STypicalVertex
-	{
-		CVector3f _Position;
-		CVector3f _Normal;
-	};
-
 	virtual ~CGameObject() = default;
 
 	virtual void Initialize( CGraphics& Graphics ) {};
 	virtual void Shutdown() {};
 	virtual bool IsInitialized() const;
 
-	virtual void Render( CRenderContext& RenderContext, const CCameraBase& Camera ) {};
-	virtual void RenderShadows(CRenderContext& RenderContext) {};
-	virtual bool ShouldRender() { return true; }
-	virtual bool ShouldRenderShadows() { return true; }
+	virtual void Render(CRenderManager& RenderManager, const CCameraBase& Camera);
 
 	virtual void SetPosition(const CVector3f& NewPosition);
 	virtual void SetScale(const CVector3f& NewScale);

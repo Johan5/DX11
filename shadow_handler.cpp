@@ -73,12 +73,14 @@ void CShadowHandler::Initialize(CGraphics& Graphics, uint32_t Width, uint32_t He
 	_SamplerState = Graphics.CreateSamplerState();
 }
 
-SShadowData CShadowHandler::CalculatePointLightShadows(CRenderContext& RenderContext, const CLightSource& Light, std::vector<std::unique_ptr<CGameObject>>& GameObjects)
+SShadowData CShadowHandler::CreateShadowMap(CGraphics& Graphics, CRenderManager& RenderManager, const CLightSource& Light)
 {
+	CRenderContext& RenderContext = Graphics.AccessRenderContest();
 	ID3D11DeviceContext* pDeviceContext = RenderContext.Debug_AccessDxRaw().AccessDeviceContext();
+
 	// extra parenthesis since Windows.h defines 'max()' as a macro
 	float FloatMax = (std::numeric_limits<float>::max)();
-	float ClearColor[4] = { FloatMax, FloatMax, FloatMax, 1.0f }; // can this be a single float?
+	float ClearColor[4] = { FloatMax, FloatMax, FloatMax, 1.0f };
 	pDeviceContext->ClearRenderTargetView(_RenderTargetView.AccessRenderTargetView(), ClearColor);
 	pDeviceContext->ClearDepthStencilView(_DepthStencilView.AccessDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
@@ -124,10 +126,7 @@ SShadowData CShadowHandler::CalculatePointLightShadows(CRenderContext& RenderCon
 	RenderContext.SetGeometryShaderConstantBuffer(_PerLightConstantBuffer, EConstantBufferIdx::PerLight);
 	RenderContext.SetPixelShaderConstantBuffer(_PerLightConstantBuffer, EConstantBufferIdx::PerLight);
 
-	for (auto& pGameObject : GameObjects)
-	{
-		pGameObject->RenderShadows(RenderContext);
-	}
+	RenderManager.RenderInstanced(RenderContext, Graphics, ERenderPass::Shadow);
 	
 	RenderContext.ClearShaders();
 	RenderContext.RestoreViewport();

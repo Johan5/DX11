@@ -37,7 +37,7 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof(NWorldPass::SCameraConstantBuffer), ECpuAccessPolicy::CpuWrite);
 	_LightConstantBuffer = Graphics.CreateConstantBuffer(sizeof(NWorldPass::SLightConstantBuffer), ECpuAccessPolicy::CpuWrite);
 	_ShadowHandler.Initialize(Graphics, Graphics.GetScreenWidth(), Graphics.GetScreenWidth());
-
+	_RenderManager.Initialize(Graphics);
 	SpawnDefaultObjects();
 }
 
@@ -55,7 +55,7 @@ void CWorld::Update()
 
 void CWorld::Render(CRenderContext& RenderContext)
 {
-	SShadowData ShadowData = _ShadowHandler.CalculatePointLightShadows(RenderContext, *_Light.get(), _GameObjects);
+	SShadowData ShadowData = _ShadowHandler.CreateShadowMap(*_pGraphics, _RenderManager, *_Light.get());
 
 	PerCameraSetup(RenderContext, *_Camera.get());
 	PerLightSetup(RenderContext, *_Light.get(), ShadowData);
@@ -71,32 +71,26 @@ void CWorld::SpawnDefaultObjects()
 	Bottom->SetPosition(CVector3f{ 0.0f, -15.0f, 0.0f });
 	Bottom->SetScale(CVector3f{ 30.0f, 0.01f, 30.0f });
 	Bottom->DisableShadowRendering();
-	Bottom->SetColor(WallColor);
 	CCube* Top = SpawnGameObject<CCube>();
 	Top->SetPosition(CVector3f{ 0.0f, 15.0f, 0.0f });
 	Top->SetScale(CVector3f{ 30.0f, 0.01f, 30.0f });
 	Top->DisableShadowRendering();
-	Top->SetColor(WallColor);
 	CCube* Right = SpawnGameObject<CCube>();
 	Right->SetPosition(CVector3f{ 15.0f, 0.0f, 0.0f });
 	Right->SetScale(CVector3f{ 0.01f, 30.0f, 30.0f });
 	Right->DisableShadowRendering();
-	Right->SetColor(WallColor);
 	CCube* Left = SpawnGameObject<CCube>();
 	Left->SetPosition(CVector3f{ -15.0f, 0.0f, 0.0f });
 	Left->SetScale(CVector3f{ 0.01f, 30.0f, 30.0f });
 	Left->DisableShadowRendering();
-	Left->SetColor(WallColor);
 	CCube* Front = SpawnGameObject<CCube>();
 	Front->SetPosition(CVector3f{ 0.0f, 0.0f, 15.0f });
 	Front->SetScale(CVector3f{ 30.0f, 30.0f, 0.01f });
 	Front->DisableShadowRendering();
-	Front->SetColor(WallColor);
 	CCube* Back = SpawnGameObject<CCube>();
 	Back->SetPosition(CVector3f{ 0.0f, 0.0f, -15.0f });
 	Back->SetScale(CVector3f{ 30.0f, 30.0f, 0.01f });
 	Back->DisableShadowRendering();
-	Back->SetColor(WallColor);
 
 	CCube* Cube1 = SpawnGameObject<CCube>();
 	Cube1->SetPosition(CVector3f{ -3.0f, -2.0f, -2.5f });
@@ -186,10 +180,10 @@ void CWorld::RenderObjects(CRenderContext& RenderContext, CCameraBase& Camera)
 {
 	RenderContext.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	_Light->Render(RenderContext, Camera);
-
+	_Light->Render(_RenderManager, Camera);
 	for (auto& pGameObject : _GameObjects)
 	{
-		pGameObject->Render(RenderContext, Camera);
+		pGameObject->Render(_RenderManager, Camera);
 	}
+	_RenderManager.RenderInstanced(RenderContext, *_pGraphics, ERenderPass::Normal);
 }

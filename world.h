@@ -4,6 +4,7 @@
 #include "light_source.h"
 #include "camera_base.h"
 #include "graphics.h"
+#include "render_manager.h"
 #include "input_handler.h"
 #include "constant_buffer.h"
 #include "shadow_handler.h"
@@ -67,14 +68,10 @@ private:
 
 
 	CShadowHandler _ShadowHandler;
+	CRenderManager _RenderManager;
 	
 	uint64_t _NextGameObjectId = 0;
 };
-
-
-
-
-
 
 template< class CGameObjectDerived, class ...ArgsT>
 CGameObjectDerived* CWorld::SpawnGameObject( ArgsT&&... Args )

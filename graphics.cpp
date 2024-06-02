@@ -4,190 +4,14 @@
 #include "string_util.h"
 #include "logger.h"
 #include "assert.h"
+#include "stb_image_include.h"
 #include "graphics_enums.h"
+#include "graphic_resources.h"
+#include "mesh_loader.h"
+
+#include <filesystem>
 
 
-namespace
-{
-	void UpdateDx11Buffer(ID3D11DeviceContext& DeviceContext, ID3D11Buffer* pBuffer, const void* pNewData, size_t NewDataSize)
-	{
-		D3D11_MAPPED_SUBRESOURCE MappedResource;
-		ZeroMemory(&MappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
-		HRESULT Result = DeviceContext.Map(pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource);
-		ASSERT(SUCCEEDED(Result), "Failed to update buffer");
-		memcpy(MappedResource.pData, pNewData, NewDataSize);
-		DeviceContext.Unmap(pBuffer, 0);
-	}
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-CVertexBuffer::CVertexBuffer( ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties )
-{
-	ASSERT(Properties._VertexDataSizeInBytes > 0, "Vertex data size needs to be positive" );
-	ASSERT(Properties._SingleVertexSizeInBytes > 0, "Single vertex size needs to be positive" );
-	D3D11_BUFFER_DESC VertexBufferDesc;
-	ZeroMemory( &VertexBufferDesc, sizeof( D3D11_BUFFER_DESC ) );
-	VertexBufferDesc.ByteWidth = Properties._VertexDataSizeInBytes;
-	VertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	VertexBufferDesc.BindFlags = static_cast<uint32_t>(EBindFlag::VertexBuffer);
-	VertexBufferDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::CpuWrite); // TODO: Expose this to caller instead?
-	VertexBufferDesc.MiscFlags = 0;
-	VertexBufferDesc.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA VertexData;
-	ZeroMemory( &VertexData, sizeof( D3D11_SUBRESOURCE_DATA ) );
-	VertexData.pSysMem = pVertexData;
-	VertexData.SysMemPitch = 0;
-	VertexData.SysMemSlicePitch = 0;
-	HRESULT VertexResult = Device.CreateBuffer( &VertexBufferDesc, &VertexData, _pVertexBuffer.GetAddressOf() );
-	ASSERT( SUCCEEDED( VertexResult ), "Failed to create vertex buffer" );
-	_Properties = Properties;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void CRenderContext::Initialize(CDirectX3D* pDirectX3D)
-{
-	_pDirectX3D = pDirectX3D;
-}
-
-namespace
-{
-	struct DebugStruct
-	{
-		CVector3f _Position;
-		CVector4f _Color;
-	};
-};
-
-void CRenderContext::SetVertexBuffer(CVertexBuffer& VertexBuffer)
-{
-	ID3D11Buffer* pVertexBuffer = VertexBuffer.AccessVertexBuffer();
-	ASSERT(pVertexBuffer, "Given vertex buffer is invalid");
-	uint32_t SingleVertexSize = VertexBuffer.GetProperties()._SingleVertexSizeInBytes;
-	ASSERT(SingleVertexSize > 0, "Creating vertex buffer with vertices of size 0?");
-	uint32_t Stride = SingleVertexSize;
-	uint32_t Offset = 0U;
-	_pDirectX3D->AccessDeviceContext()->IASetVertexBuffers(0, 1, VertexBuffer.AccessVertexBufferAddr(), &Stride, &Offset);
-}
-
-void CRenderContext::SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology)
-{
-	_pDirectX3D->AccessDeviceContext()->IASetPrimitiveTopology(PrimitiveTopology);
-}
-
-void CRenderContext::SetVertexShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
-{
-	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
-	_pDirectX3D->AccessDeviceContext()->VSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
-}
-
-void CRenderContext::SetVertexShader(CVertexShader& VertexShader)
-{
-	_pDirectX3D->AccessDeviceContext()->IASetInputLayout(VertexShader.AccessInputLayout());
-	_pDirectX3D->AccessDeviceContext()->VSSetShader(VertexShader.AccessVertexShader(), nullptr, 0);
-}
-
-void CRenderContext::SetPixelShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
-{
-	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
-	_pDirectX3D->AccessDeviceContext()->PSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
-}
-
-void CRenderContext::SetPixelShader(CPixelShader& PixelShader)
-{
-	_pDirectX3D->AccessDeviceContext()->PSSetShader(PixelShader.AccessPixelShader(), nullptr, 0);
-}
-
-void CRenderContext::SetGeometryShader(CGeometryShader& GeometryShader)
-{
-	_pDirectX3D->AccessDeviceContext()->GSSetShader(GeometryShader.AccessGeometryShader(), nullptr, 0);
-}
-
-void CRenderContext::SetGeometryShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index)
-{
-	ID3D11Buffer* pConstantBuffer = ConstantBuffer.AccessRawBuffer();
-	_pDirectX3D->AccessDeviceContext()->GSSetConstantBuffers(static_cast<uint32_t>(Index), 1, &pConstantBuffer);
-}
-
-void CRenderContext::SetPixelShaderTexture(CTextureView& TextureView, int32_t SlotIdx)
-{
-	ID3D11ShaderResourceView** ppTextureView = TextureView.AccessAddrOfTextureView();
-	_pDirectX3D->AccessDeviceContext()->PSSetShaderResources(SlotIdx, 1, ppTextureView);
-}
-
-void CRenderContext::SetPixelShaderSampler(CSamplerState& SamplerState, int32_t SlotIdx)
-{
-	ID3D11SamplerState** ppSamplerState = SamplerState.AccessAddrOfSamplerState();
-	_pDirectX3D->AccessDeviceContext()->PSSetSamplers(SlotIdx, 1, ppSamplerState);
-}
-
-void CRenderContext::SetRenderTarget(CRenderTargetView& RenderTarget)
-{
-	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, RenderTarget.AccessAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
-}
-
-void CRenderContext::SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs)
-{
-	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(NumTargets, ppRTVs, pDSVs);
-}
-
-void CRenderContext::SetViewport(CVector2f NewSize)
-{
-	D3D11_VIEWPORT Viewport;
-	Viewport.TopLeftX = 0.0f;
-	Viewport.TopLeftY = 0.0f;
-	Viewport.Width = NewSize._X;
-	Viewport.Height = NewSize._Y;
-	Viewport.MinDepth = 0.0f;
-	Viewport.MaxDepth = 1.0f;
-	_pDirectX3D->AccessDeviceContext()->RSSetViewports(1, &Viewport);
-}
-
-void CRenderContext::ClearShaders()
-{
-	_pDirectX3D->AccessDeviceContext()->VSSetShader(nullptr, nullptr, 0);
-	_pDirectX3D->AccessDeviceContext()->GSSetShader(nullptr, nullptr, 0);
-	_pDirectX3D->AccessDeviceContext()->PSSetShader(nullptr, nullptr, 0);
-}
-
-void CRenderContext::ClearTextureSlot(int32_t SlotIdx)
-{
-	ID3D11ShaderResourceView* nullView[] = { nullptr };
-	_pDirectX3D->AccessDeviceContext()->PSSetShaderResources(SlotIdx, 1, nullView);
-}
-
-void CRenderContext::RestoreRenderTarget()
-{
-	_pDirectX3D->AccessDeviceContext()->OMSetRenderTargets(1, _pDirectX3D->AccessAddrOfRenderTargetView(), _pDirectX3D->AccessDepthStencilView());
-}
-
-void CRenderContext::RestoreViewport()
-{
-	D3D11_VIEWPORT Viewport = _pDirectX3D->GetViewport();
-	_pDirectX3D->AccessDeviceContext()->RSSetViewports(1, &Viewport);
-}
-
-void CRenderContext::UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, size_t NewDataSize)
-{
-	ASSERT(VertexBuffer.GetProperties()._VertexDataSizeInBytes == NewDataSize, "Size mismatch");
-	UpdateDx11Buffer(*_pDirectX3D->AccessDeviceContext(), VertexBuffer.AccessVertexBuffer(), pNewData, NewDataSize);
-}
-
-void CRenderContext::UpdateConstantBuffer(CConstantBuffer& ConstantBuffer, const void* pNewData, size_t NewDataSize)
-{
-	ASSERT(ConstantBuffer.GetSizeInBytes() == NewDataSize, "Size mismatch, investigate.");
-	ASSERT((uint32_t)ConstantBuffer.GetAccessPolicy() | (uint32_t)ECpuAccessPolicy::CpuWrite, "Cannot update contents of constant buffer unless registered with CpuWrite");
-	UpdateDx11Buffer(*_pDirectX3D->AccessDeviceContext(), ConstantBuffer.AccessRawBuffer(), pNewData, NewDataSize);
-}
-
-void CRenderContext::Draw(int32_t VertexCount)
-{
-	_pDirectX3D->AccessDeviceContext()->Draw( VertexCount, 0 );
-}
-
-////////////////////////////////////////////////////////////////////////////////
 
 CGraphics::~CGraphics()
 {
@@ -208,6 +32,23 @@ bool CGraphics::Initialize(int ScreenWidth, int ScreenHeight, HWND Wnd)
 	}
 
 	_RenderContext.Initialize( _Direct3D.get() );
+	Result = initShaders();
+	if (!Result)
+	{
+		MessageBoxW(Wnd, L"Failed to initialize Shaders", L"Error", MB_OK);
+	}
+
+	Result = initTextures();
+	if (!Result)
+	{
+		MessageBoxW(Wnd, L"Failed to initialize Textures", L"Error", MB_OK);
+	}
+
+	Result = initMeshes();
+	if (!Result)
+	{
+		MessageBoxW(Wnd, L"Failed to initialize Meshes", L"Error", MB_OK);
+	}
 
 	return true;
 }
@@ -217,35 +58,14 @@ void CGraphics::Shutdown()
 	_Direct3D.release();
 }
 
-CVertexBuffer CGraphics::CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings )
+CVertexBuffer CGraphics::CreateVertexBuffer(const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings)
 {
 	return CVertexBuffer{ AccessDevice(), pVertexData, Settings };
 }
 
-CVertexShader CGraphics::CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout )
+CIndexBuffer CGraphics::CreateIndexBuffer(uint32_t SizeInBytes, ECpuAccessPolicy AccessPolicy)
 {
-	_VertexShaderCache.emplace_back();
-	CVertexShader& VertexShader = _VertexShaderCache.back();
-	bool Success = VertexShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction, ShaderInputLayout );
-	ASSERT( Success, "Faield to create vertex shader" );
-	return VertexShader;
-}
-
-CGeometryShader CGraphics::CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction)
-{
-	_GeometryShaderCache.emplace_back();
-	CGeometryShader& GeometryShader = _GeometryShaderCache.back();
-	GeometryShader.Initialize(AccessDevice(), ShaderFileName, ShaderMainFunction);
-	return GeometryShader;
-}
-
-CPixelShader CGraphics::CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction )
-{
-	_PixelShaderCache.emplace_back();
-	CPixelShader& PixelShader = _PixelShaderCache.back();
-	bool Success = PixelShader.Initialize( AccessDevice(), ShaderFileName, ShaderMainFunction );
-	ASSERT( Success, "Failed to create pixel shader" );
-	return PixelShader;
+	return CIndexBuffer(AccessDevice(), SizeInBytes, AccessPolicy);
 }
 
 CConstantBuffer CGraphics::CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy )
@@ -273,6 +93,14 @@ CTexture CGraphics::CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc)
 {
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 	HRESULT Result = AccessDevice().CreateTexture2D(&TextureDesc, nullptr, pTexture.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create texture resource");
+	return CTexture{ pTexture };
+}
+
+CTexture CGraphics::CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc, const D3D11_SUBRESOURCE_DATA& pInitialData)
+{
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+	HRESULT Result = AccessDevice().CreateTexture2D(&TextureDesc, &pInitialData, pTexture.GetAddressOf());
 	ASSERT(SUCCEEDED(Result), "Failed to create texture resource");
 	return CTexture{ pTexture };
 }
@@ -306,6 +134,30 @@ CSamplerState CGraphics::CreateSamplerState()
 	return CSamplerState{ AccessDevice() };
 }
 
+CVertexShader* CGraphics::AccessVertexShader(const std::string& fileName)
+{
+	auto it = _VertexShaders.find(fileName);
+	return (it == _VertexShaders.end() ? nullptr : &it->second);
+}
+
+CPixelShader* CGraphics::AccessPixelShader(const std::string& fileName)
+{
+	auto it = _PixelShaders.find(fileName);
+	return (it == _PixelShaders.end() ? nullptr : &it->second);
+}
+
+CGeometryShader* CGraphics::AccessGeometryShader(const std::string& fileName)
+{
+	auto it = _GeometryShaders.find(fileName);
+	return (it == _GeometryShaders.end() ? nullptr : &it->second);
+}
+
+SMesh* CGraphics::AccessMesh(EMeshType MeshType)
+{
+	auto it = _Meshes.find(MeshType);
+	return (it == _Meshes.end() ? nullptr : &it->second);
+}
+
 CRenderContext& CGraphics::StartRenderFrame( const CVector4f& BackgroundColor )
 {
 	_Direct3D->BeginScene( BackgroundColor._X, BackgroundColor._Y, BackgroundColor._Z, BackgroundColor._W );
@@ -315,4 +167,112 @@ CRenderContext& CGraphics::StartRenderFrame( const CVector4f& BackgroundColor )
 void CGraphics::EndFrame( CRenderContext& /* RenderContext */ )
 {
 	_Direct3D->EndScene();
+}
+
+bool CGraphics::initShaders()
+{
+	std::filesystem::path shaderFolder = std::filesystem::current_path() / "shaders";
+	std::vector<SShaderInputDescription> CubeInputLayout;
+	CubeInputLayout.push_back(SShaderInputDescription{ "POSITION", EGfxResourceDataFormat::R32G32B32Float });
+	CubeInputLayout.push_back(SShaderInputDescription{ "NORMAL", EGfxResourceDataFormat::R32G32B32Float });
+	CubeInputLayout.push_back(SShaderInputDescription{ "SV_InstanceID", EGfxResourceDataFormat::R32UInt });
+	std::optional<CVertexShader> cubeVs = CreateVertexShader((shaderFolder / shader_names::DefaultVertexShaderFileName).string(), shader_names::DefaultVertexShaderMainFunction, CubeInputLayout);
+	std::optional<CPixelShader> cubePs = CreatePixelShader((shaderFolder / shader_names::DefaultPixelShaderFileName).string(), shader_names::DefaultPixelShaderMainFunction);
+	if (cubeVs && cubePs)
+	{
+		_VertexShaders.emplace(shader_names::DefaultVertexShaderFileName, cubeVs.value());
+		_PixelShaders.emplace(shader_names::DefaultPixelShaderFileName, cubePs.value());
+	}
+	else
+	{
+		return false;
+	}
+	std::optional<CVertexShader> cubeShadowVs = CreateVertexShader((shaderFolder / shader_names::CubeShadowVertexShaderFileName).string(), shader_names::CubeShadowVertexShaderMainFunction, CubeInputLayout);
+	std::optional<CPixelShader> cubeShadowPs = CreatePixelShader((shaderFolder / shader_names::CubeShadowPixelShaderFileName).string(), shader_names::CubeShadowPixelShaderMainFunction);
+	std::optional<CGeometryShader> cubeShadowGs = CreateGeometryShader((shaderFolder / shader_names::CubeShadowGeometryShaderFileName).string(), shader_names::CubeShadowGeometryShaderMainFunction);
+	if (cubeShadowVs && cubeShadowPs && cubeShadowGs)
+	{
+		_VertexShaders.emplace(shader_names::CubeShadowVertexShaderFileName, cubeShadowVs.value());
+		_PixelShaders.emplace(shader_names::CubeShadowPixelShaderFileName, cubeShadowPs.value());
+		_GeometryShaders.emplace(shader_names::CubeShadowGeometryShaderFileName, cubeShadowGs.value());
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CGraphics::initTextures()
+{
+	
+	std::filesystem::path path = std::filesystem::current_path() / "assets" / "bricks.jpg";
+	int32_t width;
+	int32_t height;
+	int32_t channelCount;
+	uint8_t* data = stbi_load(path.string().c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
+	if (data)
+	{
+		D3D11_TEXTURE2D_DESC TextureDesc;
+		TextureDesc.Width = width;
+		TextureDesc.Height = height;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.ArraySize = 1;
+		TextureDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R8G8B8UInt);
+		TextureDesc.SampleDesc = DXGI_SAMPLE_DESC{ 1, 0 };
+		TextureDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		TextureDesc.BindFlags = static_cast<uint32_t>(EBindFlag::ShaderResource);
+		TextureDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::NoAccess);
+		TextureDesc.MiscFlags = 0;
+		D3D11_SUBRESOURCE_DATA Data;
+		Data.pSysMem = data;
+		Data.SysMemPitch = 4 * width;
+		Data.SysMemSlicePitch = 0;
+		std::string name = path.stem().string();
+		//auto testTexture = CreateTexture( TextureDesc );
+		_Textures.emplace("bricks", CreateTexture(TextureDesc, Data));
+		stbi_image_free(data);
+		return true;
+	}
+	else
+	{
+		std::string error = stbi_failure_reason();
+		CLogger::LogFormat("Failed to load texture. Path='{}', Error='{}'", path.string(), error);
+		return false;
+	}
+}
+
+bool CGraphics::initMeshes()
+{
+	_Meshes.emplace(EMeshType::Cube, mesh_loader::LoadMesh(*this, EMeshType::Cube));
+	_Meshes.emplace(EMeshType::Sphere, mesh_loader::LoadMesh(*this, EMeshType::Sphere));
+	return true;
+}
+
+std::optional<CVertexShader> CGraphics::CreateVertexShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout)
+{
+	CVertexShader VertexShader;
+	bool Success = VertexShader.Initialize(AccessDevice(), ShaderFileName, ShaderMainFunction, ShaderInputLayout);
+	if (Success)
+	{
+		return VertexShader;
+	}
+	ASSERT(false, "Faield to create vertex shader");
+	return std::nullopt;
+}
+
+std::optional<CGeometryShader> CGraphics::CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction)
+{
+	CGeometryShader GeometryShader;
+	GeometryShader.Initialize(AccessDevice(), ShaderFileName, ShaderMainFunction);
+	return GeometryShader;
+}
+
+std::optional<CPixelShader> CGraphics::CreatePixelShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction)
+{
+	CPixelShader PixelShader;
+	bool Success = PixelShader.Initialize(AccessDevice(), ShaderFileName, ShaderMainFunction);
+	ASSERT(Success, "Failed to create pixel shader");
+	return PixelShader;
 }

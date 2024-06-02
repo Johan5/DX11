@@ -1,6 +1,8 @@
 
 #pragma pack_matrix( row_major )
 
+#define MAX_DRAW_BATCH 100
+
 cbuffer PerLightCb : register(b2)
 {
 	float4x4 _LightViewMatrix[6];
@@ -16,18 +18,30 @@ struct SMaterial
 	float _AmbientStrength;
 	// Large specular power means small specular highlight
 	int _SpecularPower; // "phong exponent"
+    float4 _Color;
+};
+
+struct PerObjectCbData
+{
+	// Local To World
+    float4x4 _WorldMatrix;
 };
 
 cbuffer PerObjectCb : register(b3) 
 {
-	float4x4 _WorldMatrix;
+    PerObjectCbData _PerObjectData[MAX_DRAW_BATCH];
+}
+
+PerObjectCbData GetCbData(uint InstanceId)
+{
+    return _PerObjectData[InstanceId];
 }
 
 struct SVsInput
 {
 	float3 _L_Position : POSITION;
 	float3 _L_Normal : NORMAL;
-	float4 _Color : COLOR;
+    uint _InstanceId : SV_InstanceID;
 };
 
 struct SGsInput
@@ -46,7 +60,8 @@ struct SPsInput
 SGsInput VS(SVsInput Input)
 {
 	SGsInput Output;
-	Output._W_Position = mul(_WorldMatrix, float4(Input._L_Position, 1.0f));
+    PerObjectCbData Cb = GetCbData(Input._InstanceId);
+	Output._W_Position = mul(Cb._WorldMatrix, float4(Input._L_Position, 1.0f));
 	return Output;
 }
 

@@ -10,6 +10,9 @@
 #include "vertex_shader.h"
 #include "pixel_shader.h"
 #include "constant_buffer.h"
+#include "material.h"
+#include "render_packet.h"
+#include "default_object_constant_buffer.h"
 
 #include <mutex>
 
@@ -17,41 +20,23 @@
 class CCube : public CGameObject
 {
 public:
-	struct SVertex
-	{
-		CVector3f _Position;
-		CVector3f _Normal;
-		CVector4f _Color;
-	};
 	~CCube() override;
 
 	void Initialize( CGraphics& Graphics ) override;
 	void Shutdown() override;
 	bool IsInitialized() const override;
 
-	void Render( CRenderContext& RenderContext, const CCameraBase& Camera ) override;
-	void RenderShadows(CRenderContext& RenderContext) override;
+	void Render(CRenderManager& RenderManager, const CCameraBase& Camera) override;
 
-	bool ShouldRenderShadows() override;
+	bool ShouldRenderShadows() const;
 	void DisableShadowRendering();
 
-	void SetColor(const CVector4f& NewColor);
-
 private:
-	std::vector<SVertex> _Vertices;
-	CVertexBuffer _VertexBuffer;
-	bool _NeedVertexBufferUpdate = false;
-	CConstantBuffer _ConstantBuffer;
-	CConstantBuffer _ShadowConstantBuffer;
-
-	CVertexShader _VertexShader;
-	CPixelShader _PixelShader;
-
-	CVertexShader _ShadowVertexShader;
-	CGeometryShader _ShadowGeometryShader;
-	CPixelShader _ShadowPixelShader;
-
-	std::mutex _RenderLock;
+	SMaterial _Material;
+	SMaterial _ShadowMaterial;
+	SMesh _Mesh;
+	std::string _Texture = "bricks";
+	SDefaultObjectConstantBuffer _CbData;
 
 	bool _IsInitialized = false;
 	bool _ShouldRenderShadow = true;

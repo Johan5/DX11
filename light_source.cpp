@@ -7,12 +7,7 @@
 
 namespace
 {
-	const std::string VertexShaderFileName = "light_source.fx";
-	const std::string PixelShaderFileName = "light_source.fx";
-	const std::string VertexShaderMainFunction = "LightSourceVertexShader";
-	const std::string PixelShaderMainFunction = "LightSourcePixelShader";
-
-	std::vector<CGameObject::STypicalVertex> GenerateSphereModelVertices(int32_t LatitudeLineCount, int32_t LongitudeLineCount)
+	std::vector<CLightSource::SVertex> GenerateSphereModelVertices(int32_t LatitudeLineCount, int32_t LongitudeLineCount)
 	{
 		auto CalcPos = [LatitudeLineCount, LongitudeLineCount](int32_t LatIdx, int32_t LongIdx) -> CVector3f
 		{
@@ -28,7 +23,7 @@ namespace
 			return CVector3f{ X, Y, Z };
 		};
 
-		std::vector< CGameObject::STypicalVertex > Vertices;
+		std::vector< CLightSource::SVertex > Vertices;
 		CVector3f TopPos{ 0.0f, 1.0f, 0.0f };
 		std::vector<CVector3f> PrevLat(LongitudeLineCount, TopPos);
 
@@ -38,22 +33,22 @@ namespace
 			for (int32_t LongIdx = 0; LongIdx < LongitudeLineCount; ++LongIdx)
 			{
 				const CVector3f& PointUp = PrevLat[LongIdx];
-				const CVector3f& PointUpRight = PrevLat[ (LongIdx + 1) % LongitudeLineCount];
+				const CVector3f& PointUpRight = PrevLat[(LongIdx + 1) % LongitudeLineCount];
 				CVector3f PointThis = CalcPos(LatIdx, LongIdx);
 				CVector3f PointRight = CalcPos(LatIdx, LongIdx + 1);
 
 				ThisLat.push_back(PointThis);
 				if (LatIdx > 1)
 				{
-					Vertices.push_back(CGameObject::STypicalVertex{ PointThis, PointThis });
-					Vertices.push_back(CGameObject::STypicalVertex{ PointUp, PointUp });
-					Vertices.push_back(CGameObject::STypicalVertex{ PointUpRight, PointUpRight });
+					Vertices.push_back(CLightSource::SVertex{ PointThis, PointThis });
+					Vertices.push_back(CLightSource::SVertex{ PointUp, PointUp });
+					Vertices.push_back(CLightSource::SVertex{ PointUpRight, PointUpRight });
 				}
 				if (LatIdx < LatitudeLineCount - 1)
 				{
-					Vertices.push_back(CGameObject::STypicalVertex{ PointThis, PointThis });
-					Vertices.push_back(CGameObject::STypicalVertex{ PointUpRight, PointUpRight });
-					Vertices.push_back(CGameObject::STypicalVertex{ PointRight, PointRight });
+					Vertices.push_back(CLightSource::SVertex{ PointThis, PointThis });
+					Vertices.push_back(CLightSource::SVertex{ PointUpRight, PointUpRight });
+					Vertices.push_back(CLightSource::SVertex{ PointRight, PointRight });
 				}
 			}
 			PrevLat = std::move(ThisLat);
@@ -66,25 +61,21 @@ namespace
 
 void CLightSource::Initialize(CGraphics& Graphics)
 {
-	int32_t LatitudeLineCount = 21;
-	int32_t LongitudeLineCount = 21;
+	_Material._VS = shader_names::DefaultVertexShaderFileName;
+	_Material._PS = shader_names::DefaultPixelShaderFileName;
+	SMesh* pMesh = Graphics.AccessMesh(EMeshType::Sphere);
+	if (pMesh)
+	{
+		_Mesh = *pMesh;
+	}
+	else
+	{
+		ASSERT(false, "Failed to retrieve sphere mesh");
+		return;
+	}
 
-	_Vertices = GenerateSphereModelVertices(LatitudeLineCount, LongitudeLineCount);
-
-	uint32_t VertexBufferSize = static_cast<uint32_t>(_Vertices.size() * sizeof(CGameObject::STypicalVertex));
-	SVertexBufferProperties Properties;
-	Properties._VertexDataSizeInBytes = VertexBufferSize;
-	Properties._SingleVertexSizeInBytes = sizeof(CGameObject::STypicalVertex);
-	_VertexBuffer = Graphics.CreateVertexBuffer(_Vertices.data(), VertexBufferSize, Properties);
-
-	_ConstantBuffer = Graphics.CreateConstantBuffer(sizeof(SConstantBuffer), ECpuAccessPolicy::CpuWrite);
-
-	std::vector<SShaderInputDescription> InputLayout;
-	InputLayout.push_back(SShaderInputDescription{ "POSITION", EGfxResourceDataFormat::R32G32B32Float });
-	InputLayout.push_back(SShaderInputDescription{ "NORMAL", EGfxResourceDataFormat::R32G32B32Float });
-	_VertexShader = Graphics.CreateVertexShader(VertexShaderFileName, VertexShaderMainFunction, InputLayout);
-	_PixelShader = Graphics.CreatePixelShader(PixelShaderFileName, PixelShaderMainFunction);
-
+	_CbData._ColorData._AmbientStrength = 1.0f;
+	_CbData._ColorData._Color = CVector4f{ 0.9f, 0.9f, 0.9f, 1.0f };
 	_IsInitialized = true;
 }
 
@@ -99,18 +90,14 @@ bool CLightSource::IsInitialized() const
 	return _IsInitialized;
 }
 
-void CLightSource::Render(CRenderContext& RenderContext, const CCameraBase& Camera)
+void CLightSource::Render(CRenderManager& RenderManager, const CCameraBase& Camera)
 {
-	ASSERT(_Vertices.size() > 0, "Trying to render 0 vertices?");
-	RenderContext.SetVertexBuffer(_VertexBuffer);
-	{
-		SConstantBuffer CB;
-		CB._ModelToWorld = GetLocalToWorldTransform();
-		CB._NormalModelToWorld = GetNormalLocalToWorldTransform();
-		RenderContext.UpdateConstantBuffer(_ConstantBuffer, &CB, sizeof(SConstantBuffer));
-	}
-	RenderContext.SetVertexShaderConstantBuffer(_ConstantBuffer, EConstantBufferIdx::PerObject);
-	RenderContext.SetVertexShader(_VertexShader);
-	RenderContext.SetPixelShader(_PixelShader);
-	RenderContext.Draw(static_cast<int32_t>(_Vertices.size()));
+	_CbData._WorldMatrix = GetLocalToWorldTransform();
+	_CbData._NormalWorldMatrix = GetNormalLocalToWorldTransform();
+	SRenderPacket RenderPacket{ 
+		._Mesh = _Mesh, 
+		._Material = _Material, 
+		._ConstantBufferData = SRawPtrConstantBufferData{._ConstantData = static_cast<void*>(&_CbData), ._ConstantDataByteSize = sizeof(_CbData)}
+	};
+	RenderManager.QueForInstancedRendering(RenderPacket, ERenderPass::Normal);
 }

@@ -42,7 +42,7 @@ public:
 	void Initialize(CGraphics& Graphics, uint32_t Width, uint32_t Height);
 
 	// Returns ptr to the shadow texture array (cubemap)
-	SShadowData CalculatePointLightShadows(CRenderContext& RenderContext, const CLightSource& Light, std::vector<std::unique_ptr<CGameObject>>& GameObjects);
+	SShadowData CreateShadowMap(CGraphics& Graphics, CRenderManager& RenderManager, const CLightSource& Light);
 
 	CVector2f GetShadowMapDimensions();
 

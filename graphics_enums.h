@@ -5,6 +5,11 @@
 
 #include <stdint.h>
 
+enum class ERenderPass
+{
+	Normal,
+	Shadow
+};
 
 enum class ECpuAccessPolicy : uint32_t
 {
@@ -18,8 +23,11 @@ enum class EGfxResourceDataFormat
 	Unknown = DXGI_FORMAT_UNKNOWN,
 	R32G32B32A32Float = DXGI_FORMAT_R32G32B32A32_FLOAT,
 	R32G32B32Float = DXGI_FORMAT_R32G32B32_FLOAT,
+	R8G8B8UInt = DXGI_FORMAT_R8G8B8A8_UINT,
+	R8G8B8UNorm = DXGI_FORMAT_R8G8B8A8_UNORM,
 	R32Float = DXGI_FORMAT_R32_FLOAT,
 	D32Float = DXGI_FORMAT_D32_FLOAT,
+	R32UInt = DXGI_FORMAT_R32_UINT
 };
 
 enum class EBindFlag 

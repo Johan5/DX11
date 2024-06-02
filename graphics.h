@@ -11,10 +11,16 @@
 #include "texture_view.h"
 #include "sampler_state.h"
 #include "depth_stencil_view.h"
+#include "vertex_buffer.h"
+#include "index_buffer.h"
+#include "render_context.h"
+#include "mesh.h"
 
 #include <string>
+#include <unordered_map>
 #include <memory>
 #include <vector>
+#include <optional>
 #include <wrl/client.h> // Microsoft ComPtr
 
 class CVertexShader;
@@ -30,87 +36,6 @@ namespace NGraphicsDefines
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Colors might be replaced if object has a per-vertex coloring or texture
-struct SMaterial
-{
-	float _DiffuseStrength = 1.0f;
-	float _SpecularStrength = 1.0f;
-	float _AmbientStrength = 0.15f;
-	// Large specular power means small specular highlight
-	int32_t _SpecularPower = 256;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-struct SVertexBufferProperties
-{
-	// Size of the entire buffer (all vertices)
-	uint32_t _VertexDataSizeInBytes = 0;
-	// Size of a single vertex
-	uint32_t _SingleVertexSizeInBytes = 0;
-};
-
-class CVertexBuffer
-{
-	friend class CGraphics; // Only allow CGraphics to create
-public:
-	CVertexBuffer() = default;
-
-	ID3D11Buffer* AccessVertexBuffer() { return _pVertexBuffer.Get(); }
-	ID3D11Buffer** AccessVertexBufferAddr() { return _pVertexBuffer.GetAddressOf(); }
-	const SVertexBufferProperties& GetProperties() const { return _Properties; }
-
-private:
-	CVertexBuffer( ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties );
-
-private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> _pVertexBuffer;
-	SVertexBufferProperties _Properties;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The render context is the basic rendering API used by gameplay classes
-class CRenderContext
-{
-public:
-	void Initialize(CDirectX3D* pDirectX3D);
-
-	void SetVertexBuffer( CVertexBuffer& VertexBuffer );
-	void SetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY PrimitiveTopology );
-	void SetVertexShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
-	void SetVertexShader( CVertexShader& VertexShader );
-	void SetPixelShaderConstantBuffer( CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index );
-	void SetPixelShader( CPixelShader& PixelShader );
-	void SetGeometryShader(CGeometryShader& GeometryShader);
-	void SetGeometryShaderConstantBuffer(CConstantBuffer& ConstantBuffer, EConstantBufferIdx Index);
-
-	void SetPixelShaderTexture(CTextureView& TextureView, int32_t SlotIdx);
-
-	void SetPixelShaderSampler(CSamplerState& SamplerState, int32_t SlotIdx);
-
-	void SetRenderTarget(CRenderTargetView& RenderTarget);
-	void SetRenderTargets(int32_t NumTargets, ID3D11RenderTargetView** ppRTVs, ID3D11DepthStencilView* pDSVs);
-	void SetViewport(CVector2f NewSize);
-
-	// Clears registered shaders
-	void ClearShaders();
-	void ClearTextureSlot(int32_t SlotIdx);
-	// Restores render target to the initial backbuffer
-	void RestoreRenderTarget();
-	void RestoreViewport();
-	void UpdateVertexBuffer(CVertexBuffer& VertexBuffer, const void* pNewData, size_t NewDataSize);
-	// optimally, ConstantBuffer data should be 16 byte aligned
-	void UpdateConstantBuffer( CConstantBuffer& ConstantBuffer, const void* NewData, size_t NewDataSize );
-	void Draw( int32_t VertexCount );
-
-	// TODO: Removes this
-	CDirectX3D& Debug_AccessDxRaw() { return *_pDirectX3D; }
-private:
-	CDirectX3D* _pDirectX3D;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 
 // The CGraphics class' primary usage is creating (and owning) various graphics related resources,
 // such as buffers and shaders.
@@ -128,22 +53,25 @@ public:
 	void Shutdown();
 
 	CVertexBuffer CreateVertexBuffer( const void* pVertexData, uint32_t VertexDataSizeInBytes, const SVertexBufferProperties& Settings );
-	CVertexShader CreateVertexShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout );
-	CGeometryShader CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction);
-	CPixelShader CreatePixelShader( const std::string& ShaderFileName, const std::string& ShaderMainFunction );
-
+	CIndexBuffer CreateIndexBuffer(uint32_t SizeInBytes, ECpuAccessPolicy AccessPolicy);
 	CConstantBuffer CreateConstantBuffer( int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy );
 	CTexture CreateTexture(uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format, uint32_t BindFlags, ECpuAccessPolicy AccessPolicy);
 	CTexture CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc);
+	CTexture CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc, const D3D11_SUBRESOURCE_DATA& pInitialData);
 	CTextureView CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc);
 	CRenderTargetView CreateRenderTargetView(CTexture& Texture, const D3D11_RENDER_TARGET_VIEW_DESC& Desc);
 	CDepthStencilView CreateDepthStencilView(CTexture& Texture, const D3D11_DEPTH_STENCIL_VIEW_DESC& Desc);
 	
-
 	CSamplerState CreateSamplerState();
 
 	int GetScreenWidth() const { return _ScreenWidthInPix; }
 	int GetScreenHeight() const { return _ScreenHeightInPix; }
+
+	CVertexShader* AccessVertexShader(const std::string& fileName);
+	CPixelShader* AccessPixelShader(const std::string& fileName);
+	CGeometryShader* AccessGeometryShader(const std::string& fileName);
+
+	SMesh* AccessMesh(EMeshType MeshType);
 
 	CRenderContext& StartRenderFrame( const CVector4f& BackgroundColor );
 	void EndFrame( CRenderContext& RenderContext );
@@ -152,7 +80,13 @@ public:
 	ID3D11Device& AccessDevice() { return *_Direct3D->AccessDevice(); }
 
 private:
-	Microsoft::WRL::ComPtr<ID3D10Blob> CompileVertexShader( const std::string& FileName, const std::string& ShaderMainFunction ) const;
+	bool initShaders();
+	bool initTextures();
+	bool initMeshes();
+
+	std::optional<CVertexShader> CreateVertexShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout);
+	std::optional<CGeometryShader> CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction);
+	std::optional<CPixelShader> CreatePixelShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction);
 
 private:
 	std::unique_ptr<CDirectX3D> _Direct3D;
@@ -163,7 +97,10 @@ private:
 	int32_t _ScreenWidthInPix;
 	int32_t _ScreenHeightInPix;
 
-	std::vector<CVertexShader> _VertexShaderCache;
-	std::vector<CGeometryShader> _GeometryShaderCache;
-	std::vector<CPixelShader> _PixelShaderCache;
+	std::unordered_map<EMeshType, SMesh> _Meshes;
+	std::unordered_map<std::string, CTexture> _Textures;
+
+	std::unordered_map<std::string, CVertexShader> _VertexShaders;
+	std::unordered_map<std::string, CPixelShader> _PixelShaders;
+	std::unordered_map<std::string, CGeometryShader> _GeometryShaders;
 };

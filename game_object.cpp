@@ -9,6 +9,13 @@ bool CGameObject::IsInitialized() const
 	return false;
 }
 
+void CGameObject::Render(CRenderManager& RenderManager, const CCameraBase& Camera)
+{
+	(void)RenderManager;
+	(void)Camera;
+	return;
+}
+
 void CGameObject::SetPosition(const CVector3f& NewPosition)
 {
 	_Position = NewPosition;

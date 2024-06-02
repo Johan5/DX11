@@ -124,6 +124,7 @@ bool CSystem::Initialize()
 	int ScreenHeight = 0;
 
 	InitializeWindows(ScreenWidth, ScreenHeight);
+	_InputHandler = std::make_unique<CInputHandler>(ScreenWidth, ScreenHeight);
 
 	_Graphics = std::make_unique<CGraphics>();
 	bool GfxOk = _Graphics->Initialize(ScreenWidth, ScreenHeight, _Wnd);
@@ -131,7 +132,6 @@ bool CSystem::Initialize()
 	{
 		return false;
 	}
-	_InputHandler = std::make_unique<CInputHandler>( ScreenWidth, ScreenHeight );
 	_GameApplication = std::make_unique<CGameApplication>( *_InputHandler, *_Graphics );
 	
 	return true;

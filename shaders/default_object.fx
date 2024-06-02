@@ -1,6 +1,8 @@
 
 #pragma pack_matrix( row_major )
 
+#define MAX_DRAW_BATCH 100
+
 cbuffer PerCameraCb : register(b1)
 {
 	// World To Camera space
@@ -20,24 +22,36 @@ struct SMaterial
 	float _DiffuseStrength;
 	float _SpecularStrength;
 	float _AmbientStrength;
-// Large specular power means small specular highlight
+	// Large specular power means small specular highlight
 	int _SpecularPower; // "phong exponent"
+    float4 _Color;
+};
+
+struct PerObjectCbData
+{
+	// Local To World
+    float4x4 _WorldMatrix;
+	// Local To World for normals
+    float4x4 _NormalWorldMatrix;
+    SMaterial _Material;
 };
 
 cbuffer PerObjectCb : register(b3) 
 {
-	// Local To World
-	float4x4 _WorldMatrix;
-	// Local To World for normals
-	float4x4 _NormalWorldMatrix;
-	SMaterial _Material;
+    PerObjectCbData _PerObjectData[MAX_DRAW_BATCH];
+
+}
+
+PerObjectCbData GetCbData(uint InstanceId)
+{
+    return _PerObjectData[InstanceId];
 }
 
 struct SVsInput
 {
 	float3 _L_Position : POSITION;
 	float3 _L_Normal : NORMAL;
-	float4 _Color : COLOR;
+    uint _InstanceId : SV_InstanceID;
 };
 
 struct SPsInput
@@ -47,15 +61,16 @@ struct SPsInput
 	float3 _C_Position : CAMERA_SPACE_POSITION;
 	float3 _C_Normal : NORMAL;
 	float3 _L0_Position : LIGHT0_SPACE_POSITION;
-	float4 _Color : COLOR;
+    uint _InstanceId : SV_InstanceID;
 };
 
-
-SPsInput CubeVertexShader( SVsInput Input ) 
+SPsInput DefaultVertexShader( SVsInput Input ) 
 {
 	SPsInput Output;
 
-	float4 W_Position = mul(_WorldMatrix, float4(Input._L_Position, 1.0f));
+    PerObjectCbData Cb = GetCbData(Input._InstanceId);
+	
+    float4 W_Position = mul(Cb._WorldMatrix, float4(Input._L_Position, 1.0f));
 	Output._W_Position = W_Position.xyz / W_Position.w;
 
 	Output._S_Position = mul(_ViewAndProjectionMatrix, W_Position);
@@ -63,13 +78,13 @@ SPsInput CubeVertexShader( SVsInput Input )
 	float4 C_Position = mul(_ViewMatrix, W_Position);
 	Output._C_Position = C_Position.xyz / C_Position.w;
 	
-	float4 W_Normal = mul( _NormalWorldMatrix, float4(Input._L_Normal, 0.0f));
+    float4 W_Normal = mul(Cb._NormalWorldMatrix, float4(Input._L_Normal, 0.0f));
 	W_Normal.w = 0.0f;
 	float4 C_Normal = mul( _ViewMatrix, W_Normal );
 	Output._C_Normal = normalize(C_Normal.xyz);
-	
-	Output._Color = Input._Color;
 
+    Output._InstanceId = Input._InstanceId;
+	
 	return Output;
 }
 
@@ -85,8 +100,8 @@ struct SLightingData
 	float3 _Specular;
 };
 
-SLightingData CalcLighting( float3 _C_Pos, float3 _C_Normal, float4 SurfaceColor )
-{
+SLightingData CalcLighting(float3 _C_Pos, float3 _C_Normal, PerObjectCbData Cb)
+{	
 	float4 C_LightPos4f = mul(_ViewMatrix, float4(_W_LightPos, 1.0f));
 	float3 C_LightPos = C_LightPos4f.xyz / C_LightPos4f.w;
 	float3 C_VecToLight = C_LightPos - _C_Pos;
@@ -96,7 +111,7 @@ SLightingData CalcLighting( float3 _C_Pos, float3 _C_Normal, float4 SurfaceColor
 	float3 l = normalize(C_VecToLight);
 	float3 c = normalize(C_VecToCam);
 	
-	float3 DiffuseColor = _Material._DiffuseStrength * _LightIntensity * SurfaceColor.xyz * saturate(dot(n, l));
+	float3 DiffuseColor = Cb._Material._DiffuseStrength * _LightIntensity * Cb._Material._Color.xyz * saturate(dot(n, l));
 	
 	float3 SpecularColor;
 	{
@@ -104,8 +119,8 @@ SLightingData CalcLighting( float3 _C_Pos, float3 _C_Normal, float4 SurfaceColor
 		// h is the (unit) vector between l and c
 		float3 h = normalize(l + c);
 		float SpecularCosAngle = saturate(dot(n, h));
-		SpecularColor = _Material._SpecularStrength * _LightIntensity * HighlightColor * pow(SpecularCosAngle, _Material._SpecularPower);
-	}
+        SpecularColor = Cb._Material._SpecularStrength * _LightIntensity * HighlightColor * pow(SpecularCosAngle, Cb._Material._SpecularPower);
+    }
 		
 	float Attenuation;
 	{
@@ -121,7 +136,7 @@ SLightingData CalcLighting( float3 _C_Pos, float3 _C_Normal, float4 SurfaceColor
 }
 
 // Blinn-Phong reflection
-float4 CubePixelShader(SPsInput Input) : SV_TARGET
+float4 DefaultPixelShader(SPsInput Input) : SV_TARGET
 {
 	bool IsInShadow = false;
 	{
@@ -135,6 +150,7 @@ float4 CubePixelShader(SPsInput Input) : SV_TARGET
 			IsInShadow = true;
 		}
 	}
+    PerObjectCbData Cb = GetCbData(Input._InstanceId);
 	
 	float3 LightSourceColor;
 	if (IsInShadow)
@@ -143,11 +159,11 @@ float4 CubePixelShader(SPsInput Input) : SV_TARGET
 	}
 	else
 	{
-		SLightingData LightingData = CalcLighting(Input._C_Position, Input._C_Normal, Input._Color);
+        SLightingData LightingData = CalcLighting(Input._C_Position, Input._C_Normal, Cb);
 		LightSourceColor = LightingData._Diffuse + LightingData._Specular;
 	}
 	
-	float3 AmbientColor = _Material._AmbientStrength * Input._Color.xyz;	
+	float3 AmbientColor = Cb._Material._AmbientStrength * Cb._Material._Color.xyz;	
 	float3 CombinedColor = AmbientColor + LightSourceColor;
 	
 	float3 GammeExp = float3(1.0f, 1.0f, 1.0f) / 2.2f;

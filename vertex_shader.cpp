@@ -19,7 +19,9 @@ bool CVertexShader::Initialize( ID3D11Device& Device, const std::string& FileNam
 	{
 		if ( pErrorMessage )
 		{
-			CLogger::LogFormat( "Failed to compile shader file %s. Error: ", FileName.c_str() );
+			std::string msg1 = std::string{ "Failed to compile shader file " } + FileName;
+			std::string msg2{ static_cast<char*>(pErrorMessage->GetBufferPointer() ) };
+			CLogger::Log(msg1 + " Error: " + msg2);
 		}
 		else
 		{
