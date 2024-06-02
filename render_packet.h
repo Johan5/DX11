@@ -17,7 +17,7 @@ struct SRenderPacket
 {
 	friend bool CanUseSameDraw(const SRenderPacket& a, const SRenderPacket& b)
 	{
-		return false; // TODO
+		return a._Mesh == b._Mesh && a._Material == b._Material;
 	}
 
 	SMesh _Mesh;

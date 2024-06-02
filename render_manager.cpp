@@ -3,6 +3,9 @@
 #include "assert.h"
 #include "graphics_enums.h"
 
+#include <algorithm>
+
+
 namespace
 {
 	void AppendConstantDataToVec(const SRenderPacket& RenderPacket, CRenderManager::LocalCbData& DataInOut)
@@ -11,6 +14,22 @@ namespace
 		DataInOut._CbData.insert(DataInOut._CbData.end(), pData, pData + RenderPacket._ConstantBufferData._ConstantDataByteSize);
 		DataInOut._BatchSize++;
 	}
+
+	struct SRenderPacketSorter
+	{
+		// The purpose here is to group the packets to optimize performance. We don't care which (e.g.) material is rendered first. 
+		bool operator()(const SRenderPacket& a, const SRenderPacket& b)
+		{
+			if (a._Material != b._Material)
+			{
+				std::hash<std::string> hasher;
+				size_t hashA = hasher(a._Material._VS) ^ hasher(a._Material._GS) ^ hasher(a._Material._PS);
+				size_t hashB = hasher(b._Material._VS) ^ hasher(b._Material._GS) ^ hasher(b._Material._PS);
+				return hashA < hashB;
+			}
+			return a._Mesh._MeshType < b._Mesh._MeshType;
+		}
+	};
 }
 
 void CRenderManager::Initialize(CGraphics& Graphics)
@@ -26,7 +45,7 @@ void CRenderManager::RenderInstanced(CRenderContext& RenderContext, CGraphics& G
 		return;
 	}
 
-	//sort 
+	std::sort(RenderQue.begin(), RenderQue.end(), SRenderPacketSorter{});
 
 	LocalCbData CbData;
 	SRenderPacket* pPrevPacket = nullptr;
@@ -50,6 +69,11 @@ void CRenderManager::RenderInstanced(CRenderContext& RenderContext, CGraphics& G
 		AppendConstantDataToVec(CurrPacket, CbData);
 
 		pPrevPacket = &CurrPacket;
+	}
+	if (pPrevPacket)
+	{
+		// Render the final batch
+		RenderBatch(RenderContext, CbData, *pPrevPacket);
 	}
 	RenderQue.clear();
 }
