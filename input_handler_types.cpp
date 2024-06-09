@@ -26,7 +26,10 @@ const SInputData& CDoubleBufferedInput::SwapBuffers()
 	{
 		if ( KeyInput._InputType == EInputType::KeyUp )
 		{
-			InputData._CurrentlyHeldDown.erase( std::find( InputData._CurrentlyHeldDown.begin(), InputData._CurrentlyHeldDown.end(), KeyInput._InputCode ) );
+			std::erase_if(InputData._CurrentlyHeldDown, [ReleasedKey = KeyInput._InputCode](EInputCode InputCode)
+				{
+					return InputCode == ReleasedKey;
+				});
 			if ( IsMouseInput( KeyInput._InputCode ) )
 			{
 				InputData._NewMouseReleases.push_back( SMouseClick{ KeyInput._InputCode, KeyInput._CoordinateData } );
@@ -71,7 +74,6 @@ const SInputData& CDoubleBufferedInput::SwapBuffers()
 
 void CDoubleBufferedInput::AddKeyInput( EInputType InputType, EInputCode InputCode )
 {
-	static std::vector<EInputCode> MouseInputCodes = { EInputCode::LeftMouseButton, EInputCode::RightMouseButton, EInputCode::MiddleMouseButton };
 	std::lock_guard<std::mutex> Lock{ _Mutex };
 	_KeyInput[_BackBufferIdx].push_back( SKeyInput{ InputType, InputCode, _MousePos[_BackBufferIdx] } );
 }

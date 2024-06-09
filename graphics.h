@@ -32,6 +32,10 @@ namespace NGraphicsDefines
 	const float ScreenDepth = 1000.0f;
 	const float ScreenNear = 1.0f;
 	const float ScreenFar = 100.0f;
+
+	// These slots should of course otimally not be hardcoded, but parsed from resource files
+	const int32_t ShadowMapTextureSlot = 0;
+	const int32_t ShadowMapSamplerSlot = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,11 +65,11 @@ public:
 	CTextureView CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc);
 	CRenderTargetView CreateRenderTargetView(CTexture& Texture, const D3D11_RENDER_TARGET_VIEW_DESC& Desc);
 	CDepthStencilView CreateDepthStencilView(CTexture& Texture, const D3D11_DEPTH_STENCIL_VIEW_DESC& Desc);
-	
-	CSamplerState CreateSamplerState();
+	CSamplerState CreateSamplerState(const D3D11_SAMPLER_DESC& SamplerDesc);
 
 	int GetScreenWidth() const { return _ScreenWidthInPix; }
 	int GetScreenHeight() const { return _ScreenHeightInPix; }
+	std::optional<CTexture> GetTextureByName(const std::string& Name);
 
 	CVertexShader* AccessVertexShader(const std::string& fileName);
 	CPixelShader* AccessPixelShader(const std::string& fileName);
@@ -90,7 +94,6 @@ private:
 
 private:
 	std::unique_ptr<CDirectX3D> _Direct3D;
-	//std::unique_ptr<CColorShader> _ColorShader;
 
 	CRenderContext _RenderContext;
 

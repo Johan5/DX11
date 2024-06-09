@@ -1,4 +1,4 @@
-#include "render_manager.h"
+#include "batch_render_helper.h"
 
 #include "assert.h"
 #include "graphics_enums.h"
@@ -8,7 +8,7 @@
 
 namespace
 {
-	void AppendConstantDataToVec(const SRenderPacket& RenderPacket, CRenderManager::LocalCbData& DataInOut)
+	void AppendConstantDataToVec(const SRenderPacket& RenderPacket, CBatchRenderHelper::LocalCbData& DataInOut)
 	{
 		const uint8_t* pData = static_cast<const uint8_t*>(RenderPacket._ConstantBufferData._ConstantData); // probably UB
 		DataInOut._CbData.insert(DataInOut._CbData.end(), pData, pData + RenderPacket._ConstantBufferData._ConstantDataByteSize);
@@ -22,22 +22,19 @@ namespace
 		{
 			if (a._Material != b._Material)
 			{
-				std::hash<std::string> hasher;
-				size_t hashA = hasher(a._Material._VS) ^ hasher(a._Material._GS) ^ hasher(a._Material._PS);
-				size_t hashB = hasher(b._Material._VS) ^ hasher(b._Material._GS) ^ hasher(b._Material._PS);
-				return hashA < hashB;
+				return a._Material.CalcRenderHash() < b._Material.CalcRenderHash();
 			}
 			return a._Mesh._MeshType < b._Mesh._MeshType;
 		}
 	};
 }
 
-void CRenderManager::Initialize(CGraphics& Graphics)
+void CBatchRenderHelper::Initialize(CGraphics& Graphics)
 {
 	_ConstantBuffer = Graphics.CreateConstantBuffer(_CbSize, ECpuAccessPolicy::CpuWrite);
 }
 
-void CRenderManager::RenderInstanced(CRenderContext& RenderContext, CGraphics& Graphics, ERenderPass Pass)
+void CBatchRenderHelper::RenderInstanced(CRenderContext& RenderContext, CGraphics& Graphics, ERenderPass Pass)
 {
 	std::vector<SRenderPacket>& RenderQue = (Pass == ERenderPass::Normal ? _NormalRenderQue : _ShadowRenderQue);
 	if (RenderQue.empty())
@@ -78,7 +75,7 @@ void CRenderManager::RenderInstanced(CRenderContext& RenderContext, CGraphics& G
 	RenderQue.clear();
 }
 
-void CRenderManager::QueForInstancedRendering(const SRenderPacket& Packet, ERenderPass Pass)
+void CBatchRenderHelper::QueForInstancedRendering(const SRenderPacket& Packet, ERenderPass Pass)
 {
 	switch (Pass)
 	{
@@ -94,9 +91,16 @@ void CRenderManager::QueForInstancedRendering(const SRenderPacket& Packet, ERend
 	}
 }
 
-void CRenderManager::UpdateContext(CRenderContext& Context, CGraphics& Graphics, SRenderPacket& CurrPacket, SRenderPacket* pPrevPacket) const
+void CBatchRenderHelper::UpdateContext(CRenderContext& Context, CGraphics& Graphics, SRenderPacket& CurrPacket, SRenderPacket* pPrevPacket) const
 {
-	if (!pPrevPacket || pPrevPacket->_Mesh != CurrPacket._Mesh)
+	bool UpdateVertexAndIndexBuffers = !pPrevPacket || pPrevPacket->_Mesh != CurrPacket._Mesh;
+	bool UpdateVertexShader = !pPrevPacket || pPrevPacket->_Material._VS != CurrPacket._Material._VS;
+	bool UpdateGeoShader = !pPrevPacket || pPrevPacket->_Material._GS != CurrPacket._Material._GS;
+	bool UpdatePixelShader = !pPrevPacket || pPrevPacket->_Material._PS != CurrPacket._Material._PS;
+	bool UpdatePixelShaderTexture = UpdatePixelShader || pPrevPacket->_Material._Texture != CurrPacket._Material._Texture;
+	bool UpdatePixelShaderSampler = UpdatePixelShader || pPrevPacket->_Material._TextureSampler != CurrPacket._Material._TextureSampler;
+
+	if (UpdateVertexAndIndexBuffers)
 	{
 		Context.SetVertexBuffer(CurrPacket._Mesh._VertexBuffer);
 		if (CurrPacket._Mesh._IndexBuffer.IsValid())
@@ -104,7 +108,7 @@ void CRenderManager::UpdateContext(CRenderContext& Context, CGraphics& Graphics,
 			Context.SetIndexBuffer(CurrPacket._Mesh._IndexBuffer);
 		}
 	}
-	if (!pPrevPacket || pPrevPacket->_Material._VS != CurrPacket._Material._VS)
+	if (UpdateVertexShader)
 	{
 		CVertexShader* pVS = Graphics.AccessVertexShader(CurrPacket._Material._VS);
 		ASSERT(pVS, "Failed to find VertexShader");
@@ -113,7 +117,7 @@ void CRenderManager::UpdateContext(CRenderContext& Context, CGraphics& Graphics,
 			Context.SetVertexShader(*pVS);
 		}
 	}
-	if (!pPrevPacket || pPrevPacket->_Material._GS != CurrPacket._Material._GS)
+	if (UpdateGeoShader)
 	{
 		CGeometryShader* pGS = Graphics.AccessGeometryShader(CurrPacket._Material._GS);
 		if (pGS)
@@ -121,7 +125,7 @@ void CRenderManager::UpdateContext(CRenderContext& Context, CGraphics& Graphics,
 			Context.SetGeometryShader(*pGS);
 		}
 	}
-	if (!pPrevPacket || pPrevPacket->_Material._PS != CurrPacket._Material._PS)
+	if (UpdatePixelShader)
 	{
 		CPixelShader* pPS = Graphics.AccessPixelShader(CurrPacket._Material._PS);
 		ASSERT(pPS, "Failed to find PixelShader");
@@ -130,9 +134,17 @@ void CRenderManager::UpdateContext(CRenderContext& Context, CGraphics& Graphics,
 			Context.SetPixelShader(*pPS);
 		}
 	}
+	if (UpdatePixelShaderTexture)
+	{
+		Context.SetPixelShaderTexture(CurrPacket._Material._Texture, NGraphicsDefines::ShadowMapTextureSlot + 1);
+	}
+	if (UpdatePixelShaderSampler)
+	{
+		Context.SetPixelShaderSampler(CurrPacket._Material._TextureSampler, NGraphicsDefines::ShadowMapSamplerSlot + 1);
+	}
 }
 
-void CRenderManager::RenderBatch(CRenderContext& RenderContext, const LocalCbData& CbData, const SRenderPacket& LastPacket)
+void CBatchRenderHelper::RenderBatch(CRenderContext& RenderContext, const LocalCbData& CbData, const SRenderPacket& LastPacket)
 {
 	if (_ConstantBuffer.AccessRawBuffer() == nullptr)
 	{

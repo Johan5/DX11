@@ -105,6 +105,12 @@ CTexture CGraphics::CreateTexture(const D3D11_TEXTURE2D_DESC& TextureDesc, const
 	return CTexture{ pTexture };
 }
 
+std::optional<CTexture> CGraphics::GetTextureByName(const std::string& Name)
+{
+	auto it = _Textures.find(Name);
+	return (it == _Textures.end()) ? std::nullopt : std::optional<CTexture>{ it->second };
+}
+
 CTextureView CGraphics::CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc)
 {
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
@@ -129,9 +135,12 @@ CDepthStencilView CGraphics::CreateDepthStencilView(CTexture& Texture, const D3D
 	return CDepthStencilView{ pDepthStencilView };
 }
 
-CSamplerState CGraphics::CreateSamplerState()
+CSamplerState CGraphics::CreateSamplerState(const D3D11_SAMPLER_DESC& SamplerDesc)
 {
-	return CSamplerState{ AccessDevice() };
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> pSamplerState;
+	HRESULT Result = AccessDevice().CreateSamplerState(&SamplerDesc, pSamplerState.GetAddressOf());
+	ASSERT(SUCCEEDED(Result), "Failed to create sampler state");
+	return CSamplerState{ pSamplerState };
 }
 
 CVertexShader* CGraphics::AccessVertexShader(const std::string& fileName)
@@ -175,6 +184,7 @@ bool CGraphics::initShaders()
 	std::vector<SShaderInputDescription> CubeInputLayout;
 	CubeInputLayout.push_back(SShaderInputDescription{ "POSITION", EGfxResourceDataFormat::R32G32B32Float });
 	CubeInputLayout.push_back(SShaderInputDescription{ "NORMAL", EGfxResourceDataFormat::R32G32B32Float });
+	CubeInputLayout.push_back(SShaderInputDescription{ "TEXCOORD", EGfxResourceDataFormat::R32G32Float });
 	CubeInputLayout.push_back(SShaderInputDescription{ "SV_InstanceID", EGfxResourceDataFormat::R32UInt });
 	std::optional<CVertexShader> cubeVs = CreateVertexShader((shaderFolder / shader_names::DefaultVertexShaderFileName).string(), shader_names::DefaultVertexShaderMainFunction, CubeInputLayout);
 	std::optional<CPixelShader> cubePs = CreatePixelShader((shaderFolder / shader_names::DefaultPixelShaderFileName).string(), shader_names::DefaultPixelShaderMainFunction);
@@ -214,24 +224,28 @@ bool CGraphics::initTextures()
 	uint8_t* data = stbi_load(path.string().c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
 	if (data)
 	{
+		std::vector<float> fVec;
+		for (int32_t i = 0; i < 4 * width * height; ++i)
+		{
+			fVec.push_back(data[i] / 255.0f);
+		}
 		D3D11_TEXTURE2D_DESC TextureDesc;
 		TextureDesc.Width = width;
 		TextureDesc.Height = height;
 		TextureDesc.MipLevels = 1;
 		TextureDesc.ArraySize = 1;
-		TextureDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R8G8B8UInt);
+		TextureDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32G32B32A32Float);
 		TextureDesc.SampleDesc = DXGI_SAMPLE_DESC{ 1, 0 };
 		TextureDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		TextureDesc.BindFlags = static_cast<uint32_t>(EBindFlag::ShaderResource);
 		TextureDesc.CPUAccessFlags = static_cast<uint32_t>(ECpuAccessPolicy::NoAccess);
 		TextureDesc.MiscFlags = 0;
 		D3D11_SUBRESOURCE_DATA Data;
-		Data.pSysMem = data;
-		Data.SysMemPitch = 4 * width;
+		Data.pSysMem = fVec.data();
+		Data.SysMemPitch = 4 * 4 * width;
 		Data.SysMemSlicePitch = 0;
 		std::string name = path.stem().string();
-		//auto testTexture = CreateTexture( TextureDesc );
-		_Textures.emplace("bricks", CreateTexture(TextureDesc, Data));
+		_Textures.emplace(name, CreateTexture(TextureDesc, Data));
 		stbi_image_free(data);
 		return true;
 	}

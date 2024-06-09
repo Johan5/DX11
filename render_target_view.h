@@ -19,7 +19,7 @@ public:
 	ID3D11RenderTargetView** AccessAddrOfRenderTargetView();
 
 private:
-	CRenderTargetView(Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenterTargetView);
+	explicit CRenderTargetView(Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenterTargetView);
 	// Viewing texture as render target
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> _pRenderTargetView;
 };

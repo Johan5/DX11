@@ -4,7 +4,7 @@
 #include "light_source.h"
 #include "camera_base.h"
 #include "graphics.h"
-#include "render_manager.h"
+#include "batch_render_helper.h"
 #include "input_handler.h"
 #include "constant_buffer.h"
 #include "shadow_handler.h"
@@ -51,7 +51,7 @@ public:
 	CGameObjectDerived* SpawnGameObject( ArgsT&&... Args );
 
 private:
-	void SpawnDefaultObjects();
+	void SpawnDefaultObjects(CGraphics& Graphics);
 	void HandleUserInput( const CInputEvent& Input );
 	void PerCameraSetup(CRenderContext& RenderContext, CCameraBase& Camera);
 	void PerLightSetup(CRenderContext& RenderContext, CLightSource& Light, SShadowData& ShadowData);
@@ -68,7 +68,7 @@ private:
 
 
 	CShadowHandler _ShadowHandler;
-	CRenderManager _RenderManager;
+	CBatchRenderHelper _BatchRenderHelper;
 	
 	uint64_t _NextGameObjectId = 0;
 };

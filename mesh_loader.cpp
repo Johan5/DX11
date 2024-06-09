@@ -13,6 +13,7 @@ namespace {
 	{
 		CVector3f _Position;
 		CVector3f _Normal;
+		CVector2f _UV;
 	};
 	struct STypicalVertex
 	{
@@ -25,87 +26,123 @@ namespace {
 		std::vector<SCubeVertex> ModelData{ 36 };
 		ModelData[0]._Position = CVector3f{ -0.5f, -0.5f, -0.5f }; // LEFT
 		ModelData[0]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[0]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[1]._Position = CVector3f{ -0.5f, -0.5f, 0.5f };
 		ModelData[1]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[1]._UV = CVector2f{ 0.0f, 1.0f };
 		ModelData[2]._Position = CVector3f{ -0.5f, 0.5f, 0.5f };
 		ModelData[2]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[2]._UV = CVector2f{ 0.0f, 0.0f };
 
 		ModelData[3]._Position = CVector3f{ 0.5f, 0.5f, -0.5f }; // BEHIND
 		ModelData[3]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[3]._UV = CVector2f{ 1.0f, 0.0f };
 		ModelData[4]._Position = CVector3f{ -0.5f, -0.5f, -0.5f };
 		ModelData[4]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[4]._UV = CVector2f{ 0.0f, 1.0f};
 		ModelData[5]._Position = CVector3f{ -0.5f, 0.5f, -0.5f, };
 		ModelData[5]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[5]._UV = CVector2f{ 0.0f, 0.0f};
 
 		ModelData[6]._Position = CVector3f{ 0.5f, -0.5f, 0.5f }; // DOWN
 		ModelData[6]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[6]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[7]._Position = CVector3f{ -0.5f, -0.5f, -0.5f };
 		ModelData[7]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[7]._UV = CVector2f{ 0.0f, 0.0f };
 		ModelData[8]._Position = CVector3f{ 0.5f, -0.5f, -0.5f };
 		ModelData[8]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[8]._UV = CVector2f{ 1.0f, 0.0f };
 
 		ModelData[9]._Position = CVector3f{ 0.5f, 0.5f, -0.5f }; // BEHIND
 		ModelData[9]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[9]._UV = CVector2f{ 1.0f, 0.0f };
 		ModelData[10]._Position = CVector3f{ 0.5f, -0.5f, -0.5f };
 		ModelData[10]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[10]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[11]._Position = CVector3f{ -0.5f, -0.5f, -0.5f };
 		ModelData[11]._Normal = CVector3f{ 0.0f, 0.0f, -1.0f };
+		ModelData[11]._UV = CVector2f{ 0.0f, 1.0f };
 
 		ModelData[12]._Position = CVector3f{ -0.5f, -0.5f, -0.5f }; // LEFT
 		ModelData[12]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[12]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[13]._Position = CVector3f{ -0.5f, 0.5f, 0.5f };
 		ModelData[13]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[13]._UV = CVector2f{ 0.0f, 0.0f };
 		ModelData[14]._Position = CVector3f{ -0.5f, 0.5f, -0.5f };
 		ModelData[14]._Normal = CVector3f{ -1.0f, 0.0f, 0.0f };
+		ModelData[14]._UV = CVector2f{ 1.0f, 0.0f };
 
 		ModelData[15]._Position = CVector3f{ 0.5f, -0.5f, 0.5f }; // DOWN
 		ModelData[15]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[15]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[16]._Position = CVector3f{ -0.5f, -0.5f, 0.5f };
 		ModelData[16]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[16]._UV = CVector2f{ 0.0f, 1.0f };
 		ModelData[17]._Position = CVector3f{ -0.5f, -0.5f, -0.5f };
 		ModelData[17]._Normal = CVector3f{ 0.0f, -1.0f, 0.0f };
+		ModelData[17]._UV = CVector2f{ 0.0f, 0.0f };
 
 		ModelData[18]._Position = CVector3f{ -0.5f, 0.5f, 0.5f }; // IN FRONT
 		ModelData[18]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[18]._UV = CVector2f{ 0.0f, 1.0f };
 		ModelData[19]._Position = CVector3f{ -0.5f, -0.5f, 0.5f };
 		ModelData[19]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[19]._UV = CVector2f{ 0.0f, 0.0f };
 		ModelData[20]._Position = CVector3f{ 0.5f, -0.5f, 0.5f };
 		ModelData[20]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[20]._UV = CVector2f{ 1.0f, 0.0f };
 
 		ModelData[21]._Position = CVector3f{ 0.5f, 0.5f, 0.5f }; // RIGHT
 		ModelData[21]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[21]._UV = CVector2f{ 0.0f, 0.0f };
 		ModelData[22]._Position = CVector3f{ 0.5f, -0.5f, -0.5f };
 		ModelData[22]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[22]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[23]._Position = CVector3f{ 0.5f, 0.5f, -0.5f };
 		ModelData[23]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[23]._UV = CVector2f{ 0.0f, 1.0f };
 
 		ModelData[24]._Position = CVector3f{ 0.5f, -0.5f, -0.5f }; // RIGHT
 		ModelData[24]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[24]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[25]._Position = CVector3f{ 0.5f, 0.5f, 0.5f };
 		ModelData[25]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[25]._UV = CVector2f{ 0.0f, 0.0f };
 		ModelData[26]._Position = CVector3f{ 0.5f, -0.5f, 0.5f };
 		ModelData[26]._Normal = CVector3f{ 1.0f, 0.0f, 0.0f };
+		ModelData[26]._UV = CVector2f{ 1.0f, 0.0f };
 
 		ModelData[27]._Position = CVector3f{ 0.5f, 0.5f, 0.5f }; // UP
 		ModelData[27]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[27]._UV = CVector2f{ 1.0f, 0.0f };
 		ModelData[28]._Position = CVector3f{ 0.5f, 0.5f, -0.5f };
 		ModelData[28]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[28]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[29]._Position = CVector3f{ -0.5f, 0.5f, -0.5f };
 		ModelData[29]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[29]._UV = CVector2f{ 0.0f, 1.0f };
 
 		ModelData[30]._Position = CVector3f{ 0.5f, 0.5f, 0.5f }; // UP
 		ModelData[30]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[30]._UV = CVector2f{ 1.0f, 0.0f };
 		ModelData[31]._Position = CVector3f{ -0.5f, 0.5f, -0.5f };
 		ModelData[31]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[31]._UV = CVector2f{ 0.0f, 1.0f };
 		ModelData[32]._Position = CVector3f{ -0.5f, 0.5f, 0.5f };
 		ModelData[32]._Normal = CVector3f{ 0.0f, 1.0f, 0.0f };
+		ModelData[32]._UV = CVector2f{ 0.0f, 0.0f };
 
 		ModelData[33]._Position = CVector3f{ 0.5f, 0.5f, 0.5f }; // IN FRONT
 		ModelData[33]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[33]._UV = CVector2f{ 1.0f, 1.0f };
 		ModelData[34]._Position = CVector3f{ -0.5f, 0.5f, 0.5f };
 		ModelData[34]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[34]._UV = CVector2f{ 0.0f, 1.0f };
 		ModelData[35]._Position = CVector3f{ 0.5f, -0.5f, 0.5f };
 		ModelData[35]._Normal = CVector3f{ 0.0f, 0.0f, 1.0f };
+		ModelData[35]._UV = CVector2f{ 1.0f, 0.0f };
 
 		return ModelData;
 	}

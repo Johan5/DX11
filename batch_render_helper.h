@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-class CRenderManager
+class CBatchRenderHelper
 {
 public:
 	struct LocalCbData
@@ -23,6 +23,7 @@ public:
 
 	void Initialize(CGraphics& Graphics);
 	void RenderInstanced(CRenderContext& RenderContext, CGraphics& Graphics, ERenderPass Pass);
+	/// Does NOT assume ownership of the given data. Caller must ensure data persist until rendering.
 	void QueForInstancedRendering(const SRenderPacket& Packet, ERenderPass Pass);
 
 private:

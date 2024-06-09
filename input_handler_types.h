@@ -55,5 +55,6 @@ private:
 
 	std::optional<SInputData> _pPrevFrameData;
 
+	// This mutex protects the back buffer data (and _BackBufferIdx)
 	std::mutex _Mutex;
 };

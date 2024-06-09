@@ -70,10 +70,24 @@ void CShadowHandler::Initialize(CGraphics& Graphics, uint32_t Width, uint32_t He
 
 	_PerLightConstantBuffer = Graphics.CreateConstantBuffer(sizeof(NShadowPass::SPerLightCb), ECpuAccessPolicy::CpuWrite);
 
-	_SamplerState = Graphics.CreateSamplerState();
+	{
+		D3D11_SAMPLER_DESC SamplerDesc;
+		ZeroMemory(&SamplerDesc, sizeof(SamplerDesc));
+		SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		SamplerDesc.MipLODBias = 0.0f;
+		SamplerDesc.MaxAnisotropy = 1U;
+		SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		//SamplerDesc.BorderColor
+		SamplerDesc.MinLOD = 0;
+		SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+		_SamplerState = Graphics.CreateSamplerState(SamplerDesc);
+	}
 }
 
-SShadowData CShadowHandler::CreateShadowMap(CGraphics& Graphics, CRenderManager& RenderManager, const CLightSource& Light)
+SShadowData CShadowHandler::CreateShadowMap(CGraphics& Graphics, CBatchRenderHelper& BatchRenderHelper, const CLightSource& Light)
 {
 	CRenderContext& RenderContext = Graphics.AccessRenderContest();
 	ID3D11DeviceContext* pDeviceContext = RenderContext.Debug_AccessDxRaw().AccessDeviceContext();
@@ -87,7 +101,7 @@ SShadowData CShadowHandler::CreateShadowMap(CGraphics& Graphics, CRenderManager&
 	RenderContext.SetRenderTargets(1, _RenderTargetView.AccessAddrOfRenderTargetView(), _DepthStencilView.AccessDepthStencilView());
 	RenderContext.SetViewport(GetShadowMapDimensions());
 	RenderContext.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
+
 	NShadowPass::SPerLightCb LightCb;
 	{ // +X, -X, +Y, -Y, +Z, -Z
 		LightCb._LightMaxDist = NGraphicsDefines::ScreenFar;
@@ -126,7 +140,7 @@ SShadowData CShadowHandler::CreateShadowMap(CGraphics& Graphics, CRenderManager&
 	RenderContext.SetGeometryShaderConstantBuffer(_PerLightConstantBuffer, EConstantBufferIdx::PerLight);
 	RenderContext.SetPixelShaderConstantBuffer(_PerLightConstantBuffer, EConstantBufferIdx::PerLight);
 
-	RenderManager.RenderInstanced(RenderContext, Graphics, ERenderPass::Shadow);
+	BatchRenderHelper.RenderInstanced(RenderContext, Graphics, ERenderPass::Shadow);
 	
 	RenderContext.ClearShaders();
 	RenderContext.RestoreViewport();

@@ -9,9 +9,9 @@ bool CGameObject::IsInitialized() const
 	return false;
 }
 
-void CGameObject::Render(CRenderManager& RenderManager, const CCameraBase& Camera)
+void CGameObject::Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera)
 {
-	(void)RenderManager;
+	(void)BatchRenderHelper;
 	(void)Camera;
 	return;
 }

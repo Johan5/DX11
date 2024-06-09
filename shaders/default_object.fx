@@ -24,7 +24,8 @@ struct SMaterial
 	float _AmbientStrength;
 	// Large specular power means small specular highlight
 	int _SpecularPower; // "phong exponent"
-    float4 _Color;
+    float4 _Color; // Only used if no Texture
+    int _TextureSlot; // -1 if no texture
 };
 
 struct PerObjectCbData
@@ -51,16 +52,17 @@ struct SVsInput
 {
 	float3 _L_Position : POSITION;
 	float3 _L_Normal : NORMAL;
+    float2 _UV : TEXCOORD0;
     uint _InstanceId : SV_InstanceID;
 };
 
 struct SPsInput
 {
-	float4 _S_Position : SV_POSITION;
-	float3 _W_Position : WORLD_SPACE_POSITION;
-	float3 _C_Position : CAMERA_SPACE_POSITION;
-	float3 _C_Normal : NORMAL;
-	float3 _L0_Position : LIGHT0_SPACE_POSITION;
+    float4 _S_Position : SV_POSITION;
+    float3 _W_Position : WORLD_SPACE_POSITION;
+    float3 _C_Position : CAMERA_SPACE_POSITION;
+    float3 _C_Normal : NORMAL;
+    float2 _UV : TEXCOORD0;
     uint _InstanceId : SV_InstanceID;
 };
 
@@ -83,6 +85,7 @@ SPsInput DefaultVertexShader( SVsInput Input )
 	float4 C_Normal = mul( _ViewMatrix, W_Normal );
 	Output._C_Normal = normalize(C_Normal.xyz);
 
+    Output._UV = Input._UV;
     Output._InstanceId = Input._InstanceId;
 	
 	return Output;
@@ -91,8 +94,10 @@ SPsInput DefaultVertexShader( SVsInput Input )
 ////////////////////////////////////////////////////////////////////////////////
 
 TextureCube ShadowMap : register(t0);
+Texture2D Texture1 : register(t1);
 
 SamplerState ShadowMapSampler : register(s0);
+SamplerState Sampler1 : register(s1);
 
 struct SLightingData
 {
@@ -100,7 +105,20 @@ struct SLightingData
 	float3 _Specular;
 };
 
-SLightingData CalcLighting(float3 _C_Pos, float3 _C_Normal, PerObjectCbData Cb)
+float4 GetMaterialColor(SMaterial Material, float2 UV)
+{
+    if (Material._TextureSlot == -1)
+    {
+        return Material._Color;
+    }
+    if (Material._TextureSlot == 1)
+    {
+        return Texture1.Sample(Sampler1, UV);
+    }
+    return float4(1.0f, 0.0f, 1.0f, 1.0);
+}
+
+SLightingData CalcLighting(float3 _C_Pos, float3 _C_Normal, float2 UV, PerObjectCbData Cb)
 {	
 	float4 C_LightPos4f = mul(_ViewMatrix, float4(_W_LightPos, 1.0f));
 	float3 C_LightPos = C_LightPos4f.xyz / C_LightPos4f.w;
@@ -111,7 +129,7 @@ SLightingData CalcLighting(float3 _C_Pos, float3 _C_Normal, PerObjectCbData Cb)
 	float3 l = normalize(C_VecToLight);
 	float3 c = normalize(C_VecToCam);
 	
-	float3 DiffuseColor = Cb._Material._DiffuseStrength * _LightIntensity * Cb._Material._Color.xyz * saturate(dot(n, l));
+    float3 DiffuseColor = Cb._Material._DiffuseStrength * _LightIntensity * GetMaterialColor(Cb._Material, UV).xyz * saturate(dot(n, l));
 	
 	float3 SpecularColor;
 	{
@@ -159,15 +177,15 @@ float4 DefaultPixelShader(SPsInput Input) : SV_TARGET
 	}
 	else
 	{
-        SLightingData LightingData = CalcLighting(Input._C_Position, Input._C_Normal, Cb);
+        SLightingData LightingData = CalcLighting(Input._C_Position, Input._C_Normal, Input._UV, Cb);
 		LightSourceColor = LightingData._Diffuse + LightingData._Specular;
 	}
 	
-	float3 AmbientColor = Cb._Material._AmbientStrength * Cb._Material._Color.xyz;	
+    float3 AmbientColor = Cb._Material._AmbientStrength * GetMaterialColor(Cb._Material, Input._UV).xyz;
 	float3 CombinedColor = AmbientColor + LightSourceColor;
 	
 	float3 GammeExp = float3(1.0f, 1.0f, 1.0f) / 2.2f;
 	float3 GammaCorrectedColor = pow(CombinedColor, GammeExp);
-	
+		
 	return float4(saturate(GammaCorrectedColor), 1.0f);
 }

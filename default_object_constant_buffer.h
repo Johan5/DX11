@@ -12,6 +12,7 @@ struct SDefaultColorData
 	int _SpecularPower = 256; // "phong exponent"
 	// Pink
 	CVector4f _Color = { 1.0f, 0.08f, 0.6f, 1.0f };
+	int32_t _TextureSlot = -1; // -1 if no texture
 };
 struct SDefaultObjectConstantBuffer
 {

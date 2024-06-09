@@ -4,7 +4,7 @@
 #include "matrix.h"
 #include "graphics.h"
 #include "render_packet.h"
-#include "render_manager.h"
+#include "batch_render_helper.h"
 
 #include <cstdint>
 
@@ -22,7 +22,7 @@ public:
 	virtual void Shutdown() {};
 	virtual bool IsInitialized() const;
 
-	virtual void Render(CRenderManager& RenderManager, const CCameraBase& Camera);
+	virtual void Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera);
 
 	virtual void SetPosition(const CVector3f& NewPosition);
 	virtual void SetScale(const CVector3f& NewScale);

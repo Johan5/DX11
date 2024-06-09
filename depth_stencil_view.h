@@ -17,7 +17,7 @@ public:
 	ID3D11DepthStencilView** AccessAddrOfDepthStencilView();
 
 private:
-	CDepthStencilView(Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView);
+	explicit CDepthStencilView(Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDepthStencilView);
 
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> _pDepthStencilView;
 };

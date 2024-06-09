@@ -26,10 +26,13 @@ public:
 	void Shutdown() override;
 	bool IsInitialized() const override;
 
-	void Render(CRenderManager& RenderManager, const CCameraBase& Camera) override;
+	void Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera) override;
 
 	bool ShouldRenderShadows() const;
 	void DisableShadowRendering();
+
+	SMaterial& AccessMaterial();
+	SDefaultObjectConstantBuffer& AccessConstantBuffer();
 
 private:
 	SMaterial _Material;

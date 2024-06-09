@@ -26,7 +26,7 @@ public:
 	ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
 
 private:
-	CConstantBuffer(ID3D11Device& Device, int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy);
+	explicit CConstantBuffer(ID3D11Device& Device, int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;

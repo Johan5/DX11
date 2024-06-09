@@ -18,7 +18,7 @@ public:
 	ID3D11Texture2D* AccessTexture();
 
 private:
-	CTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture);
+	explicit CTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture);
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> _pTexture;
 };

@@ -63,6 +63,19 @@ void CLightSource::Initialize(CGraphics& Graphics)
 {
 	_Material._VS = shader_names::DefaultVertexShaderFileName;
 	_Material._PS = shader_names::DefaultPixelShaderFileName;
+	D3D11_SAMPLER_DESC SamplerDesc;
+	ZeroMemory(&SamplerDesc, sizeof(SamplerDesc));
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = 0.0f;
+	SamplerDesc.MaxAnisotropy = 1;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	_Material._TextureSampler= Graphics.CreateSamplerState(SamplerDesc);
+
 	SMesh* pMesh = Graphics.AccessMesh(EMeshType::Sphere);
 	if (pMesh)
 	{
@@ -90,14 +103,14 @@ bool CLightSource::IsInitialized() const
 	return _IsInitialized;
 }
 
-void CLightSource::Render(CRenderManager& RenderManager, const CCameraBase& Camera)
+void CLightSource::Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera)
 {
 	_CbData._WorldMatrix = GetLocalToWorldTransform();
 	_CbData._NormalWorldMatrix = GetNormalLocalToWorldTransform();
-	SRenderPacket RenderPacket{ 
-		._Mesh = _Mesh, 
-		._Material = _Material, 
+	SRenderPacket RenderPacket{
+		._Mesh = _Mesh,
+		._Material = _Material,
 		._ConstantBufferData = SRawPtrConstantBufferData{._ConstantData = static_cast<void*>(&_CbData), ._ConstantDataByteSize = sizeof(_CbData)}
 	};
-	RenderManager.QueForInstancedRendering(RenderPacket, ERenderPass::Normal);
+	BatchRenderHelper.QueForInstancedRendering(RenderPacket, ERenderPass::Normal);
 }

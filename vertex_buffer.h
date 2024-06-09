@@ -29,7 +29,7 @@ public:
 	const SVertexBufferProperties& GetProperties() const { return _Properties; }
 
 private:
-	CVertexBuffer(ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties);
+	explicit CVertexBuffer(ID3D11Device& Device, const void* pVertexData, const SVertexBufferProperties& Properties);
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> _pVertexBuffer;

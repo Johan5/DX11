@@ -6,15 +6,9 @@
 #include "perspective_camera.h"
 #include "logger.h"
 #include "input_enums.h"
+#include "assert.h"
 
 #include <functional>
-
-
-namespace
-{
-	constexpr int32_t ShadowMapTextureSlotIdx = 0;
-}
-
 
 void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 {
@@ -37,8 +31,8 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 	_CameraConstantBuffer = Graphics.CreateConstantBuffer( sizeof(NWorldPass::SCameraConstantBuffer), ECpuAccessPolicy::CpuWrite);
 	_LightConstantBuffer = Graphics.CreateConstantBuffer(sizeof(NWorldPass::SLightConstantBuffer), ECpuAccessPolicy::CpuWrite);
 	_ShadowHandler.Initialize(Graphics, Graphics.GetScreenWidth(), Graphics.GetScreenWidth());
-	_RenderManager.Initialize(Graphics);
-	SpawnDefaultObjects();
+	_BatchRenderHelper.Initialize(Graphics);
+	SpawnDefaultObjects(Graphics);
 }
 
 void CWorld::ShutDown()
@@ -55,42 +49,39 @@ void CWorld::Update()
 
 void CWorld::Render(CRenderContext& RenderContext)
 {
-	SShadowData ShadowData = _ShadowHandler.CreateShadowMap(*_pGraphics, _RenderManager, *_Light.get());
+	SShadowData ShadowData = _ShadowHandler.CreateShadowMap(*_pGraphics, _BatchRenderHelper, *_Light.get());
 
 	PerCameraSetup(RenderContext, *_Camera.get());
 	PerLightSetup(RenderContext, *_Light.get(), ShadowData);
 	RenderObjects(RenderContext, *_Camera.get());
 
-	RenderContext.ClearTextureSlot(ShadowMapTextureSlotIdx);
+	RenderContext.ClearTextureSlot(NGraphicsDefines::ShadowMapTextureSlot);
 }
 
-void CWorld::SpawnDefaultObjects()
+void CWorld::SpawnDefaultObjects(CGraphics& Graphics)
 {
-	CVector4f WallColor{ 0.2f, 0.2f, 0.2f, 1.0f };
-	CCube* Bottom = SpawnGameObject<CCube>();
-	Bottom->SetPosition(CVector3f{ 0.0f, -15.0f, 0.0f });
-	Bottom->SetScale(CVector3f{ 30.0f, 0.01f, 30.0f });
-	Bottom->DisableShadowRendering();
-	CCube* Top = SpawnGameObject<CCube>();
-	Top->SetPosition(CVector3f{ 0.0f, 15.0f, 0.0f });
-	Top->SetScale(CVector3f{ 30.0f, 0.01f, 30.0f });
-	Top->DisableShadowRendering();
-	CCube* Right = SpawnGameObject<CCube>();
-	Right->SetPosition(CVector3f{ 15.0f, 0.0f, 0.0f });
-	Right->SetScale(CVector3f{ 0.01f, 30.0f, 30.0f });
-	Right->DisableShadowRendering();
-	CCube* Left = SpawnGameObject<CCube>();
-	Left->SetPosition(CVector3f{ -15.0f, 0.0f, 0.0f });
-	Left->SetScale(CVector3f{ 0.01f, 30.0f, 30.0f });
-	Left->DisableShadowRendering();
-	CCube* Front = SpawnGameObject<CCube>();
-	Front->SetPosition(CVector3f{ 0.0f, 0.0f, 15.0f });
-	Front->SetScale(CVector3f{ 30.0f, 30.0f, 0.01f });
-	Front->DisableShadowRendering();
-	CCube* Back = SpawnGameObject<CCube>();
-	Back->SetPosition(CVector3f{ 0.0f, 0.0f, -15.0f });
-	Back->SetScale(CVector3f{ 30.0f, 30.0f, 0.01f });
-	Back->DisableShadowRendering();
+	auto SpawnWall = [this](const CVector3f& Position, const CVector3f& Scale)
+		{
+			CCube* Object = SpawnGameObject<CCube>();
+			Object->SetPosition(Position);
+			Object->SetScale(Scale);
+			Object->DisableShadowRendering();
+			Object->AccessConstantBuffer()._ColorData._TextureSlot = NGraphicsDefines::ShadowMapTextureSlot + 1;
+		};
+
+	// Bottom
+	SpawnWall(CVector3f{ 0.0f, -15.0f, 0.0f }, CVector3f{ 30.0f, 0.01f, 30.0f });
+	//SpawnWall(CVector3f{ 0.0f, -15.0f, 0.0f }, CVector3f{ 10.0f, 10.0f, 10.0f });
+	// Top
+	SpawnWall(CVector3f{ 0.0f, 15.0f, 0.0f }, CVector3f{ 30.0f, 0.01f, 30.0f });
+	// Right
+	SpawnWall(CVector3f{ 15.0f, 0.0f, 0.0f }, CVector3f{ 0.01f, 30.0f, 30.0f });
+	// Left
+	SpawnWall(CVector3f{ -15.0f, 0.0f, 0.0f }, CVector3f{ 0.01f, 30.0f, 30.0f });
+	// Front
+	SpawnWall(CVector3f{ 0.0f, 0.0f, 15.0f }, CVector3f{ 30.0f, 30.0f, 0.01f });
+	// Back
+	SpawnWall(CVector3f{ 0.0f, 0.0f, -15.0f }, CVector3f{ 30.0f, 30.0f, 0.01f });
 
 	CCube* Cube1 = SpawnGameObject<CCube>();
 	Cube1->SetPosition(CVector3f{ -3.0f, -2.0f, -2.5f });
@@ -172,18 +163,18 @@ void CWorld::PerLightSetup(CRenderContext& RenderContext, CLightSource& Light, S
 	RenderContext.SetVertexShaderConstantBuffer(_LightConstantBuffer, EConstantBufferIdx::PerLight);
 	RenderContext.SetPixelShaderConstantBuffer(_LightConstantBuffer, EConstantBufferIdx::PerLight);
 
-	RenderContext.SetPixelShaderTexture(ShadowData._ShadowMap, ShadowMapTextureSlotIdx);
-	RenderContext.SetPixelShaderSampler(ShadowData._ShadowMapSampler, 0);
+	RenderContext.SetPixelShaderTexture(ShadowData._ShadowMap, NGraphicsDefines::ShadowMapTextureSlot);
+	RenderContext.SetPixelShaderSampler(ShadowData._ShadowMapSampler, NGraphicsDefines::ShadowMapSamplerSlot);
 }
 
 void CWorld::RenderObjects(CRenderContext& RenderContext, CCameraBase& Camera)
 {
 	RenderContext.SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	_Light->Render(_RenderManager, Camera);
+	_Light->Render(_BatchRenderHelper, Camera);
 	for (auto& pGameObject : _GameObjects)
 	{
-		pGameObject->Render(_RenderManager, Camera);
+		pGameObject->Render(_BatchRenderHelper, Camera);
 	}
-	_RenderManager.RenderInstanced(RenderContext, *_pGraphics, ERenderPass::Normal);
+	_BatchRenderHelper.RenderInstanced(RenderContext, *_pGraphics, ERenderPass::Normal);
 }

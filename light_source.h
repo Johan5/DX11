@@ -26,7 +26,7 @@ public:
 	void Shutdown() override;
 	bool IsInitialized() const override;
 
-	void Render(CRenderManager& RenderManager, const CCameraBase& Camera) override;
+	void Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera) override;
 
 private:
 	std::vector<SVertex> _Vertices;
