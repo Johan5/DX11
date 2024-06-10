@@ -70,6 +70,8 @@ public:
 	int GetScreenWidth() const { return _ScreenWidthInPix; }
 	int GetScreenHeight() const { return _ScreenHeightInPix; }
 	std::optional<CTexture> GetTextureByName(const std::string& Name);
+	std::optional<CTextureView> GetTextureViewByName(const std::string& Name);
+	std::optional<CSamplerState> GetDefaultSamplerState();
 
 	CVertexShader* AccessVertexShader(const std::string& fileName);
 	CPixelShader* AccessPixelShader(const std::string& fileName);
@@ -87,6 +89,7 @@ private:
 	bool initShaders();
 	bool initTextures();
 	bool initMeshes();
+	bool initSamplerState();
 
 	std::optional<CVertexShader> CreateVertexShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction, std::vector<SShaderInputDescription>& ShaderInputLayout);
 	std::optional<CGeometryShader> CreateGeometryShader(const std::string& ShaderFileName, const std::string& ShaderMainFunction);
@@ -102,6 +105,8 @@ private:
 
 	std::unordered_map<EMeshType, SMesh> _Meshes;
 	std::unordered_map<std::string, CTexture> _Textures;
+	std::unordered_map<std::string, CTextureView> _TextureViews;
+	std::optional<CSamplerState> _DefaultSamplerState;
 
 	std::unordered_map<std::string, CVertexShader> _VertexShaders;
 	std::unordered_map<std::string, CPixelShader> _PixelShaders;

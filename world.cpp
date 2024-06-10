@@ -25,6 +25,7 @@ void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
 		_Light->SetId(_NextGameObjectId++);
 		_Light->Initialize(*_pGraphics);
 		_Light->SetPosition(CVector3f{ 0.0f, 0.0f, 0.0f });
+		_Light->SetScale(CVector3f{ 0.3f, 0.3f, 0.3f });
 	}
 
 	InputHandler.RegisterKeyInputEventCallback( this, std::bind( &CWorld::HandleUserInput, this, _1 ) );
@@ -71,7 +72,6 @@ void CWorld::SpawnDefaultObjects(CGraphics& Graphics)
 
 	// Bottom
 	SpawnWall(CVector3f{ 0.0f, -15.0f, 0.0f }, CVector3f{ 30.0f, 0.01f, 30.0f });
-	//SpawnWall(CVector3f{ 0.0f, -15.0f, 0.0f }, CVector3f{ 10.0f, 10.0f, 10.0f });
 	// Top
 	SpawnWall(CVector3f{ 0.0f, 15.0f, 0.0f }, CVector3f{ 30.0f, 0.01f, 30.0f });
 	// Right

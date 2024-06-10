@@ -26,6 +26,7 @@ struct SMaterial
 	int _SpecularPower; // "phong exponent"
     float4 _Color; // Only used if no Texture
     int _TextureSlot; // -1 if no texture
+    uint3 _Pad;
 };
 
 struct PerObjectCbData

@@ -50,6 +50,12 @@ bool CGraphics::Initialize(int ScreenWidth, int ScreenHeight, HWND Wnd)
 		MessageBoxW(Wnd, L"Failed to initialize Meshes", L"Error", MB_OK);
 	}
 
+	Result = initSamplerState();
+	if (!Result)
+	{
+		MessageBoxW(Wnd, L"Failed to initialize Sampler State", L"Error", MB_OK);
+	}
+
 	return true;
 }
 
@@ -109,6 +115,17 @@ std::optional<CTexture> CGraphics::GetTextureByName(const std::string& Name)
 {
 	auto it = _Textures.find(Name);
 	return (it == _Textures.end()) ? std::nullopt : std::optional<CTexture>{ it->second };
+}
+
+std::optional<CTextureView> CGraphics::GetTextureViewByName(const std::string& Name)
+{
+	auto it = _TextureViews.find(Name);
+	return (it == _TextureViews.end()) ? std::nullopt : std::optional<CTextureView>{ it->second };
+}
+
+std::optional<CSamplerState> CGraphics::GetDefaultSamplerState()
+{
+	return _DefaultSamplerState;
 }
 
 CTextureView CGraphics::CreateTextureView(CTexture& Texture, const D3D11_SHADER_RESOURCE_VIEW_DESC& Desc)
@@ -245,8 +262,18 @@ bool CGraphics::initTextures()
 		Data.SysMemPitch = 4 * 4 * width;
 		Data.SysMemSlicePitch = 0;
 		std::string name = path.stem().string();
-		_Textures.emplace(name, CreateTexture(TextureDesc, Data));
-		stbi_image_free(data);
+		CTexture Texture = CreateTexture(TextureDesc, Data);
+		_Textures.emplace(name, Texture);
+		D3D11_SHADER_RESOURCE_VIEW_DESC TextureViewDesc;
+		ZeroMemory(&TextureViewDesc, sizeof(TextureViewDesc));
+		TextureViewDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32G32B32A32Float);
+		TextureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		TextureViewDesc.Texture2D.MipLevels = 1;
+		CTextureView TextureView = CreateTextureView(Texture, TextureViewDesc);
+		_TextureViews.emplace(name, TextureView);
+
+
+		stbi_image_free(data); // (TODO: RAII)
 		return true;
 	}
 	else
@@ -261,6 +288,23 @@ bool CGraphics::initMeshes()
 {
 	_Meshes.emplace(EMeshType::Cube, mesh_loader::LoadMesh(*this, EMeshType::Cube));
 	_Meshes.emplace(EMeshType::Sphere, mesh_loader::LoadMesh(*this, EMeshType::Sphere));
+	return true;
+}
+
+bool CGraphics::initSamplerState()
+{
+	D3D11_SAMPLER_DESC SamplerDesc;
+	ZeroMemory(&SamplerDesc, sizeof(SamplerDesc));
+	SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	SamplerDesc.MipLODBias = 0.0f;
+	SamplerDesc.MaxAnisotropy = 1;
+	SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	SamplerDesc.MinLOD = 0;
+	SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	_DefaultSamplerState = CreateSamplerState(SamplerDesc);
 	return true;
 }
 

@@ -15,10 +15,7 @@ struct SRawPtrConstantBufferData
 
 struct SRenderPacket
 {
-	friend bool CanUseSameDraw(const SRenderPacket& a, const SRenderPacket& b)
-	{
-		return a._Mesh == b._Mesh && a._Material.CalcRenderHash() == b._Material.CalcRenderHash();
-	}
+	friend bool CanUseSameDraw(const SRenderPacket& a, const SRenderPacket& b);
 
 	SMesh _Mesh;
 	SMaterial _Material;

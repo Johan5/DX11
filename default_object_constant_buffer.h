@@ -10,9 +10,9 @@ struct SDefaultColorData
 	float _AmbientStrength = 0.15f;
 	// Large specular power means small specular highlight
 	int _SpecularPower = 256; // "phong exponent"
-	// Pink
-	CVector4f _Color = { 1.0f, 0.08f, 0.6f, 1.0f };
+	CVector4f _Color = { 1.0f, 0.08f, 0.6f, 1.0f }; // Pink
 	int32_t _TextureSlot = -1; // -1 if no texture
+	uint8_t _Pad[12];
 };
 struct SDefaultObjectConstantBuffer
 {

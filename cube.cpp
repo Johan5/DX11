@@ -22,35 +22,23 @@ namespace
 		return CVector4f{ Distribution(Rng), Distribution(Rng), Distribution(Rng), 1.0f };
 	}
 
-	std::pair<CTextureView, CSamplerState> CreateBrickTexture(CGraphics& Graphics)
+	std::pair<CTextureView, CSamplerState> CreateBrickTextureView(CGraphics& Graphics)
 	{
-		std::optional<CTexture> BrickTexture = Graphics.GetTextureByName("bricks");
-		ASSERT(BrickTexture, "Failed to retrieve brick texture");
-		if (!BrickTexture)
+		std::optional<CTextureView> BrickTextureView = Graphics.GetTextureViewByName("bricks");
+		ASSERT(BrickTextureView, "Failed to retrieve brick texture");
+		if (!BrickTextureView)
 		{
 			return { CTextureView{}, CSamplerState{} };
 		}
-		D3D11_SHADER_RESOURCE_VIEW_DESC TextureViewDesc;
-		ZeroMemory(&TextureViewDesc, sizeof(TextureViewDesc));
-		TextureViewDesc.Format = static_cast<DXGI_FORMAT>(EGfxResourceDataFormat::R32G32B32A32Float);
-		TextureViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		TextureViewDesc.Texture2D.MipLevels = 1;
-		CTextureView TextureView = Graphics.CreateTextureView(BrickTexture.value(), TextureViewDesc);
 
-		D3D11_SAMPLER_DESC SamplerDesc;
-		ZeroMemory(&SamplerDesc, sizeof(SamplerDesc));
-		SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-		SamplerDesc.MipLODBias = 0.0f;
-		SamplerDesc.MaxAnisotropy = 1;
-		SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-		SamplerDesc.MinLOD = 0;
-		SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		CSamplerState SamplerState = Graphics.CreateSamplerState(SamplerDesc);
+		std::optional<CSamplerState> SamplerState = Graphics.GetDefaultSamplerState();
+		ASSERT(SamplerState, "Failed to retrieve brickdefault sampler");
+		if (!SamplerState)
+		{
+			return { CTextureView{}, CSamplerState{} };
+		}
 
-		return { TextureView, SamplerState };
+		return { BrickTextureView.value(), SamplerState.value()};
 	}
 }
 
@@ -63,7 +51,7 @@ void CCube::Initialize( CGraphics& Graphics )
 {
 	_Material._VS = shader_names::DefaultVertexShaderFileName;
 	_Material._PS = shader_names::DefaultPixelShaderFileName;
-	std::pair<CTextureView, CSamplerState> BrickTexture = CreateBrickTexture(Graphics);
+	std::pair<CTextureView, CSamplerState> BrickTexture = CreateBrickTextureView(Graphics);
 	_Material._Texture = BrickTexture.first;
 	_Material._TextureSampler = BrickTexture.second;
 
