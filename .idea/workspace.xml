@@ -11,9 +11,13 @@
   </component>
   <component name="CMakeRunConfigurationManager">
     <generated>
+      <config projectName="dx11" targetName="utils" />
+      <config projectName="dx11" targetName="input" />
       <config projectName="dx11" targetName="zlibstatic" />
       <config projectName="dx11" targetName="renderer" />
       <config projectName="dx11" targetName="dx11" />
+      <config projectName="dx11" targetName="core" />
+      <config projectName="dx11" targetName="graphics" />
       <config projectName="dx11" targetName="UpdateAssimpLibsDebugSymbolsAndDLLs" />
       <config projectName="dx11" targetName="assimp" />
     </generated>
@@ -21,7 +25,7 @@
   <component name="CMakeSettings">
     <configurations>
       <configuration PROFILE_NAME="debug" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build/debug" />
-      <configuration PROFILE_NAME="release" ENABLED="true" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build/release" />
+      <configuration PROFILE_NAME="release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build/release" />
       <configuration PROFILE_NAME="debug - debug" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build/debug" />
       <configuration PROFILE_NAME="release - release" ENABLED="false" FROM_PRESET="true" GENERATION_DIR="$PROJECT_DIR$/build/release" />
     </configurations>
@@ -29,101 +33,147 @@
   <component name="ChangeListManager">
     <list default="true" id="a4619560-d863-4998-b7b8-e13301fe8393" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/3d_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/3d_math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/3d_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/3d_math.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assert.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/assert.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assert.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/assert.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/batch_render_helper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/batch_render_helper.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/batch_render_helper.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/batch_render_helper.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/camera_base.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/camera_base.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/camera_base.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/camera_base.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constant_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/constant_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/constant_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cube.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/cube.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cube.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/cube.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d3dclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/d3dclass.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/d3dclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/d3dclass.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/default_object_constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/default_object_constant_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/depth_stencil_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/depth_stencil_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/depth_stencil_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/depth_stencil_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dx11test.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/game_application.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_application.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/game_application.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/game_object.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game_object.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/game_object.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/geometry_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/geometry_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/geometry_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/geometry_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphic_resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphic_resources.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphics.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/graphics_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics_enums.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/index_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/index_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input_enums.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input_handler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input_handler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_handler_types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input_handler_types.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_handler_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input_handler_types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/light_source.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/light_source.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/light_source.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/light_source.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/logger.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/material.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/material.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/matrix.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/matrix.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/mesh.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesh.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/mesh.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesh_loader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/mesh_loader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mesh_loader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/mesh_loader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/misc_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/misc_math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/misc_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/misc_math.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orthographic_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/orthographic_camera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orthographic_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/orthographic_camera.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perspective_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/perspective_camera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/perspective_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/perspective_camera.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pixel_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/pixel_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pixel_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/pixel_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quaternion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/quaternion.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quaternion.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/quaternion.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_context.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_context.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_context.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_context.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_packet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_packet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_packet.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_packet.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_target_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_target_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/render_target_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/render_target_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sampler_state.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/sampler_state.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sampler_state.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/sampler_state.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shadow_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/shadow_handler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shadow_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/shadow_handler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stb_image.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/stb_image.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stb_image_include.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/stb_image_include.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/string_util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/string_util.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/string_util.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/string_util.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/systemclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/systemclass.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/systemclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/systemclass.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/texture.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/texture.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/texture.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/texture_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/texture_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/texture_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/texture_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vector.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vector.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vector.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/vector.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vertex_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vertex_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vertex_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/vertex_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vertex_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vertex_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vertex_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/vertex_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vs-chromium-project.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/vs-chromium-project.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/world.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/world.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/world.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/world.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/3d_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/3d_math.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/3d_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/3d_math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assert.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/assert.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assert.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/assert.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/batch_render_helper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/batch_render_helper.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/batch_render_helper.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/batch_render_helper.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/camera_base.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/camera_base.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/camera_base.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/camera_base.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constant_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/constant_buffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/constant_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cube.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/cube.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cube.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/cube.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/d3dclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/d3dclass.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/d3dclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/d3dclass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/default_object_constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/default_object_constant_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/depth_stencil_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/depth_stencil_view.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/depth_stencil_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/depth_stencil_view.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game_application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/game_application.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game_application.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/game_application.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game_object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/game_object.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/game_object.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/game_object.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/geometry_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/geometry_shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/geometry_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/geometry_shader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphic_resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphic_resources.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/graphics.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphics.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphics_enums.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/index_buffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/index_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_enums.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/input_handler.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_handler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input_handler_types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/input_handler_types.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input_handler_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_handler_types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/light_source.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/light_source.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/light_source.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/light_source.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/logger.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/logger.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/material.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/material.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/matrix.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/matrix.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/mesh.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mesh.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/mesh.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mesh_loader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/mesh_loader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mesh_loader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/mesh_loader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/misc_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/misc_math.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/misc_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/misc_math.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orthographic_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/orthographic_camera.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orthographic_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/orthographic_camera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/perspective_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/perspective_camera.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/perspective_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/perspective_camera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pixel_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/pixel_shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pixel_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/pixel_shader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/quaternion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/quaternion.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/quaternion.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/quaternion.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_context.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_context.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_context.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_context.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_packet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_packet.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_packet.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_packet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_target_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_target_view.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/render_target_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_target_view.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sampler_state.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/sampler_state.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sampler_state.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/sampler_state.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shadow_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/shadow_handler.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shadow_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/shadow_handler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stb_image.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/stb_image.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stb_image_include.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/stb_image_include.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/string_util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/string_util.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/string_util.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/string_util.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/systemclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/systemclass.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/systemclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/systemclass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/texture.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/texture.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/texture.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/texture_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/texture_view.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/texture_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/texture_view.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vector.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vector.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/vector.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vertex_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/vertex_buffer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vertex_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vertex_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/vertex_shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vertex_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_shader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/world.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/world.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/world.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/world.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/Blender/BlenderDNA.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/Blender/BlenderDNA.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXBinaryTokenizer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXBinaryTokenizer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXDocument.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXDocument.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXParser.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXParser.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXUtil.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/FBX/FBXUtil.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/HMP/HMPFileData.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/HMP/HMPFileData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/M3D/m3d.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/M3D/m3d.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MD2/MD2FileData.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MD2/MD2FileData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MD3/MD3FileData.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MD3/MD3FileData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MDC/MDCFileData.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MDC/MDCFileData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MDL/MDLFileData.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/AssetLib/MDL/MDLFileData.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/Common/StackAllocator.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/Common/StackAllocator.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/code/Material/MaterialSystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/code/Material/MaterialSystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/Open3DGC/o3dgcCommon.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/Open3DGC/o3dgcCommon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/Open3DGC/o3dgcIndexedFaceSet.inl" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/Open3DGC/o3dgcIndexedFaceSet.inl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_geometric_normal_predictor_base.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_geometric_normal_predictor_base.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_decoder.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_decoder.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_encoder.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_encoder.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_portable_predictor.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/attributes/prediction_schemes/mesh_prediction_scheme_tex_coords_portable_predictor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/config/compression_shared.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/config/compression_shared.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/entropy/shannon_entropy.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/entropy/shannon_entropy.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/mesh/mesh_edgebreaker_shared.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/compression/mesh/mesh_edgebreaker_shared.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/bit_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/bit_utils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/decoder_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/decoder_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/divide.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/divide.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/draco_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/draco_types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/hash_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/hash_utils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/quantization_utils.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/draco/src/draco/core/quantization_utils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/openddlparser/code/OpenDDLParser.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/openddlparser/code/OpenDDLParser.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/rapidjson/include/rapidjson/msinttypes/stdint.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/rapidjson/include/rapidjson/msinttypes/stdint.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/rapidjson/include/rapidjson/rapidjson.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/rapidjson/include/rapidjson/rapidjson.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/stb/stb_image.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/stb/stb_image.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/unzip/ioapi.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/unzip/ioapi.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/src/miniz.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/src/miniz.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/src/zip.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/src/zip.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/test/minunit.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/zip/test/minunit.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/zlib/contrib/iostream2/zstream_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/zlib/contrib/iostream2/zstream_test.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/contrib/zlib/contrib/minizip/ioapi.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/contrib/zlib/contrib/minizip/ioapi.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Base64.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Base64.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Compiler/pstdint.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Compiler/pstdint.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Hash.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/Hash.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/MemoryIOWrapper.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/MemoryIOWrapper.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/SGSpatialSort.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/SGSpatialSort.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/SmoothingGroups.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/SmoothingGroups.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/fast_atof.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/fast_atof.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/metadata.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/metadata.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/qnan.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/qnan.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/types.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/include/assimp/types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/samples/SimpleTexturedDirectx11/SimpleTexturedDirectx11/TextureLoader.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/samples/SimpleTexturedDirectx11/SimpleTexturedDirectx11/TextureLoader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/test/unit/Main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/test/unit/Main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/test/unit/UnitTestPCH.h" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/test/unit/UnitTestPCH.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="ClangdSettings">
-    <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:debug" />
   <component name="FileTemplateManagerImpl">
@@ -139,6 +189,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="OCResolveContextSettings">
+    <option name="configuration" value="0-Debug-input" />
   </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
@@ -164,22 +217,32 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.advertisement.text.overridden": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Git/DX11/src/core",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "project.propDebugger",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Git\DX11\src\core" />
+      <recent name="C:\Git\DX11\src\input" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Git\DX11\src" />
+      <recent name="C:\Git\DX11\src\core\include\core" />
+      <recent name="C:\Git\DX11\src\core\src" />
+      <recent name="C:\Git\DX11\src\core" />
+      <recent name="C:\Git\DX11\src\input\src" />
+      <recent name="C:\Git\DX11\src\input\include\input" />
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.dx11">
@@ -198,12 +261,32 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="core" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="core" CONFIG_NAME="debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="dx11" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="dx11" CONFIG_NAME="debug" RUN_TARGET_PROJECT_NAME="dx11" RUN_TARGET_NAME="dx11">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="graphics" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="graphics" CONFIG_NAME="debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="input" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="input" CONFIG_NAME="debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="renderer" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="renderer" CONFIG_NAME="debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="utils" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="utils" CONFIG_NAME="debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -215,7 +298,11 @@
     </configuration>
     <list>
       <item itemvalue="CMake Application.dx11" />
+      <item itemvalue="CMake Application.core" />
+      <item itemvalue="CMake Application.graphics" />
+      <item itemvalue="CMake Application.input" />
       <item itemvalue="CMake Application.renderer" />
+      <item itemvalue="CMake Application.utils" />
       <item itemvalue="CMake Application.UpdateAssimpLibsDebugSymbolsAndDLLs" />
       <item itemvalue="CMake Application.assimp" />
       <item itemvalue="CMake Application.zlibstatic" />
@@ -232,7 +319,9 @@
       <workItem from="1718986555617" duration="4000" />
       <workItem from="1742731196897" duration="525000" />
       <workItem from="1742731728714" duration="1419000" />
-      <workItem from="1742733162688" duration="5458000" />
+      <workItem from="1742733162688" duration="8447000" />
+      <workItem from="1742744573774" duration="2451000" />
+      <workItem from="1742752693650" duration="446000" />
     </task>
     <servers />
   </component>
