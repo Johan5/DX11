@@ -3,7 +3,7 @@
 #include "index_buffer.h"
 #include "vertex_buffer.h"
 
-enum class EMeshType { Cube, Sphere };
+enum class EMeshType { Cube, Sphere, XBot };
 
 struct SMesh {
   bool operator==(const SMesh& Other) const;

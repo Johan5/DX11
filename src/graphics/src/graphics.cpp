@@ -297,6 +297,7 @@ bool CGraphics::initMeshes() {
                   mesh_loader::LoadMesh(*this, EMeshType::Cube));
   _Meshes.emplace(EMeshType::Sphere,
                   mesh_loader::LoadMesh(*this, EMeshType::Sphere));
+  _Meshes.emplace(EMeshType::XBot, mesh_loader::LoadMesh(*this, EMeshType::XBot));
   return true;
 }
 

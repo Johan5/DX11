@@ -25,7 +25,6 @@ target_link_libraries(renderer
         graphics::graphics
         input::input
         utils::utils
-        assimp
 )
 target_include_directories(renderer PUBLIC include)
 

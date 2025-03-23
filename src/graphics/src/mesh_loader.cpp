@@ -5,6 +5,10 @@
 #include "graphics/graphics.h"
 #include "utils/assert.h"
 
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
+
 #include <random>
 #include <vector>
 
@@ -17,6 +21,12 @@ struct SCubeVertex {
 struct STypicalVertex {
   CVector3f _Position;
   CVector3f _Normal;
+};
+struct SVertexWithBones {
+  CVector3f _Position;
+  CVector3f _Normal;
+  CVector2f _UV;
+
 };
 
 std::vector<SCubeVertex> GenerateCubeModelVertices() {
@@ -236,6 +246,25 @@ SMesh LoadSphereMesh(CGraphics& Graphics) {
       Vertices.data(), VertexBufferSize, Properties);
   return SMesh{VertexBuffer, CIndexBuffer{}, EMeshType::Sphere};
 }
+
+SMesh LoadXBotMesh(CGraphics& Graphics) {
+  // Create vertex buffer, index buffer, mesh type,
+  Assimp::Importer importer;
+
+  std::string characterFbxPath = "assets/Character/XBot.fbx";
+  const aiScene* scene = importer.ReadFile(
+      characterFbxPath, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+                            aiProcess_JoinIdenticalVertices |
+                            aiProcess_SortByPType);
+
+  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
+      !scene->mRootNode || scene->mNumMeshes == 0) {
+    ASSERT(false, "Scene import failed");
+  }
+
+  // https://vlad.website/game-engine-skeletal-animation/
+
+}
 }  // namespace
 
 namespace mesh_loader {
@@ -249,6 +278,10 @@ SMesh LoadMesh(CGraphics& Graphics, EMeshType MeshType) {
     case EMeshType::Sphere: {
       static SMesh SphereMesh = LoadSphereMesh(Graphics);
       return SphereMesh;
+    }
+    case EMeshType::XBot: {
+      static SMesh XBotMesh = LoadXBotMesh(Graphics);
+      return XBotMesh;
     }
   }
   ASSERT(false, "Mesh loading not implemented.");

@@ -25,5 +25,5 @@ class CConstantBuffer {
  private:
   Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
   int32_t _BufferSizeInBytes = 0;
-  ECpuAccessPolicy _AccessPolicy;
+  ECpuAccessPolicy _AccessPolicy = ECpuAccessPolicy::NoAccess;
 };
