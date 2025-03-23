@@ -31,93 +31,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4619560-d863-4998-b7b8-e13301fe8393" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.clang-format" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/TODO.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/3d_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/3d_math.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/graphic_defines.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/graphic_defines.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/matrix.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/matrix.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/misc_math.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/misc_math.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/quaternion.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/quaternion.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/include/core/vector.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/vector.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/src/3d_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/3d_math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/src/misc_math.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/misc_math.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/src/quaternion.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/src/quaternion.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/batch_render_helper.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/batch_render_helper.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/constant_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/d3dclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/d3dclass.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/default_object_constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/default_object_constant_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/depth_stencil_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/depth_stencil_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/geometry_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/geometry_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/graphic_resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphic_resources.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/graphics.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphics.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/graphics_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphics_enums.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/index_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/index_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/material.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/material.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/mesh.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/mesh.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/mesh_loader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/mesh_loader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/pixel_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/pixel_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/render_context.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_context.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/render_packet.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_packet.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/render_target_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/render_target_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/sampler_state.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/sampler_state.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/shadow_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/shadow_handler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/texture.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/texture.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/texture_view.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/texture_view.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_buffer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_shader.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/vertex_shader.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/batch_render_helper.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/batch_render_helper.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/constant_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/constant_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/d3dclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/d3dclass.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/depth_stencil_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/depth_stencil_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/geometry_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/geometry_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/graphics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/graphics.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/index_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/index_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/mesh.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/mesh.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/mesh_loader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/mesh_loader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/pixel_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/pixel_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/render_context.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_context.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/render_packet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_packet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/render_target_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/render_target_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/sampler_state.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/sampler_state.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/shadow_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/shadow_handler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/texture.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/texture.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/texture_view.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/texture_view.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/vertex_buffer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/vertex_buffer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/graphics/src/vertex_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/vertex_shader.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/camera_base.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/camera_base.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/input_enums.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_enums.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/input_handler.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_handler.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/input_handler_types.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/input_handler_types.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/orthographic_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/orthographic_camera.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/include/input/perspective_camera.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/include/input/perspective_camera.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/src/camera_base.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/camera_base.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/src/input_handler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/input_handler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/src/input_handler_types.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/input_handler_types.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/src/orthographic_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/orthographic_camera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/input/src/perspective_camera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/input/src/perspective_camera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/cube.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/cube.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/game_application.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/game_application.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/game_object.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/game_object.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/light_source.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/light_source.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/systemclass.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/systemclass.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/world.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/world.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/cube.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/cube.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/game_application.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/game_application.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/game_object.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/game_object.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/light_source.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/light_source.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/systemclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/systemclass.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/renderer/src/world.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/world.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/include/utils/assert.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/assert.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/include/utils/logger.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/logger.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/include/utils/stb_image.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/stb_image.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/include/utils/stb_image_include.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/stb_image_include.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/include/utils/string_util.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/include/utils/string_util.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/src/assert.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/assert.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/src/logger.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/logger.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/src/string_util.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/src/string_util.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="a4619560-d863-4998-b7b8-e13301fe8393" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -158,28 +72,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "CMake Application.dx11.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.advertisement.text.overridden": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Git/DX11/src/core",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;CMake Application.dx11.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.advertisement.text.overridden&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Git/DX11/src/core&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Git\DX11\src\core" />
@@ -194,12 +108,12 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.dx11">
-    <configuration name="UpdateAssimpLibsDebugSymbolsAndDLLs" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="UpdateAssimpLibsDebugSymbolsAndDLLs" CONFIG_NAME="debug">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="UpdateAssimpLibsDebugSymbolsAndDLLs" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="UpdateAssimpLibsDebugSymbolsAndDLLs" CONFIG_NAME="debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -270,6 +184,7 @@
       <workItem from="1742733162688" duration="8447000" />
       <workItem from="1742744573774" duration="2451000" />
       <workItem from="1742752693650" duration="766000" />
+      <workItem from="1742753899857" duration="2000" />
     </task>
     <servers />
   </component>
