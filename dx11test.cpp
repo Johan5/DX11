@@ -2,7 +2,6 @@
 //#include "dx11test.h"
 //
 //#include <iostream>
-//
 //#include <Windows.h>
 //
 //using namespace std;

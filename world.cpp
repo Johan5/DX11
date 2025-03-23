@@ -8,6 +8,11 @@
 #include "input_enums.h"
 #include "assert.h"
 
+/// DEBUG CODE. REMOVE
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+
 #include <functional>
 
 void CWorld::Initialize( CGraphics& Graphics, CInputHandler& InputHandler )
@@ -45,7 +50,15 @@ void CWorld::ShutDown()
 
 void CWorld::Update()
 {
+	Assimp::Importer importer;
 
+	std::string characterFbxPath = "assets/Character/XBot.fbx";
+	const aiScene* scene = importer.ReadFile(characterFbxPath, aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType);
+
+	int asd = 2;
 }
 
 void CWorld::Render(CRenderContext& RenderContext)

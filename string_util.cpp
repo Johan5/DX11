@@ -1,5 +1,4 @@
 #include "string_util.h"
-
 #include <Windows.h>
 
 

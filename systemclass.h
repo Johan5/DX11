@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-
-#include <windows.h>
+#include <Windows.h>
 
 #include "game_application.h"
 #include "graphics.h"

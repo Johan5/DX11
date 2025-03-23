@@ -1,5 +1,4 @@
 #include "systemclass.h"
-
 #include <Windows.h>
 
 #include <iostream>
