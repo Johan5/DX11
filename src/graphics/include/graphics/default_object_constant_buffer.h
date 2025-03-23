@@ -3,7 +3,14 @@
 #include "core/matrix.h"
 #include "core/vector.h"
 
-struct SDefaultColorData {
+struct SDefaultObjectCb {
+  // Local To World
+  CMatrix4x4f _WorldMatrix;
+  // Local To World for normals
+  CMatrix4x4f _NormalWorldMatrix;
+};
+
+struct SMaterialCb {
   float _DiffuseStrength = 1.0f;
   float _SpecularStrength = 1.0f;
   float _AmbientStrength = 0.15f;
@@ -13,10 +20,8 @@ struct SDefaultColorData {
   int32_t _TextureSlot = -1;                     // -1 if no texture
   uint8_t _Pad[12];
 };
-struct SDefaultObjectConstantBuffer {
-  // Local To World
-  CMatrix4x4f _WorldMatrix;
-  // Local To World for normals
-  CMatrix4x4f _NormalWorldMatrix;
-  SDefaultColorData _ColorData;
+
+
+struct SDefaultMaterialCb {
+  SMaterialCb _Material;
 };

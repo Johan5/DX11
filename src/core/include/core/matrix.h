@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <utility>
 
 #include "core/vector.h"
@@ -27,7 +28,9 @@ class CMatrix4x4f {
   }
 
   void Transpose();
-  CMatrix4x4f CalcTranspose();
+  CMatrix4x4f CalcTranspose() const;
+
+  std::optional<CMatrix4x4f> CalcInvert() const;
 
   float _M11 = 0.0f;
   float _M12 = 0.0f;
@@ -132,7 +135,75 @@ inline void CMatrix4x4f::Transpose() {
   std::swap(_M34, _M43);
 }
 
-inline CMatrix4x4f CMatrix4x4f::CalcTranspose() {
+inline CMatrix4x4f CMatrix4x4f::CalcTranspose() const {
   return CMatrix4x4f{_M11, _M21, _M31, _M41, _M12, _M22, _M32, _M42,
                      _M13, _M23, _M33, _M43, _M14, _M24, _M34, _M44};
+}
+
+inline std::optional<CMatrix4x4f> CMatrix4x4f::CalcInvert() const {
+  // This implementation is borrowed from the web
+
+  float inv[16], det;
+  int32_t i;
+
+  inv[0] = _M22 * _M33 * _M44 - _M22 * _M34 * _M43 - _M32 * _M23 * _M44 +
+           _M32 * _M24 * _M43 + _M42 * _M23 * _M34 - _M42 * _M24 * _M33;
+
+  inv[4] = -_M21 * _M33 * _M44 + _M21 * _M34 * _M43 + _M31 * _M23 * _M44 -
+           _M31 * _M24 * _M43 - _M41 * _M23 * _M34 + _M41 * _M24 * _M33;
+
+  inv[8] = _M21 * _M32 * _M44 - _M21 * _M34 * _M42 - _M31 * _M22 * _M44 +
+           _M31 * _M24 * _M42 + _M41 * _M22 * _M34 - _M41 * _M24 * _M32;
+
+  inv[12] = -_M21 * _M32 * _M43 + _M21 * _M33 * _M42 + _M31 * _M22 * _M43 -
+            _M31 * _M23 * _M42 - _M41 * _M22 * _M33 + _M41 * _M23 * _M32;
+
+  inv[1] = -_M12 * _M33 * _M44 + _M12 * _M34 * _M43 + _M32 * _M13 * _M44 -
+           _M32 * _M14 * _M43 - _M42 * _M13 * _M34 + _M42 * _M14 * _M33;
+
+  inv[5] = _M11 * _M33 * _M44 - _M11 * _M34 * _M43 - _M31 * _M13 * _M44 +
+           _M31 * _M14 * _M43 + _M41 * _M13 * _M34 - _M41 * _M14 * _M33;
+
+  inv[9] = -_M11 * _M32 * _M44 + _M11 * _M34 * _M42 + _M31 * _M12 * _M44 -
+           _M31 * _M14 * _M42 - _M41 * _M12 * _M34 + _M41 * _M14 * _M32;
+
+  inv[13] = _M11 * _M32 * _M43 - _M11 * _M33 * _M42 - _M31 * _M12 * _M43 +
+            _M31 * _M13 * _M42 + _M41 * _M12 * _M33 - _M41 * _M13 * _M32;
+
+  inv[2] = _M12 * _M23 * _M44 - _M12 * _M24 * _M43 - _M22 * _M13 * _M44 +
+           _M22 * _M14 * _M43 + _M42 * _M13 * _M24 - _M42 * _M14 * _M23;
+
+  inv[6] = -_M11 * _M23 * _M44 + _M11 * _M24 * _M43 + _M21 * _M13 * _M44 -
+           _M21 * _M14 * _M43 - _M41 * _M13 * _M24 + _M41 * _M14 * _M23;
+
+  inv[10] = _M11 * _M22 * _M44 - _M11 * _M24 * _M42 - _M21 * _M12 * _M44 +
+            _M21 * _M14 * _M42 + _M41 * _M12 * _M24 - _M41 * _M14 * _M22;
+
+  inv[14] = -_M11 * _M22 * _M43 + _M11 * _M23 * _M42 + _M21 * _M12 * _M43 -
+            _M21 * _M13 * _M42 - _M41 * _M12 * _M23 + _M41 * _M13 * _M22;
+
+  inv[3] = -_M12 * _M23 * _M34 + _M12 * _M24 * _M33 + _M22 * _M13 * _M34 -
+           _M22 * _M14 * _M33 - _M32 * _M13 * _M24 + _M32 * _M14 * _M23;
+
+  inv[7] = _M11 * _M23 * _M34 - _M11 * _M24 * _M33 - _M21 * _M13 * _M34 +
+           _M21 * _M14 * _M33 + _M31 * _M13 * _M24 - _M31 * _M14 * _M23;
+
+  inv[11] = -_M11 * _M22 * _M34 + _M11 * _M24 * _M32 + _M21 * _M12 * _M34 -
+            _M21 * _M14 * _M32 - _M31 * _M12 * _M24 + _M31 * _M14 * _M22;
+
+  inv[15] = _M11 * _M22 * _M33 - _M11 * _M23 * _M32 - _M21 * _M12 * _M33 +
+            _M21 * _M13 * _M32 + _M31 * _M12 * _M23 - _M31 * _M13 * _M22;
+
+  det = _M11 * inv[0] + _M12 * inv[4] + _M13 * inv[8] + _M14 * inv[12];
+
+  if (det == 0)
+    return std::nullopt;
+
+  det = 1.0f / det;
+
+  return CMatrix4x4f{
+      inv[0] * det,  inv[1] * det,  inv[2] * det,  inv[3] * det,
+      inv[4] * det,  inv[5] * det,  inv[6] * det,  inv[7] * det,
+      inv[8] * det,  inv[9] * det,  inv[10] * det, inv[11] * det,
+      inv[12] * det, inv[13] * det, inv[14] * det, inv[15] * det};
 }

@@ -42,7 +42,7 @@ class CGraphics {
   CVertexBuffer CreateVertexBuffer(const void* pVertexData,
                                    uint32_t VertexDataSizeInBytes,
                                    const SVertexBufferProperties& Settings);
-  CIndexBuffer CreateIndexBuffer(uint32_t SizeInBytes,
+  CIndexBuffer CreateIndexBuffer(const void* pIndexData, uint32_t SizeInBytes,
                                  ECpuAccessPolicy AccessPolicy);
   CConstantBuffer CreateConstantBuffer(int32_t SizeInBytes,
                                        ECpuAccessPolicy AccessPolicy);

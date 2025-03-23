@@ -16,6 +16,7 @@
       <config projectName="dx11" targetName="zlibstatic" />
       <config projectName="dx11" targetName="renderer" />
       <config projectName="dx11" targetName="dx11" />
+      <config projectName="dx11" targetName="copy_shaders" />
       <config projectName="dx11" targetName="core" />
       <config projectName="dx11" targetName="graphics" />
       <config projectName="dx11" targetName="UpdateAssimpLibsDebugSymbolsAndDLLs" />
@@ -31,7 +32,26 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a4619560-d863-4998-b7b8-e13301fe8393" name="Changes" comment="" />
+    <list default="true" id="a4619560-d863-4998-b7b8-e13301fe8393" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/character_vertex.fx" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/character_vertex.fx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/default_vertex.fx" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/default_vertex.fx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/shadow_map.fx" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/shadow_map.fx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/include/core/matrix.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/include/core/matrix.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/constant_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/default_object_constant_buffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/default_object_constant_buffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/include/graphics/graphic_resources.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/include/graphics/graphic_resources.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/src/d3dclass.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/d3dclass.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/src/graphics.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/graphics.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/src/pixel_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/pixel_shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/graphics/src/vertex_shader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/graphics/src/vertex_shader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/cube.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/cube.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/include/renderer/light_source.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/include/renderer/light_source.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/src/cube.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/cube.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/renderer/src/world.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/src/world.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thirdparty/assimp/samples/SimpleTexturedDirectx11/SimpleTexturedDirectx11/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/thirdparty/assimp/samples/SimpleTexturedDirectx11/SimpleTexturedDirectx11/main.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,6 +71,11 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="NamedScopeManager">
+    <order>
+      <scope name="Source Code" />
+    </order>
   </component>
   <component name="OCResolveContextSettings">
     <option name="configuration" value="0-Debug-input" />
@@ -72,30 +97,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;CMake Application.dx11.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.advertisement.text.overridden&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Git/DX11/src/core&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "CMake Application.dx11.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.advertisement.text.overridden": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Git/DX11/shaders",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Git\DX11\shaders" />
+      <recent name="C:\Git\DX11\src\renderer\src" />
       <recent name="C:\Git\DX11\src\core" />
       <recent name="C:\Git\DX11\src\input" />
     </key>
@@ -108,17 +135,17 @@
     </key>
   </component>
   <component name="RunManager" selected="CMake Application.dx11">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="UpdateAssimpLibsDebugSymbolsAndDLLs" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="UpdateAssimpLibsDebugSymbolsAndDLLs" CONFIG_NAME="debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <configuration name="assimp" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="assimp" CONFIG_NAME="debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="copy_shaders" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="dx11" TARGET_NAME="copy_shaders" CONFIG_NAME="debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -159,14 +186,15 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="CMake Application.dx11" />
+      <item itemvalue="CMake Application.UpdateAssimpLibsDebugSymbolsAndDLLs" />
+      <item itemvalue="CMake Application.assimp" />
+      <item itemvalue="CMake Application.copy_shaders" />
       <item itemvalue="CMake Application.core" />
+      <item itemvalue="CMake Application.dx11" />
       <item itemvalue="CMake Application.graphics" />
       <item itemvalue="CMake Application.input" />
       <item itemvalue="CMake Application.renderer" />
       <item itemvalue="CMake Application.utils" />
-      <item itemvalue="CMake Application.UpdateAssimpLibsDebugSymbolsAndDLLs" />
-      <item itemvalue="CMake Application.assimp" />
       <item itemvalue="CMake Application.zlibstatic" />
     </list>
   </component>
@@ -184,7 +212,21 @@
       <workItem from="1742733162688" duration="8447000" />
       <workItem from="1742744573774" duration="2451000" />
       <workItem from="1742752693650" duration="766000" />
-      <workItem from="1742753899857" duration="2000" />
+      <workItem from="1742753899857" duration="5017000" />
+      <workItem from="1743178572136" duration="3167000" />
+      <workItem from="1743351304143" duration="6799000" />
+      <workItem from="1743865392826" duration="6988000" />
+      <workItem from="1743888000383" duration="6428000" />
+      <workItem from="1744534439942" duration="15757000" />
+      <workItem from="1755378777182" duration="13255000" />
+      <workItem from="1755432008421" duration="16416000" />
+      <workItem from="1755716413633" duration="8088000" />
+      <workItem from="1755896942503" duration="3831000" />
+      <workItem from="1755936529983" duration="3126000" />
+      <workItem from="1756571350037" duration="3422000" />
+      <workItem from="1756673660323" duration="2778000" />
+      <workItem from="1757152751975" duration="81000" />
+      <workItem from="1758310675127" duration="1641000" />
     </task>
     <servers />
   </component>
@@ -195,5 +237,9 @@
     <isAutomaticCheckingOnLaunch value="false" />
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

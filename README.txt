@@ -6,3 +6,6 @@ Create Windows Application from existing sources,
 Set C++17,
 Set Project/Property/Advanced/Character_Set to Unicode
 Set Project/Properties/Debugging/Working Direction to "."
+
+
+The project uses row-major matrices and a left-handed coordinate system

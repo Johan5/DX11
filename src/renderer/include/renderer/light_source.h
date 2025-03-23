@@ -31,7 +31,8 @@ class CLightSource : public CGameObject {
 
   SMaterial _Material;
   SMesh _Mesh;
-  SDefaultObjectConstantBuffer _CbData;
+  SDefaultObjectCb _CbData;
+  SDefaultMaterialCb _MatCb;
 
   bool _IsInitialized = false;
 };

@@ -78,8 +78,12 @@ void CLightSource::Initialize(CGraphics& Graphics) {
     return;
   }
 
-  _CbData._ColorData._AmbientStrength = 1.0f;
-  _CbData._ColorData._Color = CVector4f{0.9f, 0.9f, 0.9f, 1.0f};
+  // White emissive-like material (visible light proxy)
+  _MatCb._Material._AmbientStrength = 1.0f;
+  _MatCb._Material._DiffuseStrength = 0.0f;
+  _MatCb._Material._SpecularStrength = 0.0f;
+  _MatCb._Material._Color = CVector4f{0.9f, 0.9f, 0.9f, 1.0f};
+
   _IsInitialized = true;
 }
 
@@ -96,10 +100,14 @@ void CLightSource::Render(CBatchRenderHelper& BatchRenderHelper,
                           const CCameraBase& Camera) {
   _CbData._WorldMatrix = GetLocalToWorldTransform();
   _CbData._NormalWorldMatrix = GetNormalLocalToWorldTransform();
-  SRenderPacket RenderPacket{._Mesh = _Mesh,
+SRenderPacket RenderPacket{._Mesh = _Mesh,
                              ._Material = _Material,
-                             ._ConstantBufferData = SRawPtrConstantBufferData{
-                                 ._ConstantData = static_cast<void*>(&_CbData),
-                                 ._ConstantDataByteSize = sizeof(_CbData)}};
+                             ._Cbs = SInstanceCbs{._PerObject = SRawPtrConstantBufferData{
+                                                        ._ConstantData = static_cast<void*>(&_CbData),
+                                                        ._ConstantDataByteSize = sizeof(_CbData)},
+                                                    ._PerMaterial = SRawPtrConstantBufferData{
+                                                        ._ConstantData = static_cast<void*>(&_MatCb),
+                                                        ._ConstantDataByteSize = sizeof(_MatCb)},
+                                                    ._PerSkeleton = std::nullopt}};
   BatchRenderHelper.QueForInstancedRendering(RenderPacket, ERenderPass::Normal);
 }

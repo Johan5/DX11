@@ -7,7 +7,7 @@
 #include <cstdint>
 
 // This is the index that will be used when registering a buffer with the device context
-enum class EConstantBufferIdx { PerFrame, PerCamera, PerLight, PerObject };
+enum class EConstantBufferIdx { PerFrame, PerCamera, PerLight, PerObject, PerMaterial, PerSkeleton };
 
 class CConstantBuffer {
   friend class CGraphics;  // Only allow CGraphics to create
@@ -25,5 +25,5 @@ class CConstantBuffer {
  private:
   Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
   int32_t _BufferSizeInBytes = 0;
-  ECpuAccessPolicy _AccessPolicy;
+  ECpuAccessPolicy _AccessPolicy = ECpuAccessPolicy::NoAccess;
 };

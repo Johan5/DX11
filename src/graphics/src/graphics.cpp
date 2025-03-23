@@ -62,9 +62,9 @@ CVertexBuffer CGraphics::CreateVertexBuffer(
   return CVertexBuffer{AccessDevice(), pVertexData, Settings};
 }
 
-CIndexBuffer CGraphics::CreateIndexBuffer(uint32_t SizeInBytes,
+CIndexBuffer CGraphics::CreateIndexBuffer(const void* pIndexData, uint32_t SizeInBytes,
                                           ECpuAccessPolicy AccessPolicy) {
-  return CIndexBuffer(AccessDevice(), SizeInBytes, AccessPolicy);
+  return CIndexBuffer(AccessDevice(), pIndexData, SizeInBytes, SizeInBytes, AccessPolicy);
 }
 
 CConstantBuffer CGraphics::CreateConstantBuffer(int32_t SizeInBytes,
@@ -236,6 +236,34 @@ bool CGraphics::initShaders() {
     return false;
   }
 
+  std::vector<SShaderInputDescription> CharInputLayout;
+  CharInputLayout.push_back(SShaderInputDescription{
+      "POSITION", EGfxResourceDataFormat::R32G32B32Float});
+  CharInputLayout.push_back(SShaderInputDescription{
+      "NORMAL", EGfxResourceDataFormat::R32G32B32Float});
+  CharInputLayout.push_back(
+      SShaderInputDescription{"TEXCOORD", EGfxResourceDataFormat::R32G32Float});
+  CharInputLayout.push_back(SShaderInputDescription{
+      "BONE_INDICES", EGfxResourceDataFormat::R32G32B32A32UInt});
+  CharInputLayout.push_back(SShaderInputDescription{
+      "BONE_WEIGHTS", EGfxResourceDataFormat::R32G32B32A32Float});
+  CharInputLayout.push_back(SShaderInputDescription{
+      "SV_InstanceID", EGfxResourceDataFormat::R32UInt});
+  std::optional<CVertexShader> CharVs = CreateVertexShader(
+      (shaderFolder / shader_names::CharacterVertexShaderFileName).string(),
+      shader_names::CharacterVertexShaderMainFunction, CharInputLayout);
+  std::optional<CPixelShader> CharPs = CreatePixelShader(
+      (shaderFolder / shader_names::CharacterPixelShaderFileName).string(),
+      shader_names::CharacterPixelShaderMainFunction);
+  if (CharVs && CharPs) {
+    _VertexShaders.emplace(shader_names::CharacterVertexShaderFileName,
+                           CharVs.value());
+    _PixelShaders.emplace(shader_names::CharacterPixelShaderFileName,
+                          CharPs.value());
+  } else {
+    return false;
+  }
+
   return true;
 }
 
@@ -297,6 +325,8 @@ bool CGraphics::initMeshes() {
                   mesh_loader::LoadMesh(*this, EMeshType::Cube));
   _Meshes.emplace(EMeshType::Sphere,
                   mesh_loader::LoadMesh(*this, EMeshType::Sphere));
+  _Meshes.emplace(EMeshType::XBot,
+                  mesh_loader::LoadMesh(*this, EMeshType::XBot));
   return true;
 }
 

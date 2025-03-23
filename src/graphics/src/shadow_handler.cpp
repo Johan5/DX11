@@ -3,7 +3,7 @@
 #include "core/misc_math.h"
 #include "core/vector.h"
 #include "graphics/graphics_enums.h"
-#include "input/perspective_camera.h"
+#include "input/camera_base.h"
 #include "utils/assert.h"
 
 #include <limits>
@@ -123,7 +123,7 @@ SShadowData CShadowHandler::CreateShadowMap(
     LightCb._LightMaxDist = NGraphicsDefines::ScreenFar;
     float FieldOfView = NMiscMath::Pi / 2.0f;
     float AspectRatio = 1.0f;
-    CPerspectiveCamera DummyCamera{FieldOfView, AspectRatio};
+    CCameraBase DummyCamera{FieldOfView, AspectRatio};
     LightCb._LightProjectionMatrix = DummyCamera.GetProjectionMatrix();
     CVector3f Forward{1.0f, 0.0f, 0.0f};
     CVector3f Up{0.0f, 1.0f, 0.0f};

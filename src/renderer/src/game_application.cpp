@@ -20,10 +20,11 @@ CGameApplication::~CGameApplication() {
 
 bool CGameApplication::ProduceNewFrame() {
   _InputHandler.DispatchInputEvents();
+  _World.Update();
 
   CVector4f BackgroundColor{0.1f, 0.1f, 0.1f, 1.0f};
   CRenderContext& RenderContext = _Graphics.StartRenderFrame(BackgroundColor);
-  { _World.Render(RenderContext); }
+  _World.Render(RenderContext);
   _Graphics.EndFrame(RenderContext);
   return !_ShouldExitApplication;
 }

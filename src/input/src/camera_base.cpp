@@ -1,22 +1,50 @@
 #include "input/camera_base.h"
 
 #include "core/3d_math.h"
+#include "core/graphic_defines.h"
 #include "core/misc_math.h"
 #include "utils/assert.h"
+
+namespace {
+CMatrix4x4f CreatePerspectiveFovLH(float fovAngleY, float aspectRatio,
+                                   float nearZ, float farZ) {
+  // yScale determines how wide the view is vertically.
+  // The tanf function is used to calculate this from the FOV angle.
+  float yScale = 1.0f / tanf(fovAngleY / 2.0f);
+  // xScale is derived from yScale and the aspect ratio.
+  float xScale = yScale / aspectRatio;
+
+  // These values remap the Z-depth from the view frustum to the [0, 1] range.
+  float zRange = farZ / (farZ - nearZ);
+
+  CMatrix4x4f result = {
+      xScale, 0.0f,   0.0f, 0.0f, 0.0f, yScale,          0.0f, 0.0f, 0.0f,
+      0.0f,   zRange, 1.0f, 0.0f, 0.0f, -nearZ * zRange, 0.0f};
+
+  return result;
+}
+
+}  // namespace
 
 // "World to Camera"
 CMatrix4x4f CCameraBase::GetViewMatrix() const {
   // Establish basis vectors for camera space
   CMatrix4x4f Ret = N3DMath::CreateCoordinateTransform(
-      _Position, _Forward, _Up,
+      _Position, _Forward, _Up, CVector3f{1.0f, 1.0f, 1.0f},
       N3DMath::ECoordinateTransformType::WorldToLocal);
   return Ret;
+}
+
+CMatrix4x4f CCameraBase::GetProjectionMatrix() const {
+  return CreatePerspectiveFovLH(_VerticalFov, _AspectRatio,
+                                NGraphicsDefines::ScreenNear,
+                                NGraphicsDefines::ScreenFar);
 }
 
 CMatrix4x4f CCameraBase::GetViewAndProjection() const {
   ASSERT(N3DMath::AreOrthogonal(GetForwardVec(), GetUpVec()),
          "Camera Forward and Up vec are no longer orthogonal.");
-  return GetProjectionMatrix() * GetViewMatrix();
+  return GetViewMatrix() * GetProjectionMatrix();
 }
 
 const CVector3f& CCameraBase::GetPosition() const {

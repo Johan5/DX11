@@ -62,11 +62,12 @@ void CCube::Initialize(CGraphics& Graphics) {
     return;
   }
 
-  _CbData._ColorData = SDefaultColorData{._DiffuseStrength = 1.0f,
-                                         ._SpecularStrength = 1.0f,
-                                         ._AmbientStrength = 0.15f,
-                                         ._SpecularPower = 256,
-                                         ._Color = GenRandomColor()};
+  _materialCb = SDefaultMaterialCb{
+      ._Material = SMaterialCb{._DiffuseStrength = 1.0f,
+                               ._SpecularStrength = 1.0f,
+                               ._AmbientStrength = 0.15f,
+                               ._SpecularPower = 256,
+                               ._Color = GenRandomColor()}};
 
   _IsInitialized = true;
 }
@@ -86,14 +87,19 @@ void CCube::Render(CBatchRenderHelper& BatchRenderHelper,
     return;
   }
 
-  _CbData._WorldMatrix = GetLocalToWorldTransform();
-  _CbData._NormalWorldMatrix = GetNormalLocalToWorldTransform();
-  SRenderPacket NormalRenderPacket{
+  _objectCb._WorldMatrix = GetLocalToWorldTransform();
+  _objectCb._NormalWorldMatrix = GetNormalLocalToWorldTransform();
+SRenderPacket NormalRenderPacket{
       ._Mesh = _Mesh,
       ._Material = _Material,
-      ._ConstantBufferData = SRawPtrConstantBufferData{
-          ._ConstantData = static_cast<void*>(&_CbData),
-          ._ConstantDataByteSize = sizeof(_CbData)}};
+      ._Cbs = SInstanceCbs{
+          ._PerObject = SRawPtrConstantBufferData{
+              ._ConstantData = static_cast<void*>(&_objectCb),
+              ._ConstantDataByteSize = sizeof(_objectCb)},
+          ._PerMaterial = SRawPtrConstantBufferData{
+              ._ConstantData = static_cast<void*>(&_materialCb),
+              ._ConstantDataByteSize = sizeof(_materialCb)},
+          ._PerSkeleton = std::nullopt}};
   BatchRenderHelper.QueForInstancedRendering(NormalRenderPacket,
                                              ERenderPass::Normal);
 
@@ -101,9 +107,12 @@ void CCube::Render(CBatchRenderHelper& BatchRenderHelper,
     SRenderPacket ShadowRenderPacket{
         ._Mesh = _Mesh,
         ._Material = _ShadowMaterial,
-        ._ConstantBufferData = SRawPtrConstantBufferData{
-            ._ConstantData = static_cast<void*>(&_CbData._WorldMatrix),
-            ._ConstantDataByteSize = sizeof(_CbData._WorldMatrix)}};
+        ._Cbs = SInstanceCbs{
+            ._PerObject = SRawPtrConstantBufferData{
+                ._ConstantData = static_cast<void*>(&_objectCb._WorldMatrix),
+                ._ConstantDataByteSize = sizeof(_objectCb._WorldMatrix)},
+            ._PerMaterial = std::nullopt,
+            ._PerSkeleton = std::nullopt}};
     BatchRenderHelper.QueForInstancedRendering(ShadowRenderPacket,
                                                ERenderPass::Shadow);
   }
@@ -121,6 +130,10 @@ SMaterial& CCube::AccessMaterial() {
   return _Material;
 }
 
-SDefaultObjectConstantBuffer& CCube::AccessConstantBuffer() {
-  return _CbData;
+SDefaultObjectCb& CCube::AccessObjectCb() {
+  return _objectCb;
+}
+
+SDefaultMaterialCb& CCube::AccessMaterialCb() {
+  return _materialCb;
 }

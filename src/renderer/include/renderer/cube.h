@@ -31,14 +31,17 @@ class CCube : public CGameObject {
   void DisableShadowRendering();
 
   SMaterial& AccessMaterial();
-  SDefaultObjectConstantBuffer& AccessConstantBuffer();
+  SDefaultObjectCb& AccessObjectCb();
+  SDefaultMaterialCb& AccessMaterialCb();
+
 
  private:
   SMaterial _Material;
   SMaterial _ShadowMaterial;
   SMesh _Mesh;
   std::string _Texture = "bricks";
-  SDefaultObjectConstantBuffer _CbData;
+  SDefaultObjectCb _objectCb;
+  SDefaultMaterialCb _materialCb;
 
   bool _IsInitialized = false;
   bool _ShouldRenderShadow = true;

@@ -17,13 +17,16 @@ class CIndexBuffer {
   const ID3D11Buffer* GetRawBuffer() const { return _pBuffer.Get(); }
   uint32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
   ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
+  uint32_t GetIndexCount() const { return _IndexCount; }
 
  private:
-  explicit CIndexBuffer(ID3D11Device& Device, uint32_t SizeInBytes,
+  explicit CIndexBuffer(ID3D11Device& Device, const void* pIndexData,
+                        uint32_t SizeInBytes, uint32_t IndexCount,
                         ECpuAccessPolicy AccessPolicy);
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
   uint32_t _BufferSizeInBytes = 0;
+  uint32_t _IndexCount = 0;
   ECpuAccessPolicy _AccessPolicy;
 };

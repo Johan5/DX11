@@ -8,11 +8,29 @@
 namespace {
 void AppendConstantDataToVec(const SRenderPacket& RenderPacket,
                              CBatchRenderHelper::LocalCbData& DataInOut) {
-  const uint8_t* pData = static_cast<const uint8_t*>(
-      RenderPacket._ConstantBufferData._ConstantData);  // probably UB
-  DataInOut._CbData.insert(
-      DataInOut._CbData.end(), pData,
-      pData + RenderPacket._ConstantBufferData._ConstantDataByteSize);
+  // Per-object is always required
+  {
+    const uint8_t* pData = static_cast<const uint8_t*>(
+        RenderPacket._Cbs._PerObject._ConstantData);
+    DataInOut._PerObject.insert(
+        DataInOut._PerObject.end(), pData,
+        pData + RenderPacket._Cbs._PerObject._ConstantDataByteSize);
+  }
+  // Per-material (optional)
+  if (RenderPacket._Cbs._PerMaterial) {
+    const auto& mat = *RenderPacket._Cbs._PerMaterial;
+    const uint8_t* pData = static_cast<const uint8_t*>(mat._ConstantData);
+    DataInOut._PerMaterial.insert(DataInOut._PerMaterial.end(), pData,
+                                  pData + mat._ConstantDataByteSize);
+  }
+  // Per-skeleton (optional)
+  if (RenderPacket._Cbs._PerSkeleton) {
+    const auto& skn = *RenderPacket._Cbs._PerSkeleton;
+    const uint8_t* pData = static_cast<const uint8_t*>(skn._ConstantData);
+    DataInOut._PerSkeleton.insert(DataInOut._PerSkeleton.end(), pData,
+                                  pData + skn._ConstantDataByteSize);
+  }
+
   DataInOut._BatchSize++;
 }
 
@@ -28,8 +46,9 @@ struct SRenderPacketSorter {
 }  // namespace
 
 void CBatchRenderHelper::Initialize(CGraphics& Graphics) {
-  _ConstantBuffer =
-      Graphics.CreateConstantBuffer(_CbSize, ECpuAccessPolicy::CpuWrite);
+  _PerObjectCB = Graphics.CreateConstantBuffer(_CbSize, ECpuAccessPolicy::CpuWrite);
+  _PerMaterialCB = Graphics.CreateConstantBuffer(_CbSize, ECpuAccessPolicy::CpuWrite);
+  _PerSkeletonCB = Graphics.CreateConstantBuffer(_CbSize, ECpuAccessPolicy::CpuWrite);
 }
 
 void CBatchRenderHelper::RenderInstanced(CRenderContext& RenderContext,
@@ -45,26 +64,37 @@ void CBatchRenderHelper::RenderInstanced(CRenderContext& RenderContext,
 
   LocalCbData CbData;
   SRenderPacket* pPrevPacket = nullptr;
+  auto wouldOverflow = [&](const SRenderPacket& pkt) {
+    bool obj = (CbData._PerObject.size() +
+                pkt._Cbs._PerObject._ConstantDataByteSize) > _CbSize;
+    bool mat = pkt._Cbs._PerMaterial &&
+               (CbData._PerMaterial.size() +
+                pkt._Cbs._PerMaterial-> _ConstantDataByteSize) > _CbSize;
+    bool skn = pkt._Cbs._PerSkeleton &&
+               (CbData._PerSkeleton.size() +
+                pkt._Cbs._PerSkeleton-> _ConstantDataByteSize) > _CbSize;
+    return obj || mat || skn;
+  };
+
   for (SRenderPacket& CurrPacket : RenderQue) {
-    bool cbIsFull =
-        (CbData._CbData.size() +
-         CurrPacket._ConstantBufferData._ConstantDataByteSize) > _CbSize;
+    bool cbIsFull = wouldOverflow(CurrPacket);
     bool ContextUpdateRequired = (pPrevPacket == nullptr) ||
                                  !CanUseSameDraw(*pPrevPacket, CurrPacket) ||
                                  cbIsFull;
     if (ContextUpdateRequired) {
       if (pPrevPacket) {
         // Render the previous batch, not including CurrPacket
-        RenderBatch(RenderContext, CbData, *pPrevPacket);
+        RenderBatch(RenderContext, CbData, *pPrevPacket, Pass);
         CbData.clear();
       }
       // Update Context for new batch, which starts with CurrPacket
       UpdateContext(RenderContext, Graphics, CurrPacket, pPrevPacket);
     }
+
     ASSERT(ContextUpdateRequired || !pPrevPacket ||
-               pPrevPacket->_ConstantBufferData._ConstantDataByteSize ==
-                   CurrPacket._ConstantBufferData._ConstantDataByteSize,
-           "Unexpected constant buffer size change");
+               pPrevPacket->_Cbs._PerObject._ConstantDataByteSize ==
+                   CurrPacket._Cbs._PerObject._ConstantDataByteSize,
+           "Unexpected per-object constant buffer size change in batch");
 
     AppendConstantDataToVec(CurrPacket, CbData);
 
@@ -72,7 +102,7 @@ void CBatchRenderHelper::RenderInstanced(CRenderContext& RenderContext,
   }
   if (pPrevPacket) {
     // Render the final batch
-    RenderBatch(RenderContext, CbData, *pPrevPacket);
+    RenderBatch(RenderContext, CbData, *pPrevPacket, Pass);
   }
   RenderQue.clear();
 }
@@ -150,27 +180,50 @@ void CBatchRenderHelper::UpdateContext(CRenderContext& Context,
 
 void CBatchRenderHelper::RenderBatch(CRenderContext& RenderContext,
                                      const LocalCbData& CbData,
-                                     const SRenderPacket& LastPacket) {
-  if (_ConstantBuffer.AccessRawBuffer() == nullptr) {
+                                     const SRenderPacket& LastPacket,
+                                     ERenderPass Pass) {
+  if (_PerObjectCB.AccessRawBuffer() == nullptr) {
     ASSERT(false, "Trying to render with uninitialized RenderManager");
     return;
   }
-  // 1. send CB data
-  RenderContext.UpdateConstantBuffer(_ConstantBuffer, CbData._CbData.data(),
-                                     CbData._CbData.size());
-  RenderContext.SetVertexShaderConstantBuffer(_ConstantBuffer,
+  // 1. Upload CB channels and bind to expected slots
+  // Per-object is used by VS (always) and PS (normal pass shaders reference it)
+  RenderContext.UpdateConstantBuffer(_PerObjectCB, CbData._PerObject.data(),
+                                     CbData._PerObject.size());
+  RenderContext.SetVertexShaderConstantBuffer(_PerObjectCB,
                                               EConstantBufferIdx::PerObject);
-  RenderContext.SetPixelShaderConstantBuffer(_ConstantBuffer,
+  RenderContext.SetPixelShaderConstantBuffer(_PerObjectCB,
                                              EConstantBufferIdx::PerObject);
-  // 2. Render.
+
+  // Per-material is pixel-shader only, only in normal pass
+  if (Pass == ERenderPass::Normal && !CbData._PerMaterial.empty()) {
+    RenderContext.UpdateConstantBuffer(_PerMaterialCB, CbData._PerMaterial.data(),
+                                       CbData._PerMaterial.size());
+    RenderContext.SetPixelShaderConstantBuffer(_PerMaterialCB,
+                                               EConstantBufferIdx::PerMaterial);
+  }
+
+  // Per-skeleton is VS-only
+  if (!CbData._PerSkeleton.empty()) {
+    RenderContext.UpdateConstantBuffer(_PerSkeletonCB, CbData._PerSkeleton.data(),
+                                       CbData._PerSkeleton.size());
+    RenderContext.SetVertexShaderConstantBuffer(_PerSkeletonCB,
+                                                EConstantBufferIdx::PerSkeleton);
+  }
+
+  // 2. Draw
   if (LastPacket._Mesh._VertexBuffer.GetProperties()._SingleVertexSizeInBytes ==
       0) {
     ASSERT(false, "Vertex size of 0");
     return;
   }
   if (CbData._BatchSize == 1) {
-    RenderContext.Draw(
-        LastPacket._Mesh._VertexBuffer.GetProperties()._VertexCount);
+    if (LastPacket._Mesh._IndexBuffer.IsValid()) {
+      RenderContext.DrawIndexed(LastPacket._Mesh._IndexBuffer.GetIndexCount());
+    } else {
+      RenderContext.Draw(
+          LastPacket._Mesh._VertexBuffer.GetProperties()._VertexCount);
+    }
   } else {
     RenderContext.DrawInstanced(
         LastPacket._Mesh._VertexBuffer.GetProperties()._VertexCount,

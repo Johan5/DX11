@@ -5,11 +5,16 @@
 
 class CCameraBase {
  public:
+  CCameraBase(float VerticalFov, float AspectRatio)
+    :_VerticalFov(VerticalFov), _AspectRatio(AspectRatio)
+  {
+  }
+
   // World space -> Camera space
   CMatrix4x4f GetViewMatrix() const;
 
   // Camera space -> Screen projection (x in [-1,1], y in [-1,1], z in [0,1])
-  virtual CMatrix4x4f GetProjectionMatrix() const = 0;
+  CMatrix4x4f GetProjectionMatrix() const;
   CMatrix4x4f GetViewAndProjection() const;
 
   const CVector3f& GetPosition() const;
@@ -49,4 +54,7 @@ class CCameraBase {
   float _MovementSpeed = 0.1f;
   // given in radians
   float _RotationSpeed = 5.0f;
+
+  float _VerticalFov = 0.0f;
+  float _AspectRatio = 0.0f;
 };

@@ -12,7 +12,7 @@ bool CPixelShader::Initialize(ID3D11Device& Device, const std::string& FileName,
   ComPtr<ID3D10Blob> pCompiledPixelShader;
   ComPtr<ID3D10Blob> pErrorMessage;
   HRESULT Result = D3DCompileFromFile(
-      FileNameW.c_str(), nullptr, nullptr, ShaderMainFunction.c_str(), "ps_5_0",
+      FileNameW.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, ShaderMainFunction.c_str(), "ps_5_0",
       D3D10_SHADER_ENABLE_STRICTNESS, 0, pCompiledPixelShader.GetAddressOf(),
       pErrorMessage.GetAddressOf());
   if (FAILED(Result)) {

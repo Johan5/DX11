@@ -11,30 +11,16 @@ cbuffer PerLightCb : register(b2)
 	float3 _Pad1;
 };
 
-struct SMaterial
-{
-	float _DiffuseStrength;
-	float _SpecularStrength;
-	float _AmbientStrength;
-	// Large specular power means small specular highlight
-	int _SpecularPower; // "phong exponent"
-    float4 _Color;
-};
-
 struct PerObjectCbData
 {
 	// Local To World
     float4x4 _WorldMatrix;
 };
 
+// Index using [InstanceId]
 cbuffer PerObjectCb : register(b3) 
 {
     PerObjectCbData _PerObjectData[MAX_DRAW_BATCH];
-}
-
-PerObjectCbData GetCbData(uint InstanceId)
-{
-    return _PerObjectData[InstanceId];
 }
 
 struct SVsInput
@@ -56,12 +42,11 @@ struct SPsInput
 	uint _CubeFaceIdx : SV_RenderTargetArrayIndex;
 };
 
-
 SGsInput VS(SVsInput Input)
 {
 	SGsInput Output;
-    PerObjectCbData Cb = GetCbData(Input._InstanceId);
-	Output._W_Position = mul(Cb._WorldMatrix, float4(Input._L_Position, 1.0f));
+    PerObjectCbData Cb = _PerObjectData[Input._InstanceId];
+	Output._W_Position = mul(float4(Input._L_Position, 1.0f), Cb._WorldMatrix);
 	return Output;
 }
 
@@ -75,8 +60,8 @@ void GS(triangle SGsInput Input[3], inout TriangleStream<SPsInput> OutputStream)
 		Output._CubeFaceIdx = CubeFace;
 		for (int VertexIdx = 0; VertexIdx < 3; ++VertexIdx)
 		{
-			float4 L0_Position = mul(_LightViewMatrix[CubeFace], Input[VertexIdx]._W_Position);
-			Output._S_Position = mul(_LightProjectionMatrix, L0_Position);
+			float4 L0_Position = mul(Input[VertexIdx]._W_Position, _LightViewMatrix[CubeFace]);
+			Output._S_Position = mul(L0_Position, _LightProjectionMatrix);
 			Output._L0_Position = L0_Position.xyz / L0_Position.w;
 			OutputStream.Append(Output);
 		}

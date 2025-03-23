@@ -15,7 +15,7 @@ bool CVertexShader::Initialize(
   ComPtr<ID3D10Blob> pCompiledVertexShader;
   ComPtr<ID3D10Blob> pErrorMessage;
   Result = D3DCompileFromFile(
-      FileNameW.c_str(), nullptr, nullptr, ShaderMainFunction.c_str(), "vs_5_0",
+      FileNameW.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, ShaderMainFunction.c_str(), "vs_5_0",
       D3D10_SHADER_ENABLE_STRICTNESS, 0, pCompiledVertexShader.GetAddressOf(),
       pErrorMessage.GetAddressOf());
 

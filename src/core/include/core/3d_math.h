@@ -9,11 +9,16 @@ enum class ECoordinateTransformType {
   WorldToLocal,
   LocalToWorld,
 };
-// "Origin", "Forward" and "Up" must be given in world coordinates
+
+// "Origin", "Forward", "Up", "Scale" must be given in world space
 CMatrix4x4f CreateCoordinateTransform(const CVector3f& Origin,
                                       const CVector3f& Forward,
                                       const CVector3f& Up,
+                                      const CVector3f& Scale,
                                       ECoordinateTransformType TransformType);
+
+// Creates transform that takes normal from local to world space
+std::optional<CMatrix4x4f> CreateNormalTransform(const CMatrix4x4f& localToWorldTransform);
 
 bool AreOrthogonal(const CVector3f& A, const CVector3f& B);
 bool AlmostEqual(const CVector3f& A, const CVector3f& B);

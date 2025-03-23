@@ -6,6 +6,7 @@ set(SOURCES
         src/light_source.cpp
         src/systemclass.cpp
         src/world.cpp
+        src/xbot.cpp
 )
 set(HEADERS
         include/renderer/cube.h
@@ -14,6 +15,7 @@ set(HEADERS
         include/renderer/light_source.h
         include/renderer/systemclass.h
         include/renderer/world.h
+        include/renderer/xbot.h
 )
 
 add_library(renderer STATIC ${SOURCES} ${HEADERS})
@@ -25,7 +27,6 @@ target_link_libraries(renderer
         graphics::graphics
         input::input
         utils::utils
-        assimp
 )
 target_include_directories(renderer PUBLIC include)
 

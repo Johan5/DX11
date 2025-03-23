@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Source Code" pattern="file[DX11]:shaders//*||file[DX11]:src//*||file:.clang-format||file:.gitignore||file:.gitmodules||file:CMakeLists.txt||file:CMakePresets.json||file:CppProperties.json||file:main.cpp||file:NatvisFile.natvis||file:README.txt||file:TODO.md||file:vs-chromium-project.txt" />
+</component>

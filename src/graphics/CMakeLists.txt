@@ -55,5 +55,6 @@ target_link_libraries(graphics
         utils::utils
         PRIVATE
         input::input
+        assimp
 )
 target_include_directories(graphics PUBLIC include)

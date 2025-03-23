@@ -1,19 +1,13 @@
 #include "renderer/world.h"
 
 #include "core/matrix.h"
+#include "core/misc_math.h"
 #include "graphics/graphics.h"
+#include "input/camera_base.h"
 #include "input/input_enums.h"
-#include "input/perspective_camera.h"
 #include "renderer/cube.h"
-#include "utils/assert.h"
+#include "renderer/xbot.h"
 #include "utils/logger.h"
-
-/// DEBUG CODE. REMOVE
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-
-#include <functional>
 
 void CWorld::Initialize(CGraphics& Graphics, CInputHandler& InputHandler) {
   using namespace std::placeholders;
@@ -23,18 +17,19 @@ void CWorld::Initialize(CGraphics& Graphics, CInputHandler& InputHandler) {
   float FieldOfView = NMiscMath::Pi / 2.0f;
   float AspectRatio =
       (float)Graphics.GetScreenWidth() / (float)Graphics.GetScreenHeight();
-  _Camera = std::make_unique<CPerspectiveCamera>(FieldOfView, AspectRatio);
+  _Camera = std::make_unique<CCameraBase>(FieldOfView, AspectRatio);
 
   {
     _Light = std::make_unique<CLightSource>();
-    _Light->SetId(_NextGameObjectId++);
+    _Light->SetId(static_cast<int64_t>(_NextGameObjectId++));
     _Light->Initialize(*_pGraphics);
     _Light->SetPosition(CVector3f{0.0f, 0.0f, 0.0f});
     _Light->SetScale(CVector3f{0.3f, 0.3f, 0.3f});
   }
 
-  InputHandler.RegisterKeyInputEventCallback(
-      this, std::bind(&CWorld::HandleUserInput, this, _1));
+  InputHandler.RegisterKeyInputEventCallback(this, [this](auto&& PH1) {
+    HandleUserInput(std::forward<decltype(PH1)>(PH1));
+  });
   _CameraConstantBuffer = Graphics.CreateConstantBuffer(
       sizeof(NWorldPass::SCameraConstantBuffer), ECpuAccessPolicy::CpuWrite);
   _LightConstantBuffer = Graphics.CreateConstantBuffer(
@@ -52,36 +47,26 @@ void CWorld::ShutDown() {
 }
 
 void CWorld::Update() {
-  Assimp::Importer importer;
-
-  std::string characterFbxPath = "assets/Character/XBot.fbx";
-  const aiScene* scene = importer.ReadFile(
-      characterFbxPath, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
-                            aiProcess_JoinIdenticalVertices |
-                            aiProcess_SortByPType);
-
-  int asd = 2;
 }
 
 void CWorld::Render(CRenderContext& RenderContext) {
   SShadowData ShadowData = _ShadowHandler.CreateShadowMap(
-      *_pGraphics, _BatchRenderHelper, _Light.get()->GetPosition());
+      *_pGraphics, _BatchRenderHelper, _Light->GetPosition());
 
-  PerCameraSetup(RenderContext, *_Camera.get());
-  PerLightSetup(RenderContext, *_Light.get(), ShadowData);
-  RenderObjects(RenderContext, *_Camera.get());
+  PerCameraSetup(RenderContext, *_Camera);
+  PerLightSetup(RenderContext, *_Light, ShadowData);
+  RenderObjects(RenderContext, *_Camera);
 
   RenderContext.ClearTextureSlot(NGraphicsDefines::ShadowMapTextureSlot);
 }
 
 void CWorld::SpawnDefaultObjects(CGraphics& Graphics) {
   auto SpawnWall = [this](const CVector3f& Position, const CVector3f& Scale) {
-    CCube* Object = SpawnGameObject<CCube>();
+    auto* Object = SpawnGameObject<CCube>();
     Object->SetPosition(Position);
     Object->SetScale(Scale);
     Object->DisableShadowRendering();
-    Object->AccessConstantBuffer()._ColorData._TextureSlot =
-        NGraphicsDefines::ShadowMapTextureSlot + 1;
+    Object->AccessMaterialCb()._Material._TextureSlot = NGraphicsDefines::ShadowMapTextureSlot + 1;
   };
 
   // Bottom
@@ -97,14 +82,17 @@ void CWorld::SpawnDefaultObjects(CGraphics& Graphics) {
   // Back
   SpawnWall(CVector3f{0.0f, 0.0f, -15.0f}, CVector3f{30.0f, 30.0f, 0.01f});
 
-  CCube* Cube1 = SpawnGameObject<CCube>();
+  auto* Cube1 = SpawnGameObject<CCube>();
   Cube1->SetPosition(CVector3f{-3.0f, -2.0f, -2.5f});
-  CCube* Cube2 = SpawnGameObject<CCube>();
+  auto* Cube2 = SpawnGameObject<CCube>();
   Cube2->SetPosition(CVector3f{1.0f, 3.0f, 0.0f});
-  CCube* Cube3 = SpawnGameObject<CCube>();
+  auto* Cube3 = SpawnGameObject<CCube>();
   Cube3->SetPosition(CVector3f{5.0f, -7.0f, -3.0f});
-  CCube* Cube4 = SpawnGameObject<CCube>();
-  Cube4->SetPosition(CVector3f{0.0f, -0.5f, 8.0f});
+  auto* Cube4 = SpawnGameObject<CCube>();
+  Cube4->SetPosition(CVector3f{0.0f, -0.0f, 8.0f});
+
+  auto* Char1 = SpawnGameObject<XBot>();
+  Char1->SetPosition(CVector3f{0.0f, -1.0f, 2.0f});
 }
 
 void CWorld::HandleUserInput(const CInputEvent& Input) {
