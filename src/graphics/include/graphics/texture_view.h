@@ -2,28 +2,27 @@
 
 #include "texture.h"
 
-#include <cstdint>
 #include <d3d11.h>
-#include <wrl/client.h> // Microsoft ComPtr
-
+#include <wrl/client.h>  // Microsoft ComPtr
+#include <cstdint>
 
 class CGraphics;
 
-class CTextureView
-{
-	friend CGraphics;
-public:
-	CTextureView() = default;
+class CTextureView {
+  friend CGraphics;
 
-	bool operator==(const CTextureView& other) const;
-	
-	ID3D11ShaderResourceView* AccessTextureView();
-	const ID3D11ShaderResourceView* GetTextureView() const;
-	ID3D11ShaderResourceView** AccessAddrOfTextureView();
+ public:
+  CTextureView() = default;
 
-private:
-	explicit CTextureView(Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView);
+  bool operator==(const CTextureView& other) const;
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _pTextureView;
+  ID3D11ShaderResourceView* AccessTextureView();
+  const ID3D11ShaderResourceView* GetTextureView() const;
+  ID3D11ShaderResourceView** AccessAddrOfTextureView();
+
+ private:
+  explicit CTextureView(
+      Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pShaderResourceView);
+
+  Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> _pTextureView;
 };
-

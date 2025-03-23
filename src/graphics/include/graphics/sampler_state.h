@@ -1,27 +1,23 @@
 #pragma once
 
-
-
-#include <cstdint>
 #include <d3d11.h>
-#include <wrl/client.h> // Microsoft ComPtr
+#include <wrl/client.h>  // Microsoft ComPtr
+#include <cstdint>
 
+class CSamplerState {
+  friend class CGraphics;  // Only allow CGraphics to create
+ public:
+  CSamplerState() = default;
 
-class CSamplerState
-{
-	friend class CGraphics; // Only allow CGraphics to create
-public:
-	CSamplerState() = default;
+  bool operator==(const CSamplerState& other) const;
 
-	bool operator==(const CSamplerState& other) const;
+  ID3D11SamplerState* AccessSamplerState();
+  const ID3D11SamplerState* GetSamplerState() const;
+  ID3D11SamplerState** AccessAddrOfSamplerState();
 
-	ID3D11SamplerState* AccessSamplerState();
-	const ID3D11SamplerState* GetSamplerState() const;
-	ID3D11SamplerState** AccessAddrOfSamplerState();
+ private:
+  explicit CSamplerState(
+      Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerState);
 
-private:
-	explicit CSamplerState(Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerState);
-
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> _SamplerState;
+  Microsoft::WRL::ComPtr<ID3D11SamplerState> _SamplerState;
 };
-

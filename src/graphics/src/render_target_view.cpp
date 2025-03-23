@@ -2,7 +2,6 @@
 
 #include "utils/assert.h"
 
-
 //CRenderTargetView::CRenderTargetView(ID3D11Device& Device, CTexture& Texture, uint32_t Width, uint32_t Height, EGfxResourceDataFormat Format)
 //{
 //	D3D11_RENDER_TARGET_VIEW_DESC RenderTargetViewDesc;
@@ -13,17 +12,14 @@
 //	ASSERT(SUCCEEDED(Result), "Failed to create render target view");
 //}
 
-CRenderTargetView::CRenderTargetView(Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenterTargetView)
-	: _pRenderTargetView(pRenterTargetView)
-{
+CRenderTargetView::CRenderTargetView(
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRenterTargetView)
+    : _pRenderTargetView(pRenterTargetView) {}
+
+ID3D11RenderTargetView* CRenderTargetView::AccessRenderTargetView() {
+  return _pRenderTargetView.Get();
 }
 
-ID3D11RenderTargetView* CRenderTargetView::AccessRenderTargetView()
-{
-	return _pRenderTargetView.Get();
-}
-
-ID3D11RenderTargetView** CRenderTargetView::AccessAddrOfRenderTargetView()
-{
-	return _pRenderTargetView.GetAddressOf();
+ID3D11RenderTargetView** CRenderTargetView::AccessAddrOfRenderTargetView() {
+  return _pRenderTargetView.GetAddressOf();
 }

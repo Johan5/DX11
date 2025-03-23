@@ -3,46 +3,43 @@
 #include <d3d11.h>
 #include <vector>
 
-#include "game_object.h"
-#include "core/vector.h"
 #include "core/matrix.h"
-#include "graphics/graphics.h"
-#include "graphics/vertex_shader.h"
-#include "graphics/pixel_shader.h"
+#include "core/vector.h"
+#include "game_object.h"
 #include "graphics/constant_buffer.h"
-#include "graphics/material.h"
-#include "graphics/render_packet.h"
 #include "graphics/default_object_constant_buffer.h"
+#include "graphics/graphics.h"
+#include "graphics/material.h"
+#include "graphics/pixel_shader.h"
+#include "graphics/render_packet.h"
+#include "graphics/vertex_shader.h"
 
 #include <mutex>
 
+class CCube : public CGameObject {
+ public:
+  ~CCube() override;
 
-class CCube : public CGameObject
-{
-public:
-	~CCube() override;
+  void Initialize(CGraphics& Graphics) override;
+  void Shutdown() override;
+  bool IsInitialized() const override;
 
-	void Initialize( CGraphics& Graphics ) override;
-	void Shutdown() override;
-	bool IsInitialized() const override;
+  void Render(CBatchRenderHelper& BatchRenderHelper,
+              const CCameraBase& Camera) override;
 
-	void Render(CBatchRenderHelper& BatchRenderHelper, const CCameraBase& Camera) override;
+  bool ShouldRenderShadows() const;
+  void DisableShadowRendering();
 
-	bool ShouldRenderShadows() const;
-	void DisableShadowRendering();
+  SMaterial& AccessMaterial();
+  SDefaultObjectConstantBuffer& AccessConstantBuffer();
 
-	SMaterial& AccessMaterial();
-	SDefaultObjectConstantBuffer& AccessConstantBuffer();
+ private:
+  SMaterial _Material;
+  SMaterial _ShadowMaterial;
+  SMesh _Mesh;
+  std::string _Texture = "bricks";
+  SDefaultObjectConstantBuffer _CbData;
 
-private:
-	SMaterial _Material;
-	SMaterial _ShadowMaterial;
-	SMesh _Mesh;
-	std::string _Texture = "bricks";
-	SDefaultObjectConstantBuffer _CbData;
-
-	bool _IsInitialized = false;
-	bool _ShouldRenderShadow = true;
+  bool _IsInitialized = false;
+  bool _ShouldRenderShadow = true;
 };
-
-

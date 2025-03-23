@@ -2,24 +2,23 @@
 
 #include "graphics_enums.h"
 
-#include <cstdint>
 #include <d3d11.h>
-#include <wrl/client.h> // Microsoft ComPtr
+#include <wrl/client.h>  // Microsoft ComPtr
+#include <cstdint>
 
 class CGraphics;
 
-class CTexture
-{
-	friend CGraphics;
-public:
-	CTexture() = default;
+class CTexture {
+  friend CGraphics;
 
-	const ID3D11Texture2D* GetTexture() const;
-	ID3D11Texture2D* AccessTexture();
+ public:
+  CTexture() = default;
 
-private:
-	explicit CTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture);
+  const ID3D11Texture2D* GetTexture() const;
+  ID3D11Texture2D* AccessTexture();
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> _pTexture;
+ private:
+  explicit CTexture(Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> _pTexture;
 };
-

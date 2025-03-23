@@ -6,19 +6,18 @@
 
 #include <memory>
 
-class CGameApplication
-{
-public:
-	CGameApplication( CInputHandler& InputHandler, CGraphics& Graphics );
-	~CGameApplication();
+class CGameApplication {
+ public:
+  CGameApplication(CInputHandler& InputHandler, CGraphics& Graphics);
+  ~CGameApplication();
 
-	// This is the main update loop, called from the system class
-	bool ProduceNewFrame();
+  // This is the main update loop, called from the system class
+  bool ProduceNewFrame();
 
-private:
-	CInputHandler& _InputHandler;
-	CGraphics& _Graphics;	
-	CWorld _World;
+ private:
+  CInputHandler& _InputHandler;
+  CGraphics& _Graphics;
+  CWorld _World;
 
-	bool _ShouldExitApplication = false;
+  bool _ShouldExitApplication = false;
 };

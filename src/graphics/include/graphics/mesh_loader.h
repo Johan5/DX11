@@ -4,7 +4,6 @@
 
 class CGraphics;
 
-namespace mesh_loader
-{
-	SMesh LoadMesh(CGraphics& Graphics, EMeshType MeshType);
+namespace mesh_loader {
+SMesh LoadMesh(CGraphics& Graphics, EMeshType MeshType);
 }

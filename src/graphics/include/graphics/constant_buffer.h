@@ -2,34 +2,28 @@
 
 #include "graphics_enums.h"
 
-#include <cstdint>
 #include <d3d11.h>
-#include <wrl/client.h> // Microsoft ComPtr
+#include <wrl/client.h>  // Microsoft ComPtr
+#include <cstdint>
 
 // This is the index that will be used when registering a buffer with the device context
-enum class EConstantBufferIdx
-{
-	PerFrame,
-	PerCamera,
-	PerLight,
-	PerObject
-};
+enum class EConstantBufferIdx { PerFrame, PerCamera, PerLight, PerObject };
 
-class CConstantBuffer
-{
-	friend class CGraphics; // Only allow CGraphics to create
-public:
-	CConstantBuffer() = default;
+class CConstantBuffer {
+  friend class CGraphics;  // Only allow CGraphics to create
+ public:
+  CConstantBuffer() = default;
 
-	ID3D11Buffer* AccessRawBuffer() { return _pBuffer.Get(); }
-	int32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
-	ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
+  ID3D11Buffer* AccessRawBuffer() { return _pBuffer.Get(); }
+  int32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
+  ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
 
-private:
-	explicit CConstantBuffer(ID3D11Device& Device, int32_t SizeInBytes, ECpuAccessPolicy AccessPolicy);
+ private:
+  explicit CConstantBuffer(ID3D11Device& Device, int32_t SizeInBytes,
+                           ECpuAccessPolicy AccessPolicy);
 
-private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
-	int32_t _BufferSizeInBytes = 0;
-	ECpuAccessPolicy _AccessPolicy;
+ private:
+  Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
+  int32_t _BufferSizeInBytes = 0;
+  ECpuAccessPolicy _AccessPolicy;
 };

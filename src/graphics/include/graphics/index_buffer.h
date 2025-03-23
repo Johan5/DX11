@@ -2,28 +2,28 @@
 
 #include "graphics_enums.h"
 
-#include <cstdint>
 #include <d3d11.h>
-#include <wrl/client.h> // Microsoft ComPtr
+#include <wrl/client.h>  // Microsoft ComPtr
+#include <cstdint>
 
-class CIndexBuffer
-{
-	friend class CGraphics; // Only allow CGraphics to create
-public:
-	CIndexBuffer() = default;
+class CIndexBuffer {
+  friend class CGraphics;  // Only allow CGraphics to create
+ public:
+  CIndexBuffer() = default;
 
-	bool IsValid() const { return _pBuffer != nullptr; }
+  bool IsValid() const { return _pBuffer != nullptr; }
 
-	ID3D11Buffer* AccessRawBuffer() { return _pBuffer.Get(); }
-	const ID3D11Buffer* GetRawBuffer() const { return _pBuffer.Get(); }
-	uint32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
-	ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
+  ID3D11Buffer* AccessRawBuffer() { return _pBuffer.Get(); }
+  const ID3D11Buffer* GetRawBuffer() const { return _pBuffer.Get(); }
+  uint32_t GetSizeInBytes() const { return _BufferSizeInBytes; }
+  ECpuAccessPolicy GetAccessPolicy() const { return _AccessPolicy; }
 
-private:
-	explicit CIndexBuffer(ID3D11Device& Device, uint32_t SizeInBytes, ECpuAccessPolicy AccessPolicy);
+ private:
+  explicit CIndexBuffer(ID3D11Device& Device, uint32_t SizeInBytes,
+                        ECpuAccessPolicy AccessPolicy);
 
-private:
-	Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
-	uint32_t _BufferSizeInBytes = 0;
-	ECpuAccessPolicy _AccessPolicy;
+ private:
+  Microsoft::WRL::ComPtr<ID3D11Buffer> _pBuffer;
+  uint32_t _BufferSizeInBytes = 0;
+  ECpuAccessPolicy _AccessPolicy;
 };
